@@ -42,7 +42,6 @@ public class InterpolatorProcessor extends AbstractProcessor<CtInvocation<?>> {
         substituteInvocation(element, parserResult);
     }
 
-    // check s(null), null is literal, need more fine-grained validation
     private CtLiteral<String> findFirstLiteralArgument(CtInvocation<?> element) {
         List<CtExpression<?>> arguments = element.getArguments();
 
@@ -55,14 +54,17 @@ public class InterpolatorProcessor extends AbstractProcessor<CtInvocation<?>> {
         CtExpression<?> expression = arguments.get(0);
         if (!(expression instanceof CtLiteral<?>)) {
             element.getFactory().getEnvironment()
-                    .report(this, Level.ERROR, element, "Only literal value supported!");
+                    .report(this, Level.ERROR, element, "Only string literal value is supported!");
             return null;
         }
 
         CtLiteral<?> literal = (CtLiteral<?>) expression;
-
-        // check literal.value is not null, null literal is not supported
-        // check literal.value is string
+        Object value = literal.getValue();
+        if (Objects.isNull(value)) {
+            element.getFactory().getEnvironment()
+                    .report(this, Level.ERROR, element, "Only string literal value is supported!");
+            return null;
+        }
 
         return (CtLiteral<String>) literal;
     }
