@@ -11,6 +11,7 @@
     <modules>
         <module>interp4j-core</module>
         <module>interp4j-processor</module>
+        <module>interp4j-examples</module>
     </modules>
 
     <name>interp4j</name>
@@ -23,9 +24,11 @@
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
         <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
+        <spoon-maven-plugin.version>3.4.2</spoon-maven-plugin.version>
 
         <!-- dependencies versions -->
         <spoon.version>9.1.0</spoon.version>
+        <lombok.version>1.18.20</lombok.version>
 
         <testng.version>7.4.0</testng.version>
         <assertj.version>3.20.2</assertj.version>
@@ -49,6 +52,12 @@
                 <groupId>fr.inria.gforge.spoon</groupId>
                 <artifactId>spoon-core</artifactId>
                 <version>${spoon.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <!-- test dependencies -->
@@ -75,28 +84,14 @@
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <release>11</release>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>${maven-source-plugin.version}</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                        </manifest>
-                    </archive>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
