@@ -98,4 +98,11 @@ public class SExpressionParserTest {
 
         assertThat(result).isEmpty();
     }
+
+    @Test
+    public void parse_thereIsNoOpenBracket_failParsing() {
+        Optional<SExpression> result = parser.parse("$}} name");
+
+        assertThat(result).isEmpty();
+    }
 }

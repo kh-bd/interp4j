@@ -24,7 +24,7 @@ public class SInterpolatorProcessorTest {
 
     @Test(dataProvider = "successTransformationsDataProvider")
     public void successTransformationTest(String sourcePath, String expectedPath) throws URISyntaxException {
-        verifyTheSame(sourcePath, expectedPath);
+        verifySuccess(sourcePath, expectedPath);
     }
 
     @DataProvider
@@ -35,7 +35,34 @@ public class SInterpolatorProcessorTest {
         };
     }
 
-    private void verifyTheSame(String sourcePath, String expectedPath) throws URISyntaxException {
+    @Test(dataProvider = "failTransformationsDataProvider")
+    public void failTransformationTest(String sourcePath, int errorsCount) throws URISyntaxException {
+        verifyFail(sourcePath, errorsCount);
+    }
+
+    @DataProvider
+    public static Object[][] failTransformationsDataProvider() {
+        return new Object[][]{
+                {"/s/fail/nullLiteral.java", 1},
+                {"/s/fail/notStringLiteral.java", 1},
+                {"/s/fail/wrongFormat.java", 1}
+        };
+    }
+
+    private void verifyFail(String path, int expectedErrorsCounts) throws URISyntaxException {
+        Factory actualFactory = ModelUtils.build(resourceToFile(path));
+        Factory expectedFactory = ModelUtils.build(resourceToFile(path));
+
+        ProcessorUtils.process(actualFactory, List.of(processor));
+
+        // nothing was transformed
+        verifyTheSame(actualFactory, expectedFactory);
+
+        int errorsCount = actualFactory.getEnvironment().getErrorCount();
+        assertThat(errorsCount).isEqualTo(expectedErrorsCounts);
+    }
+
+    private void verifySuccess(String sourcePath, String expectedPath) throws URISyntaxException {
         Factory actualFactory = ModelUtils.build(resourceToFile(sourcePath));
         Factory expectedFactory = ModelUtils.build(resourceToFile(expectedPath));
 
