@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
         String name = args.length > 0 ? args[0] : "Alex";
-        String greet = s("Hello ${name}. Who are you?");
+        String greet = s("Hello ${name.toUpperCase()}. How old are you? I am ${20 + 1}.");
         System.out.println(greet);
     }
 }

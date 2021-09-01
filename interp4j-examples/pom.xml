@@ -33,7 +33,7 @@
                         <configuration>
                             <processors>
                                 <processor>
-                                    com.github.interp4j.processor.s.InterpolatorProcessor
+                                    com.github.interp4j.processor.s.SInterpolatorProcessor
                                 </processor>
                             </processors>
                         </configuration>

@@ -29,6 +29,7 @@
         <!-- dependencies versions -->
         <spoon.version>9.1.0</spoon.version>
         <lombok.version>1.18.20</lombok.version>
+        <petitparser.version>2.3.1</petitparser.version>
 
         <testng.version>7.4.0</testng.version>
         <assertj.version>3.20.2</assertj.version>
@@ -58,6 +59,11 @@
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.github.petitparser</groupId>
+                <artifactId>petitparser-core</artifactId>
+                <version>${petitparser.version}</version>
             </dependency>
 
             <!-- test dependencies -->

@@ -1,7 +1,7 @@
 package com.github.interp4j.processor.s;
 
 import com.github.interp4j.core.Interpolations;
-import com.github.interp4j.core.internal.s.Interpolator;
+import com.github.interp4j.core.internal.s.SInterpolator;
 import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtExpression;
@@ -14,17 +14,18 @@ import spoon.support.Level;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * @author Sergei_Khadanovich
  */
-public class InterpolatorProcessor extends AbstractProcessor<CtInvocation<?>> {
+public class SInterpolatorProcessor extends AbstractProcessor<CtInvocation<?>> {
 
     private static final String S_METHOD_NAME = "s";
     private static final String INTERPOLATE_METHOD_NAME = "interpolate";
 
-    private final ExpressionParser parser = new ExpressionParser();
+    private final SExpressionParser parser = new SExpressionParser();
 
     @Override
     public void process(CtInvocation<?> element) {
@@ -37,9 +38,14 @@ public class InterpolatorProcessor extends AbstractProcessor<CtInvocation<?>> {
             return;
         }
 
-        ParseResult parserResult = parser.parse(literal.getValue());
+        Optional<SExpression> parsedExpression = parser.parse(literal.getValue());
 
-        substituteInvocation(element, parserResult);
+        parsedExpression.ifPresentOrElse(expr -> substituteInvocation(element, expr), () -> logWrongLiteralFormat(element));
+    }
+
+    private void logWrongLiteralFormat(CtInvocation<?> element) {
+        getFactory().getEnvironment()
+                .report(this, Level.ERROR, element, "String literal has wrong format!");
     }
 
     private CtLiteral<String> findFirstLiteralArgument(CtInvocation<?> element) {
@@ -98,7 +104,7 @@ public class InterpolatorProcessor extends AbstractProcessor<CtInvocation<?>> {
     }
 
     private CtExpression<?> interpolatorConstructorCall(List<String> parts) {
-        CtTypeReference<?> typeRef = getFactory().createCtTypeReference(Interpolator.class);
+        CtTypeReference<?> typeRef = getFactory().createCtTypeReference(SInterpolator.class);
 
         List<CtLiteral<String>> literals = parts.stream()
                 .map(part -> getFactory().createLiteral(part))
@@ -116,10 +122,10 @@ public class InterpolatorProcessor extends AbstractProcessor<CtInvocation<?>> {
                 .orElseThrow(() -> new SpoonException(methodNotFoundError(clazz, methodName)));
     }
 
-    private void substituteInvocation(CtInvocation<?> element, ParseResult parseResult) {
-        element.setTarget(interpolatorConstructorCall(parseResult.getParts()));
-        element.setExecutable(findExecutable(Interpolator.class, INTERPOLATE_METHOD_NAME));
-        element.setArguments(interpolateArguments(parseResult.getExpressions()));
+    private void substituteInvocation(CtInvocation<?> element, SExpression sExpression) {
+        element.setTarget(interpolatorConstructorCall(sExpression.getParts()));
+        element.setExecutable(findExecutable(SInterpolator.class, INTERPOLATE_METHOD_NAME));
+        element.setArguments(interpolateArguments(sExpression.getExpressions()));
     }
 
     private String methodNotFoundError(Class<?> clazz, String methodName) {

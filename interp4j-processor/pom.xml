@@ -27,6 +27,10 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.petitparser</groupId>
+            <artifactId>petitparser-core</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.testng</groupId>

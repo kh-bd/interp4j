@@ -7,7 +7,7 @@ package com.github.interp4j.core.internal.s;
  *
  * @author Sergei_Khadanovich
  */
-public class Interpolator {
+public class SInterpolator {
 
     /**
      * String literal parts.
@@ -16,7 +16,7 @@ public class Interpolator {
      */
     private final String[] parts;
 
-    public Interpolator(String... parts) {
+    public SInterpolator(String... parts) {
         this.parts = parts;
     }
 
