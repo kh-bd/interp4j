@@ -18,7 +18,6 @@ class SGrammarDefinition extends GrammarDefinition {
     private static final String EXPRESSION = "expression";
     private static final String EXPRESSION_AND_TEXT = "expressionAndText";
 
-
     SGrammarDefinition() {
         def("start",
                 ref(TEXT)
