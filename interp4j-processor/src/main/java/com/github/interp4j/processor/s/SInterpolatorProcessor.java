@@ -59,7 +59,7 @@ public class SInterpolatorProcessor extends AbstractProcessor<CtInvocation<?>> {
 
         CtExpression<?> expression = arguments.get(0);
         if (!(expression instanceof CtLiteral<?>)) {
-            element.getFactory().getEnvironment()
+            getFactory().getEnvironment()
                     .report(this, Level.ERROR, element, "Only string literal value is supported!");
             return null;
         }
@@ -67,7 +67,7 @@ public class SInterpolatorProcessor extends AbstractProcessor<CtInvocation<?>> {
         CtLiteral<?> literal = (CtLiteral<?>) expression;
         Object value = literal.getValue();
         if (Objects.isNull(value)) {
-            element.getFactory().getEnvironment()
+            getFactory().getEnvironment()
                     .report(this, Level.ERROR, element, "Only string literal value is supported!");
             return null;
         }
