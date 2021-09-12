@@ -1,9 +1,22 @@
 package dev.khbd.interp4j.core;
 
 /**
+ * Entry point to string interpolation.
+ *
+ * <p>To use string interpolation simply invoke {@link #s(String)} method
+ * with string literal. String literal can contain java expressions.
+ * For example,
+ *
+ * <pre>{@code
+ * String name = "Alex";
+ * String greet = Interpolations.s("Hello ${name}, how are you?");
+ *
+ * assert greet.equals("Hello Alex, how are you?");
+ * }</pre>
+ *
  * @author Sergei_Khadanovich
  */
-public class Interpolations {
+public final class Interpolations {
 
     private Interpolations() {
     }
