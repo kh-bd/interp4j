@@ -19,6 +19,7 @@ package dev.khbd.interp4j.core;
 public final class Interpolations {
 
     private Interpolations() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
     /**
@@ -28,6 +29,6 @@ public final class Interpolations {
      * @return interpolated string
      */
     public static String s(String str) {
-        throw new InterpolationNotImplementedException(str);
+        throw new UnsupportedOperationException("Operation is not supported");
     }
 }
