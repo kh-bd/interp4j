@@ -1,4 +1,4 @@
-package com.github.interp4j.processor.s;
+package dev.khbd.interp4j.processor.s;
 
 import org.petitparser.parser.Parser;
 import org.petitparser.parser.primitive.CharacterParser;

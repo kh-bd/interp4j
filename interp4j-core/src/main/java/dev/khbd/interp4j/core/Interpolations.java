@@ -1,4 +1,4 @@
-package com.github.interp4j.core;
+package dev.khbd.interp4j.core;
 
 /**
  * @author Sergei_Khadanovich

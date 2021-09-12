@@ -1,4 +1,4 @@
-package com.github.interp4j.processor.s;
+package dev.khbd.interp4j.processor.s;
 
 import java.util.ArrayList;
 import java.util.List;

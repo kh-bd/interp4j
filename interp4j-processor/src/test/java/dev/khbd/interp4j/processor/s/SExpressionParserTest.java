@@ -1,4 +1,4 @@
-package com.github.interp4j.processor.s;
+package dev.khbd.interp4j.processor.s;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

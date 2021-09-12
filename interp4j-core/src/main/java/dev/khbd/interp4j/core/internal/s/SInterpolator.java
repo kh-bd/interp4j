@@ -1,4 +1,4 @@
-package com.github.interp4j.core.internal.s;
+package dev.khbd.interp4j.core.internal.s;
 
 /**
  * 'S' interpolator implementation.

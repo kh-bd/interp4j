@@ -1,7 +1,7 @@
-package com.github.interp4j.processor.s;
+package dev.khbd.interp4j.processor.s;
 
-import com.github.interp4j.core.Interpolations;
-import com.github.interp4j.core.internal.s.SInterpolator;
+import dev.khbd.interp4j.core.Interpolations;
+import dev.khbd.interp4j.core.internal.s.SInterpolator;
 import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtExpression;
