@@ -4,7 +4,7 @@
     <groupId>com.github</groupId>
     <artifactId>interp4j</artifactId>
     <packaging>pom</packaging>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1.0</version>
 
     <modelVersion>4.0.0</modelVersion>
 
