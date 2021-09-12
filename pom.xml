@@ -23,7 +23,6 @@
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
         <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
-        <spoon-maven-plugin.version>3.4.2</spoon-maven-plugin.version>
 
         <!-- dependencies versions -->
         <spoon.version>9.1.0</spoon.version>
