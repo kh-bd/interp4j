@@ -1,5 +1,6 @@
 package dev.khbd.interp4j.processor.s;
 
+import com.github.javaparser.Range;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.Expression;
@@ -26,9 +27,15 @@ public class SInterpolatorProcessor extends VoidVisitorAdapter<Void> {
 
     private final SExpressionParser parser = new SExpressionParser();
     private final JavaParserFacade javaParserFacade;
+    private final Reporter reporter;
+
+    public SInterpolatorProcessor(TypeSolver typeSolver, Reporter reporter) {
+        this.javaParserFacade = JavaParserFacade.get(typeSolver);
+        this.reporter = reporter;
+    }
 
     public SInterpolatorProcessor(TypeSolver typeSolver) {
-        this.javaParserFacade = JavaParserFacade.get(typeSolver);
+        this(typeSolver, Reporter.ignoreReporter());
     }
 
     @Override
@@ -37,16 +44,21 @@ public class SInterpolatorProcessor extends VoidVisitorAdapter<Void> {
             return;
         }
 
-        String exprAsString = getFirstArgumentStringLiteral(methodCall);
-        if (Objects.isNull(exprAsString)) {
+        StringLiteralExpr stringLiteral = getFirstArgumentStringLiteral(methodCall);
+        if (Objects.isNull(stringLiteral)) {
             return;
         }
 
-        parser.parse(exprAsString)
-                .ifPresent(expr -> substituteInvocation(expr, methodCall));
+        SExpression sExpr = parser.parse(stringLiteral.asString()).orElse(null);
+        if (Objects.isNull(sExpr)) {
+            reporter.reportError(getRange(stringLiteral), "Wrong expression format.");
+            return;
+        }
+
+        substituteInvocation(sExpr, methodCall);
     }
 
-    private String getFirstArgumentStringLiteral(MethodCallExpr methodCall) {
+    private StringLiteralExpr getFirstArgumentStringLiteral(MethodCallExpr methodCall) {
         int argumentsCount = methodCall.getArguments().size();
 
         // seems like it is a compile-time error
@@ -56,11 +68,11 @@ public class SInterpolatorProcessor extends VoidVisitorAdapter<Void> {
 
         Expression argument = methodCall.getArgument(0);
         if (!argument.isStringLiteralExpr()) {
-            // todo: only string literal values are supported
+            reporter.reportError(getRange(argument), "Only string literal value is supported");
             return null;
         }
 
-        return argument.asStringLiteralExpr().asString();
+        return argument.asStringLiteralExpr();
     }
 
     private boolean isInterpolatorCall(MethodCallExpr methodCall) {
@@ -100,5 +112,9 @@ public class SInterpolatorProcessor extends VoidVisitorAdapter<Void> {
                 .map(StringLiteralExpr::new)
                 .collect(Collectors.toList());
         return new NodeList<>(literals);
+    }
+
+    private Range getRange(Expression expr) {
+        return expr.getRange().orElse(null);
     }
 }
