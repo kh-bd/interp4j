@@ -51,7 +51,7 @@ public class SInterpolatorProcessor extends VoidVisitorAdapter<Void> {
 
         SExpression sExpr = parser.parse(stringLiteral.asString()).orElse(null);
         if (Objects.isNull(sExpr)) {
-            reporter.reportError(getRange(stringLiteral), "Wrong expression format.");
+            reporter.reportError(getRange(stringLiteral), "Wrong expression format");
             return;
         }
 
