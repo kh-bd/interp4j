@@ -40,6 +40,8 @@ public class SInterpolatorProcessor extends VoidVisitorAdapter<Void> {
 
     @Override
     public void visit(MethodCallExpr methodCall, Void arg) {
+        super.visit(methodCall, arg);
+
         if (!isInterpolatorCall(methodCall)) {
             return;
         }

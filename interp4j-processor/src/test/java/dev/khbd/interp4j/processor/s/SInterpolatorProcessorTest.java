@@ -35,9 +35,9 @@ public class SInterpolatorProcessorTest {
 
         unit.accept(processor, null);
 
+        verify(messageConsumer, never()).reportError(any(), any());
         CompilationUnit expectedUnit = loadUnit("/cases/" + caseName + "/after.java");
         assertThat(unit).isEqualTo(expectedUnit);
-        verify(messageConsumer, never()).reportError(any(), any());
     }
 
     @Test
@@ -70,6 +70,9 @@ public class SInterpolatorProcessorTest {
                 {"assignment_import"},
                 {"assignment_import_static"},
                 {"assignment_fqn_access"},
+                {"without_expressions_inside"},
+                {"method_arguments"},
+                {"static_field_used"}
         };
     }
 
