@@ -72,7 +72,8 @@ public class SInterpolatorProcessorTest {
                 {"assignment_fqn_access"},
                 {"without_expressions_inside"},
                 {"method_arguments"},
-                {"static_field_used"}
+                {"static_field_used"},
+                {"complex_expression_used"}
         };
     }
 
