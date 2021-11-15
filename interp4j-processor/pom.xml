@@ -20,12 +20,12 @@
         </dependency>
 
         <dependency>
-            <groupId>fr.inria.gforge.spoon</groupId>
-            <artifactId>spoon-core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.github.petitparser</groupId>
             <artifactId>petitparser-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.javaparser</groupId>
+            <artifactId>javaparser-symbol-solver-core</artifactId>
         </dependency>
 
         <dependency>
