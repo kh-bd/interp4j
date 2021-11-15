@@ -16,6 +16,7 @@ import dev.khbd.interp4j.core.Interpolations;
 import dev.khbd.interp4j.core.internal.s.SInterpolator;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -36,10 +37,30 @@ public class SInterpolatorProcessor extends VoidVisitorAdapter<Void> {
             return;
         }
 
-        String str = methodCall.getArguments().getFirst().get().asStringLiteralExpr().asString();
+        String exprAsString = getFirstArgumentStringLiteral(methodCall);
+        if (Objects.isNull(exprAsString)) {
+            return;
+        }
 
-        parser.parse(str)
+        parser.parse(exprAsString)
                 .ifPresent(expr -> substituteInvocation(expr, methodCall));
+    }
+
+    private String getFirstArgumentStringLiteral(MethodCallExpr methodCall) {
+        int argumentsCount = methodCall.getArguments().size();
+
+        // seems like it is a compile-time error
+        if (argumentsCount != 1) {
+            return null;
+        }
+
+        Expression argument = methodCall.getArgument(0);
+        if (!argument.isStringLiteralExpr()) {
+            // todo: only string literal values are supported
+            return null;
+        }
+
+        return argument.asStringLiteralExpr().asString();
     }
 
     private boolean isInterpolatorCall(MethodCallExpr methodCall) {
