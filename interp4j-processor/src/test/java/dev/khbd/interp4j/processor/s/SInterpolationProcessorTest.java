@@ -20,14 +20,14 @@ import org.testng.annotations.Test;
 /**
  * @author Sergei_Khadanovich
  */
-public class SInterpolatorProcessorTest {
+public class SInterpolationProcessorTest {
 
     @Mock
     private Reporter messageConsumer;
 
     private AutoCloseable closeMockHandle;
 
-    private SInterpolatorProcessor processor;
+    private SInterpolationProcessor processor;
 
     @Test(dataProvider = "validCasesDataProvider")
     public void process_interpolatorUsageDetected_replaceIt(String caseName) {
@@ -85,7 +85,7 @@ public class SInterpolatorProcessorTest {
     public void before() {
         closeMockHandle = MockitoAnnotations.openMocks(this);
 
-        processor = new SInterpolatorProcessor(new ClassLoaderTypeSolver(this.getClass().getClassLoader()),
+        processor = new SInterpolationProcessor(new ClassLoaderTypeSolver(this.getClass().getClassLoader()),
                 messageConsumer);
     }
 

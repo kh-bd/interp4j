@@ -23,18 +23,18 @@ import java.util.stream.Collectors;
 /**
  * @author Sergei_Khadanovich
  */
-public class SInterpolatorProcessor extends VoidVisitorAdapter<Void> {
+public class SInterpolationProcessor extends VoidVisitorAdapter<Void> {
 
     private final SExpressionParser parser = new SExpressionParser();
     private final JavaParserFacade javaParserFacade;
     private final Reporter reporter;
 
-    public SInterpolatorProcessor(TypeSolver typeSolver, Reporter reporter) {
+    public SInterpolationProcessor(TypeSolver typeSolver, Reporter reporter) {
         this.javaParserFacade = JavaParserFacade.get(typeSolver);
         this.reporter = reporter;
     }
 
-    public SInterpolatorProcessor(TypeSolver typeSolver) {
+    public SInterpolationProcessor(TypeSolver typeSolver) {
         this(typeSolver, Reporter.ignoreReporter());
     }
 
