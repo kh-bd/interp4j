@@ -2,8 +2,6 @@
 
 ## Why we need it?
 
-*** 
-
 To understand why we need string interpolation and how to use it, consider following example:
 We have to implement a function, which can build a short person descriptor.
 
@@ -46,8 +44,6 @@ class Greeter {
 
 ## How to use it?
 
-***
-
 First, you need to add `interp4j-core` dependency to your project. For example, if you use maven, add the following
 configuration to your `pom.xml` file:
 
@@ -66,8 +62,6 @@ Second, you need to configure your build tool to run interpolation process
 before source files compilation.
 
 ## Maven support
-
-***
 
 To interpolate strings in maven-based projects use
 [interp4j-maven-plugin](https://github.com/KhadanovichSergey/interp4j-maven-plugin).
