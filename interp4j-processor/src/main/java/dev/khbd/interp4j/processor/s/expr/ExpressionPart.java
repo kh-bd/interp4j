@@ -8,7 +8,8 @@ import lombok.Value;
 @Value
 public class ExpressionPart implements SExpressionPart {
     String expression;
-    int startPosition;
+    int start;
+    int end;
 
     @Override
     public SExpressionPartKind kind() {

@@ -8,7 +8,8 @@ import lombok.Value;
 @Value
 public class TextPart implements SExpressionPart {
     String text;
-    int startPosition;
+    int start;
+    int end;
 
     @Override
     public SExpressionPartKind kind() {
