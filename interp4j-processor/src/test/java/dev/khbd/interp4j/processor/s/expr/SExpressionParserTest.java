@@ -60,8 +60,8 @@ public class SExpressionParserTest {
 
         assertThat(sExpression).hasValue(
                 new SExpression()
-                        .addPart(new ExpressionPart("name", 3))
-                        .addPart(new ExpressionPart("age", 10))
+                        .addPart(new ExpressionPart("name", 2))
+                        .addPart(new ExpressionPart("age", 9))
         );
     }
 
