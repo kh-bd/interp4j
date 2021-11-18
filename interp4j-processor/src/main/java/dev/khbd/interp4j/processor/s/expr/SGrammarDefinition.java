@@ -44,10 +44,10 @@ class SGrammarDefinition extends GrammarDefinition {
                 new ExpressionAndText((ExpressionPart) seq.get(0), (TextPart) seq.get(1)));
 
         def(EXPRESSION, expressionParser());
-        action(EXPRESSION, (Token token) -> new ExpressionPart(token.getValue(), token.getStart()));
+        action(EXPRESSION, (Token token) -> new ExpressionPart(token.getValue(), token.getStart(), token.getStop()));
 
         def(TEXT, textParser());
-        action(TEXT, (Token token) -> new TextPart(token.getValue(), token.getStart()));
+        action(TEXT, (Token token) -> new TextPart(token.getValue(), token.getStart(), token.getStop()));
     }
 
     private void addNotEmptyTextPart(SExpression expression, TextPart text) {
@@ -66,10 +66,10 @@ class SGrammarDefinition extends GrammarDefinition {
     }
 
     private static Parser textParser() {
-        return StringParser.of("$$")
-                .or(CharacterParser.noneOf("$"))
+        return StringParser.of("$$").map(seq -> "$")
+                .or(CharacterParser.noneOf("$").flatten())
                 .star()
-                .flatten()
+                .map(seq -> String.join("", (List<String>) seq))
                 .token();
     }
 
