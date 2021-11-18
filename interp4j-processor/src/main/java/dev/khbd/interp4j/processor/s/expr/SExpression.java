@@ -34,6 +34,6 @@ public class SExpression {
         for (SExpressionPart part : parts) {
             part.visit(visitor);
         }
-        visitor.end();
+        visitor.finish();
     }
 }

@@ -15,17 +15,20 @@ import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
 import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import dev.khbd.interp4j.core.Interpolations;
 import dev.khbd.interp4j.core.internal.s.SInterpolator;
+import dev.khbd.interp4j.processor.s.expr.ExpressionPart;
+import dev.khbd.interp4j.processor.s.expr.SExpression;
+import dev.khbd.interp4j.processor.s.expr.SExpressionParser;
+import dev.khbd.interp4j.processor.s.expr.SExpressionPart;
+import dev.khbd.interp4j.processor.s.expr.SExpressionVisitor;
+import dev.khbd.interp4j.processor.s.expr.TextPart;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * @author Sergei_Khadanovich
  */
 public class SInterpolationProcessor extends VoidVisitorAdapter<Void> {
 
-    private final SExpressionParser parser = new SExpressionParser();
     private final JavaParserFacade javaParserFacade;
     private final Reporter reporter;
 
@@ -51,7 +54,7 @@ public class SInterpolationProcessor extends VoidVisitorAdapter<Void> {
             return;
         }
 
-        SExpression sExpr = parser.parse(stringLiteral.asString()).orElse(null);
+        SExpression sExpr = SExpressionParser.getInstance().parse(stringLiteral.asString()).orElse(null);
         if (Objects.isNull(sExpr)) {
             reporter.reportError(getRange(stringLiteral), "Wrong expression format");
             return;
@@ -90,33 +93,52 @@ public class SInterpolationProcessor extends VoidVisitorAdapter<Void> {
     }
 
     private void substituteInvocation(SExpression sExpr, MethodCallExpr methodCall) {
+        ExpressionsCollector expressionsCollector = new ExpressionsCollector();
+        sExpr.visit(expressionsCollector);
+
         methodCall.setName("interpolate");
-        methodCall.setArguments(toExpressionsArray(sExpr.getExpressions()));
-        methodCall.setScope(makeReceiver(sExpr.getParts()));
+        methodCall.setArguments(expressionsCollector.methodArguments);
+        methodCall.setScope(makeReceiver(expressionsCollector));
     }
 
-    private NodeList<Expression> toExpressionsArray(List<String> sExpressions) {
-        List<Expression> expressions = sExpressions.stream()
-                .map(StaticJavaParser::<Expression>parseExpression)
-                .collect(Collectors.toList());
-        return new NodeList<>(expressions);
-    }
-
-    private Expression makeReceiver(List<String> parts) {
+    private Expression makeReceiver(ExpressionsCollector expressionsCollector) {
         ObjectCreationExpr objectCreationExpr = StaticJavaParser.parseExpression("new Object()");
         objectCreationExpr.setType(SInterpolator.class.getCanonicalName());
-        objectCreationExpr.setArguments(toStringLiteralsArray(parts));
+        objectCreationExpr.setArguments(expressionsCollector.constructorArguments);
         return objectCreationExpr;
-    }
-
-    private NodeList<Expression> toStringLiteralsArray(List<String> parts) {
-        List<Expression> literals = parts.stream()
-                .map(StringLiteralExpr::new)
-                .collect(Collectors.toList());
-        return new NodeList<>(literals);
     }
 
     private Range getRange(Expression expr) {
         return expr.getRange().orElse(null);
+    }
+
+    static class ExpressionsCollector implements SExpressionVisitor {
+
+        private final NodeList<Expression> constructorArguments = new NodeList<>();
+        private final NodeList<Expression> methodArguments = new NodeList<>();
+
+        private SExpressionPart lastPart;
+
+        @Override
+        public void visitExpressionPart(ExpressionPart expressionPart) {
+            if (Objects.isNull(lastPart) || lastPart.isExpression()) {
+                constructorArguments.add(new StringLiteralExpr(""));
+            }
+            lastPart = expressionPart;
+            methodArguments.add(StaticJavaParser.parseExpression(expressionPart.getExpression()));
+        }
+
+        @Override
+        public void visitTextPart(TextPart textPart) {
+            lastPart = textPart;
+            constructorArguments.add(new StringLiteralExpr(textPart.getText()));
+        }
+
+        @Override
+        public void finish() {
+            if (lastPart.isExpression()) {
+                constructorArguments.add(new StringLiteralExpr(""));
+            }
+        }
     }
 }
