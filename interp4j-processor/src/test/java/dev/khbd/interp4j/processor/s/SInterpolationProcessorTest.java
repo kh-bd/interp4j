@@ -73,7 +73,8 @@ public class SInterpolationProcessorTest {
                 {"without_expressions_inside"},
                 {"method_arguments"},
                 {"static_field_used"},
-                {"complex_expression_used"}
+                {"complex_expression_used"},
+                {"method_inside_expr"}
         };
     }
 
