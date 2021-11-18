@@ -66,7 +66,11 @@ class SGrammarDefinition extends GrammarDefinition {
     }
 
     private static Parser textParser() {
-        return CharacterParser.noneOf("$").star().flatten().token();
+        return StringParser.of("$$")
+                .or(CharacterParser.noneOf("$"))
+                .star()
+                .flatten()
+                .token();
     }
 
     @Value
