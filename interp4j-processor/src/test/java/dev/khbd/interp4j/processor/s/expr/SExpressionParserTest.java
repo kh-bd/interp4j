@@ -28,6 +28,60 @@ public class SExpressionParserTest {
     }
 
     @Test
+    public void parse_dollarEscaped_returnResult() {
+        Optional<SExpression> sExpression = parser.parse(" $${name2} ");
+
+        assertThat(sExpression).hasValue(
+                new SExpression()
+                        .addPart(new TextPart(" $${name2} ", 0))
+        );
+    }
+
+    @Test
+    public void parse_dollarEscapedAndExpressionNext_returnResult() {
+        Optional<SExpression> sExpression = parser.parse(" $$${name2} ");
+
+        assertThat(sExpression).hasValue(
+                new SExpression()
+                        .addPart(new TextPart(" $$", 0))
+                        .addPart(new ExpressionPart("name2", 5))
+                        .addPart(new TextPart(" ", 11))
+        );
+    }
+
+    @Test
+    public void parse_bothExpressionsDollarEscaped_returnResult() {
+        Optional<SExpression> sExpression = parser.parse("$${name1}$${name2}");
+
+        assertThat(sExpression).hasValue(
+                new SExpression()
+                        .addPart(new TextPart("$${name1}$${name2}", 0))
+        );
+    }
+
+    @Test
+    public void parse_firstEscapedBySecondNot_returnResult() {
+        Optional<SExpression> sExpression = parser.parse("$${name1}${name2}");
+
+        assertThat(sExpression).hasValue(
+                new SExpression()
+                        .addPart(new TextPart("$${name1}", 0))
+                        .addPart(new ExpressionPart("name2", 11))
+        );
+    }
+
+    @Test
+    public void parse_firstNotEscapedBySecondDoes_returnResult() {
+        Optional<SExpression> sExpression = parser.parse("${name1}$${name2}");
+
+        assertThat(sExpression).hasValue(
+                new SExpression()
+                        .addPart(new ExpressionPart("name1", 2))
+                        .addPart(new TextPart("$${name2}", 8))
+        );
+    }
+
+    @Test
     public void parse_thereIsNoExpressions_returnValidSExpression() {
         Optional<SExpression> sExpression = parser.parse("Hello world!!!");
 
