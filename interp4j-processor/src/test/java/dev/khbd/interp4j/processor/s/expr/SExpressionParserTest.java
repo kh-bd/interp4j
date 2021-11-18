@@ -1,4 +1,4 @@
-package dev.khbd.interp4j.processor.s;
+package dev.khbd.interp4j.processor.s.expr;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,7 +11,7 @@ import java.util.Optional;
  */
 public class SExpressionParserTest {
 
-    private final SExpressionParser parser = new SExpressionParser();
+    private final SExpressionParser parser = SExpressionParser.getInstance();
 
     @Test
     public void parse_thereIsOnExpression_returnResult() {
@@ -19,11 +19,11 @@ public class SExpressionParserTest {
 
         assertThat(sExpression).hasValue(
                 new SExpression()
-                        .addPart("Hello ")
-                        .addExpression("name1")
-                        .addPart(". ")
-                        .addExpression("name2")
-                        .addPart(". How are you?")
+                        .addPart(new TextPart("Hello ", 0))
+                        .addPart(new ExpressionPart("name1", 8))
+                        .addPart(new TextPart(". ", 14))
+                        .addPart(new ExpressionPart("name2", 18))
+                        .addPart(new TextPart(". How are you?", 24))
         );
     }
 
@@ -33,7 +33,7 @@ public class SExpressionParserTest {
 
         assertThat(sExpression).hasValue(
                 new SExpression()
-                        .addPart("Hello world!!!")
+                        .addPart(new TextPart("Hello world!!!", 0))
         );
     }
 
@@ -41,10 +41,7 @@ public class SExpressionParserTest {
     public void parse_stringIsEmpty_returnValidSExpression() {
         Optional<SExpression> sExpression = parser.parse("");
 
-        assertThat(sExpression).hasValue(
-                new SExpression()
-                        .addPart("")
-        );
+        assertThat(sExpression).hasValue(new SExpression());
     }
 
     @Test
@@ -53,9 +50,7 @@ public class SExpressionParserTest {
 
         assertThat(sExpression).hasValue(
                 new SExpression()
-                        .addPart("")
-                        .addExpression("name")
-                        .addPart("")
+                        .addPart(new ExpressionPart("name", 2))
         );
     }
 
@@ -65,11 +60,8 @@ public class SExpressionParserTest {
 
         assertThat(sExpression).hasValue(
                 new SExpression()
-                        .addPart("")
-                        .addExpression("name")
-                        .addPart("")
-                        .addExpression("age")
-                        .addPart("")
+                        .addPart(new ExpressionPart("name", 2))
+                        .addPart(new ExpressionPart("age", 9))
         );
     }
 
@@ -79,9 +71,9 @@ public class SExpressionParserTest {
 
         assertThat(sExpression).hasValue(
                 new SExpression()
-                        .addPart(" ")
-                        .addExpression("{{name")
-                        .addPart(" ")
+                        .addPart(new TextPart(" ", 0))
+                        .addPart(new ExpressionPart("{{name", 3))
+                        .addPart(new TextPart(" ", 10))
         );
     }
 
