@@ -12,28 +12,12 @@ public final class ErrorDetectingReporter implements Reporter {
 
     private final Reporter base;
     @Getter
-    private boolean anyErrorOccur;
-
-    @Override
-    public void reportInfo(Range range, String message) {
-        base.reportInfo(range, message);
-    }
-
-    @Override
-    public void reportWarn(Range range, String message) {
-        base.reportWarn(range, message);
-    }
-
-    @Override
-    public void reportError(Range range, String message) {
-        anyErrorOccur = true;
-        base.reportError(range, message);
-    }
+    private boolean errorOccurred;
 
     @Override
     public void report(Range range, String message, MessageType type) {
         if (type == MessageType.ERROR) {
-            anyErrorOccur = true;
+            errorOccurred = true;
         }
         base.report(range, message, type);
     }

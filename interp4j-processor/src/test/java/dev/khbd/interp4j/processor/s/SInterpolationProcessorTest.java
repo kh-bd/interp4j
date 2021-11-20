@@ -32,7 +32,7 @@ public class SInterpolationProcessorTest {
 
         SInterpolationProcessor.getInstance().process(unit, reporter);
 
-        verify(reporter, never()).reportError(any(), any());
+        verify(reporter, never()).report(any(), any(), any());
         CompilationUnit expectedUnit = loadUnit("/cases/" + caseName + "/after.java");
         assertThat(unit).isEqualTo(expectedUnit);
     }
@@ -46,7 +46,7 @@ public class SInterpolationProcessorTest {
         CompilationUnit expectedUnit = loadUnit("/cases/non_literal_string_used/before.java");
         assertThat(unit).isEqualTo(expectedUnit); // unchanged
         verify(reporter, times(1))
-                .reportError(any(), eq("Only string literal value is supported"));
+                .report(any(), eq("Only string literal value is supported"), eq(MessageType.ERROR));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class SInterpolationProcessorTest {
         CompilationUnit expectedUnit = loadUnit("/cases/null_literal_value_used/before.java");
         assertThat(unit).isEqualTo(expectedUnit); // unchanged
         verify(reporter, times(1))
-                .reportError(any(), eq("Only string literal value is supported"));
+                .report(any(), eq("Only string literal value is supported"), eq(MessageType.ERROR));
     }
 
     @DataProvider

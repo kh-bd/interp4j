@@ -60,7 +60,7 @@ public final class SInterpolationProcessor {
 
         processSInvocations(unit, errorDetectingReporter);
 
-        if (!errorDetectingReporter.isAnyErrorOccur()) {
+        if (!errorDetectingReporter.isErrorOccurred()) {
             removeAllInterpolationsImports(unit);
         }
     }
@@ -105,7 +105,7 @@ public final class SInterpolationProcessor {
 
             SExpression sExpr = SExpressionParser.getInstance().parse(stringLiteral.asString()).orElse(null);
             if (Objects.isNull(sExpr)) {
-                reporter.reportError(getRange(stringLiteral), "Wrong expression format");
+                reporter.report(getRange(stringLiteral), "Wrong expression format", MessageType.ERROR);
                 return;
             }
 
@@ -134,11 +134,7 @@ public final class SInterpolationProcessor {
             }
 
             // FQN.s() call
-            if (scopeExpr.toString().equals(Interpolations.class.getCanonicalName())) {
-                return true;
-            }
-
-            return false;
+            return scopeExpr.toString().equals(Interpolations.class.getCanonicalName());
         }
 
         StringLiteralExpr getFirstArgumentStringLiteral(MethodCallExpr methodCall) {
@@ -151,7 +147,7 @@ public final class SInterpolationProcessor {
 
             Expression argument = methodCall.getArgument(0);
             if (!argument.isStringLiteralExpr()) {
-                reporter.reportError(getRange(argument), "Only string literal value is supported");
+                reporter.report(getRange(argument), "Only string literal value is supported", MessageType.ERROR);
                 return null;
             }
 
