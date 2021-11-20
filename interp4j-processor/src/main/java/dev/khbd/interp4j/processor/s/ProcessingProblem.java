@@ -7,7 +7,7 @@ import lombok.Value;
  * @author Sergei_Khadanovich
  */
 @Value
-public class InterpolationProblem {
+public class ProcessingProblem {
     Range range;
     String message;
     ProblemKind kind;

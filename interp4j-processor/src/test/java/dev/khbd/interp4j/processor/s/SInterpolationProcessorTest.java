@@ -19,7 +19,7 @@ public class SInterpolationProcessorTest {
     public void process_interpolatorUsageDetected_replaceIt(String caseName) {
         CompilationUnit unit = loadUnit("/cases/" + caseName + "/before.java");
 
-        InterpolationResult result = SInterpolationProcessor.getInstance().process(unit);
+        ProcessingResult result = SInterpolationProcessor.getInstance().process(unit);
 
         CompilationUnit expectedUnit = loadUnit("/cases/" + caseName + "/after.java");
         assertThat(unit).isEqualTo(expectedUnit);
@@ -30,13 +30,13 @@ public class SInterpolationProcessorTest {
     public void process_interpolatorUsedWithNonLiteralString_reportError() {
         CompilationUnit unit = loadUnit("/cases/non_literal_string_used/before.java");
 
-        InterpolationResult result = SInterpolationProcessor.getInstance().process(unit);
+        ProcessingResult result = SInterpolationProcessor.getInstance().process(unit);
 
         CompilationUnit expectedUnit = loadUnit("/cases/non_literal_string_used/before.java");
         assertThat(unit).isEqualTo(expectedUnit); // unchanged
         assertThat(result.isFail()).isTrue();
         assertThat(result.getProblems())
-                .extracting(InterpolationProblem::getMessage)
+                .extracting(ProcessingProblem::getMessage)
                 .containsOnly("Only string literal value is supported");
     }
 
@@ -44,12 +44,12 @@ public class SInterpolationProcessorTest {
     public void process_interpolatorUsedWithNullLiteralValue_reportError() {
         CompilationUnit unit = loadUnit("/cases/null_literal_value_used/before.java");
 
-        InterpolationResult result = SInterpolationProcessor.getInstance().process(unit);
+        ProcessingResult result = SInterpolationProcessor.getInstance().process(unit);
 
         CompilationUnit expectedUnit = loadUnit("/cases/null_literal_value_used/before.java");
         assertThat(unit).isEqualTo(expectedUnit); // unchanged
         assertThat(result.getProblems())
-                .extracting(InterpolationProblem::getMessage)
+                .extracting(ProcessingProblem::getMessage)
                 .containsOnly("Only string literal value is supported");
     }
 
