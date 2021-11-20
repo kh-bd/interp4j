@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verify;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.ClassLoaderTypeSolver;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.AfterMethod;
@@ -23,19 +22,17 @@ import org.testng.annotations.Test;
 public class SInterpolationProcessorTest {
 
     @Mock
-    private Reporter messageConsumer;
+    private Reporter reporter;
 
     private AutoCloseable closeMockHandle;
-
-    private SInterpolationProcessor processor;
 
     @Test(dataProvider = "validCasesDataProvider")
     public void process_interpolatorUsageDetected_replaceIt(String caseName) {
         CompilationUnit unit = loadUnit("/cases/" + caseName + "/before.java");
 
-        unit.accept(processor, null);
+        SInterpolationProcessor.getInstance().process(unit, reporter);
 
-        verify(messageConsumer, never()).reportError(any(), any());
+        verify(reporter, never()).reportError(any(), any());
         CompilationUnit expectedUnit = loadUnit("/cases/" + caseName + "/after.java");
         assertThat(unit).isEqualTo(expectedUnit);
     }
@@ -44,11 +41,11 @@ public class SInterpolationProcessorTest {
     public void process_interpolatorUsedWithNonLiteralString_reportError() {
         CompilationUnit unit = loadUnit("/cases/non_literal_string_used/before.java");
 
-        unit.accept(processor, null);
+        SInterpolationProcessor.getInstance().process(unit, reporter);
 
         CompilationUnit expectedUnit = loadUnit("/cases/non_literal_string_used/before.java");
         assertThat(unit).isEqualTo(expectedUnit); // unchanged
-        verify(messageConsumer, times(1))
+        verify(reporter, times(1))
                 .reportError(any(), eq("Only string literal value is supported"));
     }
 
@@ -56,11 +53,11 @@ public class SInterpolationProcessorTest {
     public void process_interpolatorUsedWithNullLiteralValue_reportError() {
         CompilationUnit unit = loadUnit("/cases/null_literal_value_used/before.java");
 
-        unit.accept(processor, null);
+        SInterpolationProcessor.getInstance().process(unit, reporter);
 
         CompilationUnit expectedUnit = loadUnit("/cases/null_literal_value_used/before.java");
         assertThat(unit).isEqualTo(expectedUnit); // unchanged
-        verify(messageConsumer, times(1))
+        verify(reporter, times(1))
                 .reportError(any(), eq("Only string literal value is supported"));
     }
 
@@ -85,9 +82,6 @@ public class SInterpolationProcessorTest {
     @BeforeMethod
     public void before() {
         closeMockHandle = MockitoAnnotations.openMocks(this);
-
-        processor = new SInterpolationProcessor(new ClassLoaderTypeSolver(this.getClass().getClassLoader()),
-                messageConsumer);
     }
 
     @AfterMethod

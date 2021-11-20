@@ -47,14 +47,4 @@ public interface Reporter {
     default void reportInfo(Range range, String message) {
         report(range, message, MessageType.INFO);
     }
-
-    /**
-     * Create a simple reporter which ignore any messages.
-     *
-     * @return ignore reporter
-     */
-    static Reporter ignoreReporter() {
-        return (range, message, type) -> {
-        };
-    }
 }

@@ -2,17 +2,15 @@ package dev.khbd.interp4j.processor.s;
 
 import com.github.javaparser.Range;
 import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.github.javaparser.resolution.MethodUsage;
-import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
-import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
-import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade;
-import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
 import dev.khbd.interp4j.core.Interpolations;
 import dev.khbd.interp4j.core.internal.s.SInterpolator;
 import dev.khbd.interp4j.processor.s.expr.ExpressionPart;
@@ -21,98 +19,214 @@ import dev.khbd.interp4j.processor.s.expr.SExpressionParser;
 import dev.khbd.interp4j.processor.s.expr.SExpressionPart;
 import dev.khbd.interp4j.processor.s.expr.SExpressionVisitor;
 import dev.khbd.interp4j.processor.s.expr.TextPart;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Sergei_Khadanovich
  */
-public class SInterpolationProcessor extends VoidVisitorAdapter<Void> {
+public final class SInterpolationProcessor {
 
-    private final JavaParserFacade javaParserFacade;
-    private final Reporter reporter;
+    private static final String S_METHOD_NAME = "s";
 
-    public SInterpolationProcessor(TypeSolver typeSolver, Reporter reporter) {
-        this.javaParserFacade = JavaParserFacade.get(typeSolver);
-        this.reporter = reporter;
+    private static final SInterpolationProcessor INSTANCE = new SInterpolationProcessor();
+
+    /**
+     * Get instance of processor.
+     *
+     * @return instance of processor
+     */
+    public static SInterpolationProcessor getInstance() {
+        return INSTANCE;
     }
 
-    public SInterpolationProcessor(TypeSolver typeSolver) {
-        this(typeSolver, Reporter.ignoreReporter());
+    private SInterpolationProcessor() {
     }
 
-    @Override
-    public void visit(MethodCallExpr methodCall, Void arg) {
-        super.visit(methodCall, arg);
+    /**
+     * Process compilation unit.
+     *
+     * @param unit     compilation unit
+     * @param reporter message reporter
+     */
+    public void process(@NonNull CompilationUnit unit, @NonNull Reporter reporter) {
+        ErrorDetectingReporter errorDetectingReporter = wrapReporter(reporter);
 
-        if (!isInterpolatorCall(methodCall)) {
-            return;
+        processSInvocations(unit, errorDetectingReporter);
+
+        if (!errorDetectingReporter.isAnyErrorOccur()) {
+            removeAllInterpolationsImports(unit);
         }
-
-        StringLiteralExpr stringLiteral = getFirstArgumentStringLiteral(methodCall);
-        if (Objects.isNull(stringLiteral)) {
-            return;
-        }
-
-        SExpression sExpr = SExpressionParser.getInstance().parse(stringLiteral.asString()).orElse(null);
-        if (Objects.isNull(sExpr)) {
-            reporter.reportError(getRange(stringLiteral), "Wrong expression format");
-            return;
-        }
-
-        substituteInvocation(sExpr, methodCall);
     }
 
-    private StringLiteralExpr getFirstArgumentStringLiteral(MethodCallExpr methodCall) {
-        int argumentsCount = methodCall.getArguments().size();
-
-        // seems like it is a compile-time error
-        if (argumentsCount != 1) {
-            return null;
+    private ErrorDetectingReporter wrapReporter(Reporter reporter) {
+        if (reporter instanceof ErrorDetectingReporter) {
+            return (ErrorDetectingReporter) reporter;
         }
-
-        Expression argument = methodCall.getArgument(0);
-        if (!argument.isStringLiteralExpr()) {
-            reporter.reportError(getRange(argument), "Only string literal value is supported");
-            return null;
-        }
-
-        return argument.asStringLiteralExpr();
+        return new ErrorDetectingReporter(reporter);
     }
 
-    private boolean isInterpolatorCall(MethodCallExpr methodCall) {
-        MethodUsage methodUsage = javaParserFacade.solveMethodAsUsage(methodCall);
-        ResolvedMethodDeclaration declaration = methodUsage.getDeclaration();
+    private void processSInvocations(CompilationUnit unit, Reporter reporter) {
+        SImports sImports = resolveImports(unit);
+        unit.accept(new SMethodCallProcessor(reporter, sImports), null);
+    }
 
-        if (!declaration.isStatic() || !declaration.getName().equals("s")) {
+    private void removeAllInterpolationsImports(CompilationUnit unit) {
+        List<ImportDeclaration> forRemoval = unit.getImports().stream()
+                .filter(SInterpolationProcessor::isInterpolationsImport)
+                .collect(Collectors.toList());
+        unit.getImports().removeAll(forRemoval);
+    }
+
+    @RequiredArgsConstructor
+    private static class SMethodCallProcessor extends VoidVisitorAdapter<Object> {
+
+        final Reporter reporter;
+        final SImports imports;
+
+        @Override
+        public void visit(MethodCallExpr methodCall, Object arg) {
+            super.visit(methodCall, arg);
+
+            if (!isInterpolatorCall(methodCall)) {
+                return;
+            }
+
+            StringLiteralExpr stringLiteral = getFirstArgumentStringLiteral(methodCall);
+            if (Objects.isNull(stringLiteral)) {
+                return;
+            }
+
+            SExpression sExpr = SExpressionParser.getInstance().parse(stringLiteral.asString()).orElse(null);
+            if (Objects.isNull(sExpr)) {
+                reporter.reportError(getRange(stringLiteral), "Wrong expression format");
+                return;
+            }
+
+            substituteInvocation(sExpr, methodCall);
+        }
+
+        boolean isInterpolatorCall(MethodCallExpr methodCall) {
+            String methodName = methodCall.getName().asString();
+            if (!methodName.equals(S_METHOD_NAME)) {
+                return false;
+            }
+
+            Expression scopeExpr = methodCall.getScope().orElse(null);
+
+            // s() call
+            if (scopeExpr == null) {
+                return imports.isStaticMethodImportPresent();
+            }
+
+            // Interpolations.s() call
+            if (scopeExpr instanceof NameExpr) {
+                String scopeString = scopeExpr.asNameExpr().getName().asString();
+                if (scopeString.equals(Interpolations.class.getSimpleName())) {
+                    return imports.isClassImportPresent();
+                }
+            }
+
+            // FQN.s() call
+            if (scopeExpr.toString().equals(Interpolations.class.getCanonicalName())) {
+                return true;
+            }
+
             return false;
         }
 
-        ResolvedReferenceTypeDeclaration typeDeclaration = methodUsage.declaringType();
-        return typeDeclaration.getQualifiedName().equals(Interpolations.class.getCanonicalName());
+        StringLiteralExpr getFirstArgumentStringLiteral(MethodCallExpr methodCall) {
+            int argumentsCount = methodCall.getArguments().size();
+
+            // seems like it is a compile-time error
+            if (argumentsCount != 1) {
+                return null;
+            }
+
+            Expression argument = methodCall.getArgument(0);
+            if (!argument.isStringLiteralExpr()) {
+                reporter.reportError(getRange(argument), "Only string literal value is supported");
+                return null;
+            }
+
+            return argument.asStringLiteralExpr();
+        }
+
+        void substituteInvocation(SExpression sExpr, MethodCallExpr methodCall) {
+            ArgumentsCollector expressionsCollector = new ArgumentsCollector();
+            sExpr.visit(expressionsCollector);
+
+            methodCall.setName("interpolate");
+            methodCall.setArguments(expressionsCollector.methodArguments);
+            methodCall.setScope(makeReceiver(expressionsCollector));
+        }
+
+        Expression makeReceiver(ArgumentsCollector expressionsCollector) {
+            ObjectCreationExpr objectCreationExpr = StaticJavaParser.parseExpression("new Object()");
+            objectCreationExpr.setType(SInterpolator.class.getCanonicalName());
+            objectCreationExpr.setArguments(expressionsCollector.constructorArguments);
+            return objectCreationExpr;
+        }
+
+        Range getRange(Expression expr) {
+            return expr.getRange().orElse(null);
+        }
     }
 
-    private void substituteInvocation(SExpression sExpr, MethodCallExpr methodCall) {
-        ExpressionsCollector expressionsCollector = new ExpressionsCollector();
-        sExpr.visit(expressionsCollector);
-
-        methodCall.setName("interpolate");
-        methodCall.setArguments(expressionsCollector.methodArguments);
-        methodCall.setScope(makeReceiver(expressionsCollector));
+    private static SImports resolveImports(CompilationUnit unit) {
+        SImports imports = new SImports();
+        for (ImportDeclaration importDecl : unit.getImports()) {
+            if (isInterpolationsImport(importDecl)) {
+                imports.add(SImport.of(importDecl.isStatic()));
+            }
+        }
+        return imports;
     }
 
-    private Expression makeReceiver(ExpressionsCollector expressionsCollector) {
-        ObjectCreationExpr objectCreationExpr = StaticJavaParser.parseExpression("new Object()");
-        objectCreationExpr.setType(SInterpolator.class.getCanonicalName());
-        objectCreationExpr.setArguments(expressionsCollector.constructorArguments);
-        return objectCreationExpr;
+    private static boolean isInterpolationsImport(ImportDeclaration importDecl) {
+        String importString = importDecl.getName().asString();
+        return importString.startsWith(Interpolations.class.getCanonicalName());
     }
 
-    private Range getRange(Expression expr) {
-        return expr.getRange().orElse(null);
+    private static class SImports {
+
+        final Set<SImport> imports = EnumSet.noneOf(SImport.class);
+
+        void add(SImport sImport) {
+            imports.add(sImport);
+        }
+
+        boolean isStaticMethodImportPresent() {
+            return imports.contains(SImport.METHOD);
+        }
+
+        boolean isClassImportPresent() {
+            return imports.contains(SImport.CLASS);
+        }
     }
 
-    static class ExpressionsCollector implements SExpressionVisitor {
+    /**
+     * Kind of `s` method import.
+     */
+    private enum SImport {
+        CLASS,
+        METHOD;
+
+        static SImport of(boolean isStatic) {
+            if (isStatic) {
+                return METHOD;
+            }
+            return CLASS;
+        }
+    }
+
+    private static class ArgumentsCollector implements SExpressionVisitor {
 
         private final NodeList<Expression> constructorArguments = new NodeList<>();
         private final NodeList<Expression> methodArguments = new NodeList<>();
