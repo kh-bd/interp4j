@@ -54,6 +54,7 @@ public final class SInterpolationProcessor {
      * Process compilation unit.
      *
      * @param unit compilation unit
+     * @return interpolation result
      */
     public InterpolationResult process(@NonNull CompilationUnit unit) {
         InterpolationResult result = processSInvocations(unit);
