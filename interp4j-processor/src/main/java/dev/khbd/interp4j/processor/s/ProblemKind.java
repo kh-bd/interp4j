@@ -3,8 +3,7 @@ package dev.khbd.interp4j.processor.s;
 /**
  * @author Sergei_Khadanovich
  */
-public enum MessageType {
+public enum ProblemKind {
     ERROR,
-    WARN,
-    INFO
+    WARN
 }

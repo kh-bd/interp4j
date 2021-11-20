@@ -22,6 +22,7 @@ import dev.khbd.interp4j.processor.s.expr.TextPart;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -52,29 +53,25 @@ public final class SInterpolationProcessor {
     /**
      * Process compilation unit.
      *
-     * @param unit     compilation unit
-     * @param reporter message reporter
+     * @param unit compilation unit
      */
-    public void process(@NonNull CompilationUnit unit, @NonNull Reporter reporter) {
-        ErrorDetectingReporter errorDetectingReporter = wrapReporter(reporter);
+    public InterpolationResult process(@NonNull CompilationUnit unit) {
+        InterpolationResult result = processSInvocations(unit);
 
-        processSInvocations(unit, errorDetectingReporter);
-
-        if (!errorDetectingReporter.isErrorOccurred()) {
+        if (result.isSuccess()) {
             removeAllInterpolationsImports(unit);
         }
+
+        return result;
     }
 
-    private ErrorDetectingReporter wrapReporter(Reporter reporter) {
-        if (reporter instanceof ErrorDetectingReporter) {
-            return (ErrorDetectingReporter) reporter;
-        }
-        return new ErrorDetectingReporter(reporter);
-    }
-
-    private void processSInvocations(CompilationUnit unit, Reporter reporter) {
+    private InterpolationResult processSInvocations(CompilationUnit unit) {
         SImports sImports = resolveImports(unit);
-        unit.accept(new SMethodCallProcessor(reporter, sImports), null);
+
+        SMethodCallProcessor processor = new SMethodCallProcessor(sImports);
+        unit.accept(processor, null);
+
+        return processor.getResult();
     }
 
     private void removeAllInterpolationsImports(CompilationUnit unit) {
@@ -87,7 +84,7 @@ public final class SInterpolationProcessor {
     @RequiredArgsConstructor
     private static class SMethodCallProcessor extends VoidVisitorAdapter<Object> {
 
-        final Reporter reporter;
+        final List<InterpolationProblem> problems = new ArrayList<>();
         final SImports imports;
 
         @Override
@@ -105,7 +102,7 @@ public final class SInterpolationProcessor {
 
             SExpression sExpr = SExpressionParser.getInstance().parse(stringLiteral.asString()).orElse(null);
             if (Objects.isNull(sExpr)) {
-                reporter.report(getRange(stringLiteral), "Wrong expression format", MessageType.ERROR);
+                problems.add(new InterpolationProblem(getRange(stringLiteral), "Wrong expression format", ProblemKind.ERROR));
                 return;
             }
 
@@ -147,7 +144,7 @@ public final class SInterpolationProcessor {
 
             Expression argument = methodCall.getArgument(0);
             if (!argument.isStringLiteralExpr()) {
-                reporter.report(getRange(argument), "Only string literal value is supported", MessageType.ERROR);
+                problems.add(new InterpolationProblem(getRange(argument), "Only string literal value is supported", ProblemKind.ERROR));
                 return null;
             }
 
@@ -172,6 +169,10 @@ public final class SInterpolationProcessor {
 
         Range getRange(Expression expr) {
             return expr.getRange().orElse(null);
+        }
+
+        InterpolationResult getResult() {
+            return new InterpolationResult(problems);
         }
     }
 

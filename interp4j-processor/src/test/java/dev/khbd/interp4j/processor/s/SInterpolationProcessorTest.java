@@ -1,15 +1,9 @@
 package dev.khbd.interp4j.processor.s;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -21,44 +15,42 @@ import org.testng.annotations.Test;
  */
 public class SInterpolationProcessorTest {
 
-    @Mock
-    private Reporter reporter;
-
-    private AutoCloseable closeMockHandle;
-
     @Test(dataProvider = "validCasesDataProvider")
     public void process_interpolatorUsageDetected_replaceIt(String caseName) {
         CompilationUnit unit = loadUnit("/cases/" + caseName + "/before.java");
 
-        SInterpolationProcessor.getInstance().process(unit, reporter);
+        InterpolationResult result = SInterpolationProcessor.getInstance().process(unit);
 
-        verify(reporter, never()).report(any(), any(), any());
         CompilationUnit expectedUnit = loadUnit("/cases/" + caseName + "/after.java");
         assertThat(unit).isEqualTo(expectedUnit);
+        assertThat(result.isSuccess()).isTrue();
     }
 
     @Test
     public void process_interpolatorUsedWithNonLiteralString_reportError() {
         CompilationUnit unit = loadUnit("/cases/non_literal_string_used/before.java");
 
-        SInterpolationProcessor.getInstance().process(unit, reporter);
+        InterpolationResult result = SInterpolationProcessor.getInstance().process(unit);
 
         CompilationUnit expectedUnit = loadUnit("/cases/non_literal_string_used/before.java");
         assertThat(unit).isEqualTo(expectedUnit); // unchanged
-        verify(reporter, times(1))
-                .report(any(), eq("Only string literal value is supported"), eq(MessageType.ERROR));
+        assertThat(result.isFail()).isTrue();
+        assertThat(result.getProblems())
+                .extracting(InterpolationProblem::getMessage)
+                .containsOnly("Only string literal value is supported");
     }
 
     @Test
     public void process_interpolatorUsedWithNullLiteralValue_reportError() {
         CompilationUnit unit = loadUnit("/cases/null_literal_value_used/before.java");
 
-        SInterpolationProcessor.getInstance().process(unit, reporter);
+        InterpolationResult result = SInterpolationProcessor.getInstance().process(unit);
 
         CompilationUnit expectedUnit = loadUnit("/cases/null_literal_value_used/before.java");
         assertThat(unit).isEqualTo(expectedUnit); // unchanged
-        verify(reporter, times(1))
-                .report(any(), eq("Only string literal value is supported"), eq(MessageType.ERROR));
+        assertThat(result.getProblems())
+                .extracting(InterpolationProblem::getMessage)
+                .containsOnly("Only string literal value is supported");
     }
 
     @DataProvider
@@ -78,6 +70,8 @@ public class SInterpolationProcessorTest {
     private CompilationUnit loadUnit(String path) {
         return StaticJavaParser.parse(this.getClass().getResourceAsStream(path));
     }
+
+    private AutoCloseable closeMockHandle;
 
     @BeforeMethod
     public void before() {
