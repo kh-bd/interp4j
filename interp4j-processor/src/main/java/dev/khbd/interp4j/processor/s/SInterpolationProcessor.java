@@ -106,6 +106,13 @@ public final class SInterpolationProcessor {
                 return;
             }
 
+            if (!sExpr.hasAnyExpression()) {
+                // It means, `s` expression doesn't contain any string parts,
+                // so we can replace our method call with original string literal
+                methodCall.replace(stringLiteral);
+                return;
+            }
+
             substituteInvocation(sExpr, methodCall);
         }
 
