@@ -73,4 +73,5 @@ in progress
 
 ## Intellij support
 
-in progress
+To support `interp4j` by intellij, install
+[interp4j-intellij-plugin](https://github.com/KhadanovichSergey/interp4j-intellij-plugin).
