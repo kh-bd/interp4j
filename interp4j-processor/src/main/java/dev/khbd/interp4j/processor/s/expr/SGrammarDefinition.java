@@ -43,7 +43,7 @@ class SGrammarDefinition extends GrammarDefinition {
         action(EXPRESSION_AND_TEXT, (List<Object> seq) ->
                 new ExpressionAndText((ExpressionPart) seq.get(0), (TextPart) seq.get(1)));
 
-        def(EXPRESSION, expressionParser());
+        def(EXPRESSION, expressionWithBrackets().or(expressionWithoutBrackets()));
         action(EXPRESSION, (Token token) -> new ExpressionPart(token.getValue(), token.getStart(), token.getStop()));
 
         def(TEXT, textParser());
@@ -57,12 +57,35 @@ class SGrammarDefinition extends GrammarDefinition {
         expression.addPart(text);
     }
 
-    private static Parser expressionParser() {
+    private static Parser expressionWithBrackets() {
         Parser openParser = StringParser.of("${");
         Parser expressionBodyParser = CharacterParser.noneOf("}").star().flatten().token();
         Parser closeParser = CharacterParser.of('}');
         return openParser.seq(expressionBodyParser).seq(closeParser)
                 .map((List<Object> seq) -> seq.get(1));
+    }
+
+    private static Parser expressionWithoutBrackets() {
+        Parser openParser = StringParser.of("$");
+        return openParser.seq(literalParser())
+                .map((List<Object> seq) -> seq.get(1));
+    }
+
+    private static Parser literalParser() {
+        return CharacterParser.of(Character::isJavaIdentifierStart, "")
+                .map(ch -> Character.toString((char) ch))
+                .seq(CharacterParser.of(Character::isJavaIdentifierPart, "").star()
+                        .map(chs -> makeString((List<Character>) chs)))
+                .map((List<Object> seq) -> (String) seq.get(0) + seq.get(1))
+                .token();
+    }
+
+    private static String makeString(List<Character> chs) {
+        StringBuilder builder = new StringBuilder();
+        for (Character ch : chs) {
+            builder.append(ch);
+        }
+        return builder.toString();
     }
 
     private static Parser textParser() {

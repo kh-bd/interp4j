@@ -139,16 +139,42 @@ public class SExpressionParserTest {
     }
 
     @Test
-    public void parse_thereIsNoBrackets_failParsing() {
-        Optional<SExpression> result = parser.parse("$name");
+    public void parse_thereIsNoOpenBracket_failParsing() {
+        Optional<SExpression> result = parser.parse("$}} name");
 
         assertThat(result).isEmpty();
     }
 
     @Test
-    public void parse_thereIsNoOpenBracket_failParsing() {
-        Optional<SExpression> result = parser.parse("$}} name");
+    public void parse_simpleExpressionWithoutBrackets_parseIt() {
+        Optional<SExpression> sExpression = parser.parse(" $name ");
 
-        assertThat(result).isEmpty();
+        assertThat(sExpression).hasValue(
+                new SExpression()
+                        .addPart(new TextPart(" ", 0, 1))
+                        .addPart(new ExpressionPart("name", 2, 6))
+                        .addPart(new TextPart(" ", 6, 7))
+        );
+    }
+
+    @Test
+    public void parse_thereIsNoBrackets_parseIt() {
+        Optional<SExpression> result = parser.parse("$name");
+
+        assertThat(result).hasValue(
+                new SExpression()
+                        .addPart(new ExpressionPart("name", 1, 5))
+        );
+    }
+
+    @Test
+    public void parse_thereIsNoBracketsAndExpressionNotSimple_parseIt() {
+        Optional<SExpression> result = parser.parse("$name.value");
+
+        assertThat(result).hasValue(
+                new SExpression()
+                        .addPart(new ExpressionPart("name", 1, 5))
+                        .addPart(new TextPart(".value", 5, 11))
+        );
     }
 }
