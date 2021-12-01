@@ -183,6 +183,18 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
+                        <configuration>
+                            <additionalJOptions>
+                                <additionalJOption>--add-exports</additionalJOption>
+                                <additionalJOption>jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</additionalJOption>
+                                <additionalJOption>--add-exports</additionalJOption>
+                                <additionalJOption>jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</additionalJOption>
+                                <additionalJOption>--add-exports</additionalJOption>
+                                <additionalJOption>jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</additionalJOption>
+                                <additionalJOption>--add-exports</additionalJOption>
+                                <additionalJOption>jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</additionalJOption>
+                            </additionalJOptions>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
