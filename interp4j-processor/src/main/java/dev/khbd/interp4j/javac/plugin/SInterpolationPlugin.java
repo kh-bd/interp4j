@@ -20,6 +20,7 @@ import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.List;
+import com.sun.tools.javac.util.Log;
 import com.sun.tools.javac.util.Names;
 import dev.khbd.interp4j.processor.s.expr.ExpressionPart;
 import dev.khbd.interp4j.processor.s.expr.SExpression;
@@ -62,12 +63,14 @@ public class SInterpolationPlugin implements Plugin {
         final TreeMaker factory;
         final Names symbolsTable;
         final ParserFactory parserFactory;
+        final Log logger;
 
         private SInterpolationTreeScanner(Context context) {
             this.imports = new SImports();
             this.factory = TreeMaker.instance(context);
             this.symbolsTable = Names.instance(context);
             this.parserFactory = ParserFactory.instance(context);
+            this.logger = Log.instance(context);
         }
 
         @Override
@@ -143,13 +146,13 @@ public class SInterpolationPlugin implements Plugin {
             return result;
         }
 
-        private JCTree.JCExpression interpolateIfNeeded(ExpressionTree expression) {
+        private JCTree.JCExpression interpolateIfNeeded(JCTree.JCExpression expression) {
             if (!PluginUtils.isSMethodInvocation(expression, imports)) {
                 return null;
             }
             ExpressionTree firstArgument = getFirstArgument(expression);
             if (firstArgument.getKind() != Tree.Kind.STRING_LITERAL) {
-                // todo: report error
+                logger.rawError(expression.pos, "Only string literal value is supported");
                 return null;
             }
 
@@ -158,7 +161,7 @@ public class SInterpolationPlugin implements Plugin {
 
             SExpression sExpr = SExpressionParser.getInstance().parse(literal).orElse(null);
             if (Objects.isNull(sExpr)) {
-                // todo: report error
+                logger.rawError(expression.pos, "Wrong expression format");
                 return null;
             }
 
