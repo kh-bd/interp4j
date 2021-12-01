@@ -1,4 +1,4 @@
-package dev.khbd.interp4j.processor.s.expr;
+package dev.khbd.interp4j.javac.plugin.s.expr;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -1,4 +1,4 @@
-package dev.khbd.interp4j.javac.plugin;
+package dev.khbd.interp4j.javac.plugin.s;
 
 import com.sun.source.tree.AssignmentTree;
 import com.sun.source.tree.CompilationUnitTree;
@@ -22,12 +22,12 @@ import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.Log;
 import com.sun.tools.javac.util.Names;
-import dev.khbd.interp4j.processor.s.expr.ExpressionPart;
-import dev.khbd.interp4j.processor.s.expr.SExpression;
-import dev.khbd.interp4j.processor.s.expr.SExpressionParser;
-import dev.khbd.interp4j.processor.s.expr.SExpressionPart;
-import dev.khbd.interp4j.processor.s.expr.SExpressionVisitor;
-import dev.khbd.interp4j.processor.s.expr.TextPart;
+import dev.khbd.interp4j.javac.plugin.s.expr.ExpressionPart;
+import dev.khbd.interp4j.javac.plugin.s.expr.SExpression;
+import dev.khbd.interp4j.javac.plugin.s.expr.SExpressionParser;
+import dev.khbd.interp4j.javac.plugin.s.expr.SExpressionPart;
+import dev.khbd.interp4j.javac.plugin.s.expr.SExpressionVisitor;
+import dev.khbd.interp4j.javac.plugin.s.expr.TextPart;
 
 import java.util.Objects;
 

@@ -1,4 +1,4 @@
-package dev.khbd.interp4j.javac.plugin;
+package dev.khbd.interp4j.javac.plugin.s;
 
 /**
  * Kind of 's' function import.

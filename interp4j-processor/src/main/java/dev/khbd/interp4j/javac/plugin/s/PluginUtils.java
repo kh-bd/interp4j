@@ -1,4 +1,4 @@
-package dev.khbd.interp4j.javac.plugin;
+package dev.khbd.interp4j.javac.plugin.s;
 
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.IdentifierTree;
