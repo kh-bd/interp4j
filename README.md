@@ -48,6 +48,7 @@ First, you need to add `interp4j-core` dependency to your project. For example, 
 configuration to your `pom.xml` file:
 
 ```xml
+
 <dependency>
     <groupId>dev.khbd.interp4j</groupId>
     <artifactId>interp4j-core</artifactId>
@@ -55,17 +56,35 @@ configuration to your `pom.xml` file:
 </dependency>
 ```
 
-Now, you can use `Interpolations.s` function in your code. This function is entry point
-to interpolations.
+Now, you can use `Interpolations.s` function in your code. This function is entry point to interpolations.
 
-Second, you need to configure your build tool to run interpolation process
-before source files compilation.
+Second, you need to configure your build tool to run interpolation process before source files compilation.
 
 ## Maven support
 
-To interpolate strings in maven-based projects use
-[interp4j-maven-plugin](https://github.com/KhadanovichSergey/interp4j-maven-plugin).
+To interpolate strings in maven-based projects you have to configure compiler to enable interp4j compiler plugin during
+compilation. Add the following configuration to your `pom.xml` file and that's it.
 
+```xml
+
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <configuration>
+        <compilerArgs>
+            <!-- enable interp4j compiler plugin -->
+            <arg>-Xplugin:interp4j</arg>
+        </compilerArgs>
+        <annotationProcessorPaths>
+            <path>
+                <groupId>dev.khbd.interp4j</groupId>
+                <artifactId>interp4j-processor</artifactId>
+                <version>LATEST</version>
+            </path>
+        </annotationProcessorPaths>
+    </configuration>
+</plugin>
+```
 
 ## Gradle support
 
