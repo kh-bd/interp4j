@@ -94,3 +94,23 @@ in progress
 
 To support `interp4j` by intellij, install
 [interp4j-intellij-plugin](https://github.com/KhadanovichSergey/interp4j-intellij-plugin).
+
+## How to look at modified source code?
+
+To look at modified source code after interpolation, set flag `prettyPrint.after.interpolation` to `true`. For example,
+for maven-based projects it can look like that:
+
+```xml
+
+<plugin>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <configuration>
+        <compilerArgs>
+            <arg>-Xplugin:interp4j prettyPrint.after.interpolation=true</arg>
+        </compilerArgs>
+        ...
+    </configuration>
+</plugin>
+```
+
+By default, this feature is disabled.
