@@ -3,7 +3,9 @@ package dev.khbd.interp4j.javac.plugin.s;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.Value;
 
+import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
 import javax.tools.JavaCompiler;
@@ -112,13 +114,25 @@ public abstract class AbstractPluginTest {
         }
     }
 
+    private static class TestDiagnosticListener implements javax.tools.DiagnosticListener<JavaFileObject> {
+
+        @Getter
+        private final List<Diagnostic<? extends JavaFileObject>> diagnostics = new ArrayList<>();
+
+        @Override
+        public void report(Diagnostic<? extends JavaFileObject> diagnostic) {
+            diagnostics.add(diagnostic);
+        }
+    }
 
     protected static class TestCompiler {
 
-        ClassLoader compile(String... paths) {
+        CompilationResult compile(String... paths) {
+            TestDiagnosticListener diagnostic = new TestDiagnosticListener();
+
             JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
             TestFileManager fileManager = new TestFileManager(
-                    compiler.getStandardFileManager(null, null, null));
+                    compiler.getStandardFileManager(diagnostic, null, null));
 
             List<TestSourceFile> toCompile = Stream.of(paths)
                     .map(this::toUri)
@@ -131,17 +145,38 @@ public abstract class AbstractPluginTest {
             arguments.add("-Xplugin:interp4j");
 
             JavaCompiler.CompilationTask task
-                    = compiler.getTask(new StringWriter(), fileManager, null, arguments, null,
+                    = compiler.getTask(new StringWriter(), fileManager, diagnostic, arguments, null,
                     toCompile);
 
             task.call();
 
-            return new TestClassLoader(fileManager.getCompiled());
+            return new CompilationResult(new TestClassLoader(fileManager.getCompiled()), diagnostic.getDiagnostics());
         }
 
         @SneakyThrows
         private URI toUri(String path) {
             return this.getClass().getResource(path).toURI();
+        }
+    }
+
+    @Value
+    protected static class CompilationResult {
+        ClassLoader classLoader;
+        List<Diagnostic<? extends JavaFileObject>> diagnostics;
+
+        boolean isSuccess() {
+            return diagnostics.stream()
+                    .noneMatch(d -> d.getKind() == Diagnostic.Kind.ERROR);
+        }
+
+        boolean isFail() {
+            return !isSuccess();
+        }
+
+        List<Diagnostic<? extends JavaFileObject>> getErrors() {
+            return diagnostics.stream()
+                    .filter(d -> d.getKind() == Diagnostic.Kind.ERROR)
+                    .collect(Collectors.toList());
         }
     }
 }

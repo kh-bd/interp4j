@@ -14,7 +14,11 @@ public class InterpolateVariablePluginTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_localVariableDeclarationWithExpression_interpolate() throws Exception {
-        ClassLoader classLoader = compiler.compile("/cases/local_variable/declaration/Main.java");
+        CompilationResult result = compiler.compile("/cases/local_variable/declaration/Main.java");
+
+        assertThat(result.isSuccess()).isTrue();
+
+        ClassLoader classLoader = result.getClassLoader();
         Class<?> clazz = classLoader.loadClass("cases.local_variable.declaration.Main");
         Method method = clazz.getMethod("greet");
         String greet = (String) method.invoke(null);
@@ -24,7 +28,11 @@ public class InterpolateVariablePluginTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_localVariableAssignmentWithExpression_interpolate() throws Exception {
-        ClassLoader classLoader = compiler.compile("/cases/local_variable/assignment/Main.java");
+        CompilationResult result = compiler.compile("/cases/local_variable/assignment/Main.java");
+
+        assertThat(result.isSuccess()).isTrue();
+
+        ClassLoader classLoader = result.getClassLoader();
         Class<?> clazz = classLoader.loadClass("cases.local_variable.assignment.Main");
         Method method = clazz.getMethod("greet");
         String greet = (String) method.invoke(null);
@@ -34,7 +42,11 @@ public class InterpolateVariablePluginTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_staticVariableAssignmentWithExpression_interpolate() throws Exception {
-        ClassLoader classLoader = compiler.compile("/cases/static_variable/assignment/Main.java");
+        CompilationResult result = compiler.compile("/cases/static_variable/assignment/Main.java");
+
+        assertThat(result.isSuccess()).isTrue();
+
+        ClassLoader classLoader = result.getClassLoader();
         Class<?> clazz = classLoader.loadClass("cases.static_variable.assignment.Main");
         Field field = clazz.getField("GREET");
         String greet = (String) field.get(null);
