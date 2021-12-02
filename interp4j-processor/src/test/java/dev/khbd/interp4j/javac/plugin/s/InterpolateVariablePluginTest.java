@@ -64,4 +64,14 @@ public class InterpolateVariablePluginTest extends AbstractPluginTest {
                 .extracting(d -> d.getMessage(Locale.getDefault()))
                 .containsExactly("Only string literal is supported here");
     }
+
+    @Test
+    public void interpolate_expressionIsWrong_reportError() {
+        CompilationResult result = compiler.compile("/cases/local_variable/wrong_expression/Main.java");
+
+        assertThat(result.isFail()).isTrue();
+        assertThat(result.getDiagnostics()).hasSize(1)
+                .extracting(d -> d.getMessage(Locale.getDefault()))
+                .containsExactly("Wrong expression format");
+    }
 }
