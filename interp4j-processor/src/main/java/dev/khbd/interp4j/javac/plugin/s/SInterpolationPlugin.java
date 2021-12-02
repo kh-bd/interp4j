@@ -17,6 +17,7 @@ import com.sun.tools.javac.api.BasicJavacTask;
 import com.sun.tools.javac.parser.JavacParser;
 import com.sun.tools.javac.parser.ParserFactory;
 import com.sun.tools.javac.tree.JCTree;
+import com.sun.tools.javac.tree.Pretty;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.List;
@@ -28,7 +29,10 @@ import dev.khbd.interp4j.javac.plugin.s.expr.SExpressionParser;
 import dev.khbd.interp4j.javac.plugin.s.expr.SExpressionPart;
 import dev.khbd.interp4j.javac.plugin.s.expr.SExpressionVisitor;
 import dev.khbd.interp4j.javac.plugin.s.expr.TextPart;
+import lombok.Getter;
 
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.Objects;
 
 /**
@@ -43,6 +47,7 @@ public class SInterpolationPlugin implements Plugin {
 
     @Override
     public void init(JavacTask task, String... args) {
+        Options options = new Options(args);
         task.addTaskListener(new TaskListener() {
             @Override
             public void finished(TaskEvent event) {
@@ -51,9 +56,31 @@ public class SInterpolationPlugin implements Plugin {
                 }
 
                 CompilationUnitTree unit = event.getCompilationUnit();
-                unit.accept(new SInterpolationTreeScanner(((BasicJavacTask) task).getContext()), null);
+                Context context = ((BasicJavacTask) task).getContext();
+                SInterpolationTreeScanner interpolator = new SInterpolationTreeScanner(context);
+                unit.accept(interpolator , null);
+
+                if (interpolator.interpolationTakePlace && options.prettyPrintAfterInterpolationEnabled()) {
+                    prettyPrintCompilationUnit(unit);
+                }
             }
         });
+    }
+
+    private void prettyPrintCompilationUnit(CompilationUnitTree unit) {
+        JCTree.JCCompilationUnit jcUnit = (JCTree.JCCompilationUnit) unit;
+
+        OutputStreamWriter writer = new OutputStreamWriter(System.out);
+
+        Pretty pretty = new Pretty(writer, true);
+        jcUnit.accept(pretty);
+
+        try {
+            writer.write(System.getProperty("line.separator"));
+            writer.flush();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
     }
 
     private static class SInterpolationTreeScanner extends TreeScanner<Void, Void> {
@@ -64,6 +91,9 @@ public class SInterpolationPlugin implements Plugin {
         final Names symbolsTable;
         final ParserFactory parserFactory;
         final Log logger;
+
+        @Getter
+        boolean interpolationTakePlace = false;
 
         private SInterpolationTreeScanner(Context context) {
             this.imports = new SImports();
@@ -102,6 +132,7 @@ public class SInterpolationPlugin implements Plugin {
             JCTree.JCExpression interpolated = interpolateIfNeeded(varDecl.getInitializer());
             if (Objects.nonNull(interpolated)) {
                 varDecl.init = interpolated;
+                interpolationTakePlace = true;
             }
 
             return null;
@@ -116,6 +147,7 @@ public class SInterpolationPlugin implements Plugin {
             JCTree.JCExpression interpolated = interpolateIfNeeded(assignment.rhs);
             if (Objects.nonNull(interpolated)) {
                 assignment.rhs = interpolated;
+                interpolationTakePlace = true;
             }
 
             return null;
@@ -138,6 +170,7 @@ public class SInterpolationPlugin implements Plugin {
                 JCTree.JCExpression interpolated = interpolateIfNeeded(expr);
                 if (Objects.nonNull(interpolated)) {
                     result = result.append(interpolated);
+                    interpolationTakePlace = true;
                 } else {
                     result = result.append(expr);
                 }
