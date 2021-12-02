@@ -20,6 +20,7 @@ import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.Pretty;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
+import com.sun.tools.javac.util.JCDiagnostic;
 import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.Log;
 import com.sun.tools.javac.util.Names;
@@ -57,6 +58,9 @@ public class SInterpolationPlugin implements Plugin {
 
                 CompilationUnitTree unit = event.getCompilationUnit();
                 Context context = ((BasicJavacTask) task).getContext();
+
+                BundleInitializer.initPluginBundle(context);
+
                 SInterpolationTreeScanner interpolator = new SInterpolationTreeScanner(context);
                 unit.accept(interpolator , null);
 
@@ -185,7 +189,7 @@ public class SInterpolationPlugin implements Plugin {
             }
             ExpressionTree firstArgument = getFirstArgument(expression);
             if (firstArgument.getKind() != Tree.Kind.STRING_LITERAL) {
-                logger.rawError(expression.pos, "Only string literal value is supported");
+                logger.error(expression.pos(), new JCDiagnostic.Error("compiler", "non.string.literal"));
                 return null;
             }
 
@@ -194,7 +198,7 @@ public class SInterpolationPlugin implements Plugin {
 
             SExpression sExpr = SExpressionParser.getInstance().parse(literal).orElse(null);
             if (Objects.isNull(sExpr)) {
-                logger.rawError(expression.pos, "Wrong expression format");
+                logger.error(expression.pos(), new JCDiagnostic.Error("compiler", "wrong.expression.format"));
                 return null;
             }
 

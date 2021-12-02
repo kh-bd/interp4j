@@ -6,6 +6,7 @@ import org.testng.annotations.Test;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Locale;
 
 /**
  * @author Sergei_Khadanovich
@@ -52,5 +53,15 @@ public class InterpolateVariablePluginTest extends AbstractPluginTest {
         String greet = (String) field.get(null);
 
         assertThat(greet).isEqualTo("Hello, Alex");
+    }
+
+    @Test
+    public void interpolate_nonLiteralUsed_reportError() {
+        CompilationResult result = compiler.compile("/cases/local_variable/non_literal_string_used/Main.java");
+
+        assertThat(result.isFail()).isTrue();
+        assertThat(result.getDiagnostics()).hasSize(1)
+                .extracting(d -> d.getMessage(Locale.getDefault()))
+                .containsExactly("Only string literal is supported here");
     }
 }
