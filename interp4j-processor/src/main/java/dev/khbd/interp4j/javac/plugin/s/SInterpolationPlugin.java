@@ -6,6 +6,7 @@ import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.ImportTree;
 import com.sun.source.tree.LiteralTree;
 import com.sun.source.tree.MethodInvocationTree;
+import com.sun.source.tree.ParenthesizedTree;
 import com.sun.source.tree.ReturnTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.tree.VariableTree;
@@ -123,6 +124,20 @@ public class SInterpolationPlugin implements Plugin {
             return PluginUtils.IS_FQN_INTERPOLATIONS_S
                     .or(PluginUtils.IS_FQN_INTERPOLATIONS)
                     .test(importTree.getQualifiedIdentifier());
+        }
+
+        @Override
+        public Void visitParenthesized(ParenthesizedTree tree, Void unused) {
+            super.visitParenthesized(tree, unused);
+
+            JCTree.JCParens parens = (JCTree.JCParens) tree;
+            JCTree.JCExpression interpolated = interpolateIfNeeded(parens.getExpression());
+            if (Objects.nonNull(interpolated)) {
+                parens.expr = interpolated;
+                interpolationTakePlace = true;
+            }
+
+            return null;
         }
 
         @Override
