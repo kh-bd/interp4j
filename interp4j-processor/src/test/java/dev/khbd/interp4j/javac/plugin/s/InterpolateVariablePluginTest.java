@@ -12,9 +12,19 @@ import java.lang.reflect.Method;
 public class InterpolateVariablePluginTest extends AbstractPluginTest {
 
     @Test
-    public void interpolate_localVariableWithExpression_interpolate() throws Exception {
-        ClassLoader classLoader = compiler.compile("/cases/local_variable/Main.java");
-        Class<?> clazz = classLoader.loadClass("cases.local_variable.Main");
+    public void interpolate_localVariableDeclarationWithExpression_interpolate() throws Exception {
+        ClassLoader classLoader = compiler.compile("/cases/local_variable/declaration/Main.java");
+        Class<?> clazz = classLoader.loadClass("cases.local_variable.declaration.Main");
+        Method method = clazz.getMethod("greet");
+        String greet = (String) method.invoke(null);
+
+        assertThat(greet).isEqualTo("Hello, Alex");
+    }
+
+    @Test
+    public void interpolate_localVariableAssignmentWithExpression_interpolate() throws Exception {
+        ClassLoader classLoader = compiler.compile("/cases/local_variable/assignment/Main.java");
+        Class<?> clazz = classLoader.loadClass("cases.local_variable.assignment.Main");
         Method method = clazz.getMethod("greet");
         String greet = (String) method.invoke(null);
 
