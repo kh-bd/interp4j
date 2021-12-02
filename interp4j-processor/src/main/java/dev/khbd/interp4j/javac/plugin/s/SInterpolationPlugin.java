@@ -2,6 +2,7 @@ package dev.khbd.interp4j.javac.plugin.s;
 
 import com.sun.source.tree.AssignmentTree;
 import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.tree.CompoundAssignmentTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.ImportTree;
 import com.sun.source.tree.LiteralTree;
@@ -163,6 +164,21 @@ public class SInterpolationPlugin implements Plugin {
             super.visitAssignment(tree, unused);
 
             JCTree.JCAssign assignment = (JCTree.JCAssign) tree;
+
+            JCTree.JCExpression interpolated = interpolateIfNeeded(assignment.rhs);
+            if (Objects.nonNull(interpolated)) {
+                assignment.rhs = interpolated;
+                interpolationTakePlace = true;
+            }
+
+            return null;
+        }
+
+        @Override
+        public Void visitCompoundAssignment(CompoundAssignmentTree tree, Void unused) {
+            super.visitCompoundAssignment(tree, unused);
+
+            JCTree.JCAssignOp assignment = (JCTree.JCAssignOp) tree;
 
             JCTree.JCExpression interpolated = interpolateIfNeeded(assignment.rhs);
             if (Objects.nonNull(interpolated)) {

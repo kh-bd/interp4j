@@ -42,6 +42,20 @@ public class InterpolateVariableTest extends AbstractPluginTest {
     }
 
     @Test
+    public void interpolate_localVariableCompoundAssignmentWithExpression_interpolate() throws Exception {
+        CompilationResult result = compiler.compile("/cases/local_variable/compound_assignment/Main.java");
+
+        assertThat(result.isSuccess()).isTrue();
+
+        ClassLoader classLoader = result.getClassLoader();
+        Class<?> clazz = classLoader.loadClass("cases.local_variable.compound_assignment.Main");
+        Method method = clazz.getMethod("greet");
+        String greet = (String) method.invoke(null);
+
+        assertThat(greet).isEqualTo("Hello, Alex");
+    }
+
+    @Test
     public void interpolate_staticVariableAssignmentWithExpression_interpolate() throws Exception {
         CompilationResult result = compiler.compile("/cases/static_variable/assignment/Main.java");
 
