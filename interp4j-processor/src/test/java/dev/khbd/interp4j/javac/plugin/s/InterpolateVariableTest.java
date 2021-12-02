@@ -11,7 +11,7 @@ import java.util.Locale;
 /**
  * @author Sergei_Khadanovich
  */
-public class InterpolateVariablePluginTest extends AbstractPluginTest {
+public class InterpolateVariableTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_localVariableDeclarationWithExpression_interpolate() throws Exception {
@@ -60,7 +60,7 @@ public class InterpolateVariablePluginTest extends AbstractPluginTest {
         CompilationResult result = compiler.compile("/cases/local_variable/non_literal_string_used/Main.java");
 
         assertThat(result.isFail()).isTrue();
-        assertThat(result.getDiagnostics()).hasSize(1)
+        assertThat(result.getErrors()).hasSize(1)
                 .extracting(d -> d.getMessage(Locale.getDefault()))
                 .containsExactly("Only string literal is supported here");
     }
@@ -70,7 +70,7 @@ public class InterpolateVariablePluginTest extends AbstractPluginTest {
         CompilationResult result = compiler.compile("/cases/local_variable/wrong_expression/Main.java");
 
         assertThat(result.isFail()).isTrue();
-        assertThat(result.getDiagnostics()).hasSize(1)
+        assertThat(result.getErrors()).hasSize(1)
                 .extracting(d -> d.getMessage(Locale.getDefault()))
                 .containsExactly("Wrong expression format");
     }

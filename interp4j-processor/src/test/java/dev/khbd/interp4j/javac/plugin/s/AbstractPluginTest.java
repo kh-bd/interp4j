@@ -142,7 +142,7 @@ public abstract class AbstractPluginTest {
             List<String> arguments = new ArrayList<>();
             arguments.add("-classpath");
             arguments.add(System.getProperty("java.class.path"));
-            arguments.add("-Xplugin:interp4j");
+            arguments.add("-Xplugin:interp4j prettyPrint.after.interpolation=true");
 
             JavaCompiler.CompilationTask task
                     = compiler.getTask(new StringWriter(), fileManager, diagnostic, arguments, null,

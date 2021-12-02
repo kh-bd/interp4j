@@ -6,6 +6,7 @@ import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.ImportTree;
 import com.sun.source.tree.LiteralTree;
 import com.sun.source.tree.MethodInvocationTree;
+import com.sun.source.tree.ReturnTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.JavacTask;
@@ -62,7 +63,7 @@ public class SInterpolationPlugin implements Plugin {
                 BundleInitializer.initPluginBundle(context);
 
                 SInterpolationTreeScanner interpolator = new SInterpolationTreeScanner(context);
-                unit.accept(interpolator , null);
+                unit.accept(interpolator, null);
 
                 if (interpolator.interpolationTakePlace && options.prettyPrintAfterInterpolationEnabled()) {
                     prettyPrintCompilationUnit(unit);
@@ -163,6 +164,20 @@ public class SInterpolationPlugin implements Plugin {
 
             JCTree.JCMethodInvocation methodInvocation = (JCTree.JCMethodInvocation) tree;
             methodInvocation.args = interpolateIfNeeded(methodInvocation.args);
+
+            return null;
+        }
+
+        @Override
+        public Void visitReturn(ReturnTree tree, Void unused) {
+            super.visitReturn(tree, unused);
+
+            JCTree.JCReturn jcReturn = (JCTree.JCReturn) tree;
+            JCTree.JCExpression interpolated = interpolateIfNeeded(jcReturn.expr);
+            if (Objects.nonNull(interpolated)) {
+                jcReturn.expr = interpolated;
+                interpolationTakePlace = true;
+            }
 
             return null;
         }
