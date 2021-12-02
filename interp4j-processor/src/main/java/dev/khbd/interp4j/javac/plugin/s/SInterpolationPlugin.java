@@ -3,6 +3,7 @@ package dev.khbd.interp4j.javac.plugin.s;
 import com.sun.source.tree.AssignmentTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.CompoundAssignmentTree;
+import com.sun.source.tree.ConditionalExpressionTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.ImportTree;
 import com.sun.source.tree.LiteralTree;
@@ -38,6 +39,7 @@ import lombok.Getter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * @author Sergei_Khadanovich
@@ -132,11 +134,7 @@ public class SInterpolationPlugin implements Plugin {
             super.visitParenthesized(tree, unused);
 
             JCTree.JCParens parens = (JCTree.JCParens) tree;
-            JCTree.JCExpression interpolated = interpolateIfNeeded(parens.getExpression());
-            if (Objects.nonNull(interpolated)) {
-                parens.expr = interpolated;
-                interpolationTakePlace = true;
-            }
+            interpolateIfNeeded(parens.expr, ie -> parens.expr = ie);
 
             return null;
         }
@@ -150,11 +148,7 @@ public class SInterpolationPlugin implements Plugin {
                 return null;
             }
 
-            JCTree.JCExpression interpolated = interpolateIfNeeded(varDecl.getInitializer());
-            if (Objects.nonNull(interpolated)) {
-                varDecl.init = interpolated;
-                interpolationTakePlace = true;
-            }
+            interpolateIfNeeded(varDecl.init, ie -> varDecl.init = ie);
 
             return null;
         }
@@ -164,12 +158,7 @@ public class SInterpolationPlugin implements Plugin {
             super.visitAssignment(tree, unused);
 
             JCTree.JCAssign assignment = (JCTree.JCAssign) tree;
-
-            JCTree.JCExpression interpolated = interpolateIfNeeded(assignment.rhs);
-            if (Objects.nonNull(interpolated)) {
-                assignment.rhs = interpolated;
-                interpolationTakePlace = true;
-            }
+            interpolateIfNeeded(assignment.rhs, ie -> assignment.rhs = ie);
 
             return null;
         }
@@ -179,12 +168,7 @@ public class SInterpolationPlugin implements Plugin {
             super.visitCompoundAssignment(tree, unused);
 
             JCTree.JCAssignOp assignment = (JCTree.JCAssignOp) tree;
-
-            JCTree.JCExpression interpolated = interpolateIfNeeded(assignment.rhs);
-            if (Objects.nonNull(interpolated)) {
-                assignment.rhs = interpolated;
-                interpolationTakePlace = true;
-            }
+            interpolateIfNeeded(assignment.rhs, ie -> assignment.rhs = ie);
 
             return null;
         }
@@ -204,11 +188,18 @@ public class SInterpolationPlugin implements Plugin {
             super.visitReturn(tree, unused);
 
             JCTree.JCReturn jcReturn = (JCTree.JCReturn) tree;
-            JCTree.JCExpression interpolated = interpolateIfNeeded(jcReturn.expr);
-            if (Objects.nonNull(interpolated)) {
-                jcReturn.expr = interpolated;
-                interpolationTakePlace = true;
-            }
+            interpolateIfNeeded(jcReturn.expr, ie -> jcReturn.expr = ie);
+
+            return null;
+        }
+
+        @Override
+        public Void visitConditionalExpression(ConditionalExpressionTree tree, Void unused) {
+            super.visitConditionalExpression(tree, unused);
+
+            JCTree.JCConditional conditional = (JCTree.JCConditional) tree;
+            interpolateIfNeeded(conditional.truepart, ie -> conditional.truepart = ie);
+            interpolateIfNeeded(conditional.falsepart, ie -> conditional.falsepart = ie);
 
             return null;
         }
@@ -227,6 +218,15 @@ public class SInterpolationPlugin implements Plugin {
             }
 
             return result;
+        }
+
+        private void interpolateIfNeeded(JCTree.JCExpression expression,
+                                         Consumer<? super JCTree.JCExpression> resultConsumer) {
+            JCTree.JCExpression interpolated = interpolateIfNeeded(expression);
+            if (Objects.nonNull(interpolated)) {
+                resultConsumer.accept(interpolated);
+                interpolationTakePlace = true;
+            }
         }
 
         private JCTree.JCExpression interpolateIfNeeded(JCTree.JCExpression expression) {
