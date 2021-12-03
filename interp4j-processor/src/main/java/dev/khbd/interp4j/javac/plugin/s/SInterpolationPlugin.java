@@ -179,6 +179,12 @@ public class SInterpolationPlugin implements Plugin {
             JCTree.JCMethodInvocation methodInvocation = (JCTree.JCMethodInvocation) tree;
             methodInvocation.args = interpolateIfNeeded(methodInvocation.args);
 
+            JCTree.JCExpression methodSelect = methodInvocation.meth;
+            if (methodSelect.getKind() == Tree.Kind.MEMBER_SELECT) {
+                JCTree.JCFieldAccess jcFieldAccess = (JCTree.JCFieldAccess) methodSelect;
+                interpolateIfNeeded(jcFieldAccess.selected, ie -> jcFieldAccess.selected = ie);
+            }
+
             return null;
         }
 
