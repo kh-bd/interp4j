@@ -1,6 +1,7 @@
 package dev.khbd.interp4j.javac.plugin.s;
 
 import com.sun.source.tree.AssignmentTree;
+import com.sun.source.tree.BinaryTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.CompoundAssignmentTree;
 import com.sun.source.tree.ConditionalExpressionTree;
@@ -205,6 +206,17 @@ public class SInterpolationPlugin implements Plugin {
             JCTree.JCConditional conditional = (JCTree.JCConditional) tree;
             interpolateIfNeeded(conditional.truepart, ie -> conditional.truepart = ie);
             interpolateIfNeeded(conditional.falsepart, ie -> conditional.falsepart = ie);
+
+            return null;
+        }
+
+        @Override
+        public Void visitBinary(BinaryTree tree, Void unused) {
+            super.visitBinary(tree, unused);
+
+            JCTree.JCBinary binary = (JCTree.JCBinary) tree;
+            interpolateIfNeeded(binary.lhs, ie -> binary.lhs = ie);
+            interpolateIfNeeded(binary.rhs, ie -> binary.rhs = ie);
 
             return null;
         }
