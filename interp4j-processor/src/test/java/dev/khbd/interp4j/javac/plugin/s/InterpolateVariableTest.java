@@ -70,6 +70,20 @@ public class InterpolateVariableTest extends AbstractPluginTest {
     }
 
     @Test
+    public void interpolate_staticVariableDeclarationWithExpression_interpolate() throws Exception {
+        CompilationResult result = compiler.compile("/cases/static_variable/declaration/Main.java");
+
+        assertThat(result.isSuccess()).isTrue();
+
+        ClassLoader classLoader = result.getClassLoader();
+        Class<?> clazz = classLoader.loadClass("cases.static_variable.declaration.Main");
+        Field field = clazz.getField("GREET");
+        String greet = (String) field.get(null);
+
+        assertThat(greet).isEqualTo("Hello, Alex");
+    }
+
+    @Test
     public void interpolate_nonLiteralUsed_reportError() {
         CompilationResult result = compiler.compile("/cases/local_variable/non_literal_string_used/Main.java");
 
