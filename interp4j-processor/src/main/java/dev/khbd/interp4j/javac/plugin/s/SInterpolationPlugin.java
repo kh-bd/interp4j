@@ -35,6 +35,7 @@ import dev.khbd.interp4j.javac.plugin.s.expr.SExpressionPart;
 import dev.khbd.interp4j.javac.plugin.s.expr.SExpressionVisitor;
 import dev.khbd.interp4j.javac.plugin.s.expr.TextPart;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -70,19 +71,17 @@ public class SInterpolationPlugin implements Plugin {
                 unit.accept(interpolator, null);
 
                 if (interpolator.interpolationTakePlace && options.prettyPrintAfterInterpolationEnabled()) {
-                    prettyPrintCompilationUnit(unit);
+                    prettyPrintTree(((JCTree.JCCompilationUnit) unit));
                 }
             }
         });
     }
 
-    private void prettyPrintCompilationUnit(CompilationUnitTree unit) {
-        JCTree.JCCompilationUnit jcUnit = (JCTree.JCCompilationUnit) unit;
-
+    private static void prettyPrintTree(JCTree tree) {
         OutputStreamWriter writer = new OutputStreamWriter(System.out);
 
         Pretty pretty = new Pretty(writer, true);
-        jcUnit.accept(pretty);
+        tree.accept(pretty);
 
         try {
             writer.write(System.getProperty("line.separator"));
@@ -248,7 +247,7 @@ public class SInterpolationPlugin implements Plugin {
                 return null;
             }
 
-            return interpolate(literal, sExpr);
+            return interpolate(literal, sExpr, expression.pos);
         }
 
         private ExpressionTree getFirstArgument(ExpressionTree tree) {
@@ -256,29 +255,31 @@ public class SInterpolationPlugin implements Plugin {
             return methodInvocation.getArguments().get(0);
         }
 
-        private JCTree.JCExpression interpolate(String literal, SExpression sExpr) {
+        private JCTree.JCExpression interpolate(String literal, SExpression sExpr, int basePosition) {
             if (!sExpr.hasAnyExpression()) {
                 // It means, `s` expression doesn't contain any string parts,
                 // so we can replace our method call with original string literal
-                return interpolateWithoutExpressions(literal);
+                return interpolateWithoutExpressions(literal, basePosition);
             }
-            return interpolateWithExpressions(sExpr);
+            return interpolateWithExpressions(sExpr, basePosition);
         }
 
-        private JCTree.JCExpression interpolateWithoutExpressions(String literal) {
-            return factory.Literal(literal);
+        private JCTree.JCExpression interpolateWithoutExpressions(String literal,
+                                                                  int basePosition) {
+            return factory.at(basePosition).Literal(literal);
         }
 
-        private JCTree.JCExpression interpolateWithExpressions(SExpression sExpr) {
-            ArgumentsCollector argumentsCollector = new ArgumentsCollector();
+        private JCTree.JCExpression interpolateWithExpressions(SExpression sExpr, int basePosition) {
+            ArgumentsCollector argumentsCollector = new ArgumentsCollector(basePosition);
             sExpr.visit(argumentsCollector);
 
-            JCTree.JCNewClass jcNew = factory.NewClass(null, List.nil(),
-                    select("dev.khbd.interp4j.core.internal.s.SInterpolator"),
-                    argumentsCollector.constructorArguments,
-                    null
-            );
-            return factory.Apply(List.nil(),
+            JCTree.JCNewClass jcNew = factory
+                    .NewClass(null, List.nil(),
+                            select("dev.khbd.interp4j.core.internal.s.SInterpolator"),
+                            argumentsCollector.constructorArguments,
+                            null
+                    );
+            return factory.at(basePosition).Apply(List.nil(),
                     factory.Select(jcNew, symbolsTable.fromString("interpolate")),
                     argumentsCollector.methodArguments);
         }
@@ -292,7 +293,10 @@ public class SInterpolationPlugin implements Plugin {
             return result;
         }
 
+        @RequiredArgsConstructor
         private class ArgumentsCollector implements SExpressionVisitor {
+
+            private final int basePosition;
 
             private List<JCTree.JCExpression> constructorArguments = List.nil();
             private List<JCTree.JCExpression> methodArguments = List.nil();
@@ -309,7 +313,9 @@ public class SInterpolationPlugin implements Plugin {
                 JavacParser parser = parserFactory.newParser(
                         expressionPart.getExpression(), false,
                         false, false);
-                methodArguments = methodArguments.append(parser.parseExpression());
+                JCTree.JCExpression expr = parser.parseExpression();
+                expr.pos = basePosition;
+                methodArguments = methodArguments.append(expr);
             }
 
             @Override
