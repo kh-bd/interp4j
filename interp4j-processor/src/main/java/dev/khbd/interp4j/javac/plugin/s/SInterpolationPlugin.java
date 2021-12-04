@@ -8,6 +8,7 @@ import com.sun.source.tree.ConditionalExpressionTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.ImportTree;
 import com.sun.source.tree.LiteralTree;
+import com.sun.source.tree.MemberReferenceTree;
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.tree.ParenthesizedTree;
 import com.sun.source.tree.ReturnTree;
@@ -185,6 +186,16 @@ public class SInterpolationPlugin implements Plugin {
                 JCTree.JCFieldAccess jcFieldAccess = (JCTree.JCFieldAccess) methodSelect;
                 interpolateIfNeeded(jcFieldAccess.selected, ie -> jcFieldAccess.selected = ie);
             }
+
+            return null;
+        }
+
+        @Override
+        public Void visitMemberReference(MemberReferenceTree tree, Void unused) {
+            super.visitMemberReference(tree, unused);
+
+            JCTree.JCMemberReference memberRef = (JCTree.JCMemberReference) tree;
+            interpolateIfNeeded(memberRef.expr, ie -> memberRef.expr = ie);
 
             return null;
         }
