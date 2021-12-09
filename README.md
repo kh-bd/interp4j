@@ -1,6 +1,6 @@
 # Interp4j is a string interpolation library for Java
 
-## Why we need it?
+## Why do we need it?
 
 To understand why we need string interpolation and how to use it, consider following example:
 We have to implement a function, which can build a short person descriptor.
