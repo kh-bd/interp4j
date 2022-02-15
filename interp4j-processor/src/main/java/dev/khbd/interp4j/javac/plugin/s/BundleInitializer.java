@@ -4,6 +4,8 @@ import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.JavacMessages;
 import lombok.experimental.UtilityClass;
 
+import java.util.ResourceBundle;
+
 /**
  * @author Sergei_Khadanovich
  */
@@ -14,6 +16,7 @@ public class BundleInitializer {
 
     public static void initPluginBundle(Context context) {
         JavacMessages messages = JavacMessages.instance(context);
-        messages.add(BUNDLE_NAME);
+        ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_NAME);
+        messages.add(l -> bundle);
     }
 }
