@@ -10,7 +10,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class BundleInitializer {
 
-    private static final String BUNDLE_NAME = "dev.khbd.interp4j.javac.plugin.s.messages.Interp4jBundle";
+    private static final String BUNDLE_NAME = "dev.khbd.interp4j.javac.plugin.s.i18n.Interp4jBundle";
 
     public static void initPluginBundle(Context context) {
         JavacMessages messages = JavacMessages.instance(context);
