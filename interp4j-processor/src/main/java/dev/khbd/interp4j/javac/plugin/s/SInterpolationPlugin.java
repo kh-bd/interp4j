@@ -205,11 +205,8 @@ public class SInterpolationPlugin implements Plugin {
             super.visitReturn(tree, unused);
 
             JCTree.JCReturn jcReturn = (JCTree.JCReturn) tree;
-            try {
+            if (Objects.nonNull(jcReturn.expr)) {
                 interpolateIfNeeded(jcReturn.expr, ie -> jcReturn.expr = ie);
-            } catch (NullPointerException npe) {
-                prettyPrintTree(jcReturn);
-                throw npe;
             }
 
             return null;
