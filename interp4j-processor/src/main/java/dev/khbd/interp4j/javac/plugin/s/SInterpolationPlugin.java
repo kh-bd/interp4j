@@ -10,6 +10,7 @@ import com.sun.source.tree.ImportTree;
 import com.sun.source.tree.LiteralTree;
 import com.sun.source.tree.MemberReferenceTree;
 import com.sun.source.tree.MethodInvocationTree;
+import com.sun.source.tree.NewClassTree;
 import com.sun.source.tree.ParenthesizedTree;
 import com.sun.source.tree.ReturnTree;
 import com.sun.source.tree.Tree;
@@ -186,6 +187,16 @@ public class SInterpolationPlugin implements Plugin {
                 JCTree.JCFieldAccess jcFieldAccess = (JCTree.JCFieldAccess) methodSelect;
                 interpolateIfNeeded(jcFieldAccess.selected, ie -> jcFieldAccess.selected = ie);
             }
+
+            return null;
+        }
+
+        @Override
+        public Void visitNewClass(NewClassTree tree, Void unused) {
+            super.visitNewClass(tree, unused);
+
+            JCTree.JCNewClass jcNewClass = (JCTree.JCNewClass) tree;
+            jcNewClass.args = interpolateIfNeeded(jcNewClass.args);
 
             return null;
         }
