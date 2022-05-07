@@ -11,6 +11,7 @@
     <modules>
         <module>interp4j-core</module>
         <module>interp4j-processor</module>
+        <module>interp4j-benchmark</module>
     </modules>
 
     <name>Interp4j</name>
@@ -49,10 +50,13 @@
         <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
         <maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
         <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
+        <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
+        <maven-deploy-plugin.version>2.7</maven-deploy-plugin.version>
 
         <!-- dependencies versions -->
         <petitparser.version>2.3.1</petitparser.version>
         <lombok.version>1.18.22</lombok.version>
+        <jmh.version>1.19</jmh.version>
 
         <testng.version>7.4.0</testng.version>
         <assertj.version>3.20.2</assertj.version>
@@ -72,6 +76,11 @@
                 <artifactId>interp4j-processor</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>dev.khbd.interp4j</groupId>
+                <artifactId>interp4j-benchmark</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.github.petitparser</groupId>
@@ -83,6 +92,18 @@
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
                 <scope>provided</scope>
+            </dependency>
+
+            <!-- benchmarks -->
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-core</artifactId>
+                <version>${jmh.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-generator-annprocess</artifactId>
+                <version>${jmh.version}</version>
             </dependency>
 
             <!-- test dependencies -->
