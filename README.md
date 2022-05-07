@@ -114,3 +114,30 @@ for maven-based projects it can look like that:
 ```
 
 By default, this feature is disabled.
+
+## Benchmarks
+
+All benchmarks were run on:
+
+- Machine: MacBook Pro 2015
+- Processor: 2.2 GHz Quad-Core Intel Core i7
+- Memory: 16 GB 1600MHz DDR3
+
+![Benchmark results](readme/imgs/bench_result.jpg)
+
+As you can see, compile time interpolation is more than 10 times
+faster than `String.format`. At the same time, it is about 3 times
+slower than manual string concatenation. Benchmarks source code can
+be found in `interp4j-benchmark` module.
+
+### Run benchmarks on your own machine
+
+To run benchmarks do several steps:
+
+- pull project to your machine
+- run from root directory `mvn package -Pbenchmark`
+- go to `interp4j-benchmark/target` directory. `interp4j-benchmark-${version}-jar-with-dependencies.jar` should be generated
+- run
+  command `java -cp ./interp4j-benchmark-${version}-jar-with-dependencies.jar dev.khbd.interp4j.benchmark.BenchmarkRunner -rf json`
+- `jmh-result.json` report should be generated
+- view it through [jmh visualizer](https://jmh.morethan.io/)
