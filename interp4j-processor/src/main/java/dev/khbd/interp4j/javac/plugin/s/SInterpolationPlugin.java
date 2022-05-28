@@ -7,6 +7,8 @@ import com.sun.source.tree.CompoundAssignmentTree;
 import com.sun.source.tree.ConditionalExpressionTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.ImportTree;
+import com.sun.source.tree.LambdaExpressionTree;
+import com.sun.source.tree.LambdaExpressionTree.BodyKind;
 import com.sun.source.tree.LiteralTree;
 import com.sun.source.tree.MemberReferenceTree;
 import com.sun.source.tree.MethodInvocationTree;
@@ -218,6 +220,18 @@ public class SInterpolationPlugin implements Plugin {
             JCTree.JCReturn jcReturn = (JCTree.JCReturn) tree;
             if (Objects.nonNull(jcReturn.expr)) {
                 interpolateIfNeeded(jcReturn.expr, ie -> jcReturn.expr = ie);
+            }
+
+            return null;
+        }
+
+        @Override
+        public Void visitLambdaExpression(LambdaExpressionTree tree, Void unused) {
+            super.visitLambdaExpression(tree, unused);
+
+            JCTree.JCLambda jcLambda = (JCTree.JCLambda) tree;
+            if (jcLambda.getBodyKind() == BodyKind.EXPRESSION) {
+                interpolateIfNeeded((JCTree.JCExpression) jcLambda.body, ie -> jcLambda.body = ie);
             }
 
             return null;
