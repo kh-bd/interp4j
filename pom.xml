@@ -17,7 +17,7 @@
     <name>Interp4j</name>
     <description>Interp4j is a simple library to support string interpolations for java language</description>
 
-    <url>https://github.com/KhadanovichSergey/interp4j</url>
+    <url>https://github.com/kh-bd/interp4j</url>
 
     <licenses>
         <license>
@@ -35,9 +35,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git@github.com:KhadanovichSergey/interp4j.git</connection>
-        <developerConnection>scm:git:ssh://github.com:KhadanovichSergey/interp4j.git</developerConnection>
-        <url>https://github.com/KhadanovichSergey/interp4j/tree/main</url>
+        <connection>scm:git:git@github.com:kh-bd/interp4j.git</connection>
+        <developerConnection>scm:git:ssh://github.com:kh-bd/interp4j.git</developerConnection>
+        <url>https://github.com/kh-bd/interp4j/tree/main</url>
     </scm>
 
     <properties>
