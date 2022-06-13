@@ -93,7 +93,7 @@ in progress
 ## Intellij support
 
 To support `interp4j` by intellij, install
-[interp4j-intellij-plugin](https://github.com/KhadanovichSergey/interp4j-intellij-plugin).
+[interp4j-intellij-plugin](https://github.com/kh-bd/interp4j-intellij-plugin).
 
 ## How to look at modified source code?
 
