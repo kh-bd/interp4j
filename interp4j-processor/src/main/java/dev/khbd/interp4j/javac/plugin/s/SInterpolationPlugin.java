@@ -197,6 +197,10 @@ public class SInterpolationPlugin implements Plugin {
         public Void visitCase(CaseTree tree, Void unused) {
             JCTree.JCCase jcCase = (JCTree.JCCase) tree;
 
+            for (JCTree.JCCaseLabel label : jcCase.getLabels()) {
+                label.accept(this, unused);
+            }
+
             for (StatementTree stat : jcCase.stats) {
                 stat.accept(this, unused);
             }

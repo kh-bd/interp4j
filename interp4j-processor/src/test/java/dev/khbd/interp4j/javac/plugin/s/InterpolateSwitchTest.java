@@ -58,4 +58,20 @@ public class InterpolateSwitchTest extends AbstractPluginTest {
         greet = (String) method.invoke(null, "Sergei");
         assertThat(greet).isEqualTo("Who are you?");
     }
+
+    @Test
+    public void interpolate_sInCaseGuard_interpolate() throws Exception {
+        CompilationResult result = compiler.compile("/cases/in_switch/guard/Main.java");
+
+        assertThat(result.isSuccess()).isTrue();
+
+        ClassLoader classLoader = result.getClassLoader();
+        Class<?> clazz = classLoader.loadClass("cases.in_switch.guard.Main");
+        Method method = clazz.getMethod("greet", Object.class);
+
+        String greet = (String) method.invoke(null, "Alex");
+        assertThat(greet).isEqualTo("Alex");
+        greet = (String) method.invoke(null, "Mi");
+        assertThat(greet).isEqualTo("Opps!");
+    }
 }
