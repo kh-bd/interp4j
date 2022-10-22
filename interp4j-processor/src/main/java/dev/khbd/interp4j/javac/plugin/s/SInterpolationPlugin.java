@@ -2,9 +2,11 @@ package dev.khbd.interp4j.javac.plugin.s;
 
 import com.sun.source.tree.AssignmentTree;
 import com.sun.source.tree.BinaryTree;
+import com.sun.source.tree.CaseTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.CompoundAssignmentTree;
 import com.sun.source.tree.ConditionalExpressionTree;
+import com.sun.source.tree.ExpressionStatementTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.ImportTree;
 import com.sun.source.tree.LambdaExpressionTree;
@@ -15,8 +17,10 @@ import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.tree.NewClassTree;
 import com.sun.source.tree.ParenthesizedTree;
 import com.sun.source.tree.ReturnTree;
+import com.sun.source.tree.StatementTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.tree.VariableTree;
+import com.sun.source.tree.YieldTree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.Plugin;
 import com.sun.source.util.TaskEvent;
@@ -163,6 +167,49 @@ public class SInterpolationPlugin implements Plugin {
 
             JCTree.JCAssign assignment = (JCTree.JCAssign) tree;
             interpolateIfNeeded(assignment.rhs, ie -> assignment.rhs = ie);
+
+            return null;
+        }
+
+        @Override
+        public Void visitYield(YieldTree tree, Void unused) {
+            super.visitYield(tree, unused);
+
+            JCTree.JCYield jcYield = (JCTree.JCYield) tree;
+            interpolateIfNeeded(jcYield.value, ie -> jcYield.value = ie);
+
+            return null;
+        }
+
+        // some wierd behavior is noticed.
+        //
+        // JCCase#body is not null and contains expected method invocation if kind == RULE (as docs says),
+        // but changing body to something else doesn't lead to changing AST tree.
+        // It seems that other parts of AST processing machinery don't take body into account.
+        // For example, Pretty#visitCase method takes into account only stats list and ignores body field at all.
+
+        // It seems expressions after right arrow are rewritten to yield statements:
+        // For example,
+        // case label -> expression;
+        // will be rewritten to
+        // case label -> yield expression;
+        @Override
+        public Void visitCase(CaseTree tree, Void unused) {
+            JCTree.JCCase jcCase = (JCTree.JCCase) tree;
+
+            for (StatementTree stat : jcCase.stats) {
+                stat.accept(this, unused);
+            }
+
+            return null;
+        }
+
+        @Override
+        public Void visitExpressionStatement(ExpressionStatementTree tree, Void unused) {
+            super.visitExpressionStatement(tree, unused);
+
+            JCTree.JCExpressionStatement jcExprStat = (JCTree.JCExpressionStatement) tree;
+            interpolateIfNeeded(jcExprStat.expr, ie -> jcExprStat.expr = ie);
 
             return null;
         }
