@@ -66,7 +66,6 @@ To interpolate strings in maven-based projects you have to configure compiler to
 compilation. Add the following configuration to your `pom.xml` file and that's it.
 
 ```xml
-
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-compiler-plugin</artifactId>
@@ -85,6 +84,37 @@ compilation. Add the following configuration to your `pom.xml` file and that's i
     </configuration>
 </plugin>
 ```
+
+Compiler plugin uses internal jdk api to interpolate string literals and
+this api is [strongly encapsulated by default](https://openjdk.org/jeps/403) in jdk 17.
+To relax it at compile time configuration should be changed accordingly.
+
+```xml
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <configuration>
+    <fork>true</fork>
+    <compilerArgs>
+      <!-- enable interp4j compiler plugin -->
+      <arg>-Xplugin:interp4j</arg>
+      <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
+      <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
+      <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
+      <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</arg>
+    </compilerArgs>
+    <annotationProcessorPaths>
+      <path>
+        <groupId>dev.khbd.interp4j</groupId>
+        <artifactId>interp4j-processor</artifactId>
+        <version>LATEST</version>
+      </path>
+    </annotationProcessorPaths>
+  </configuration>
+</plugin>
+```
+
+Additional exports are needed only for compiling process, resulted code will not be dependent on internal jdk api.
 
 ## Gradle support
 
