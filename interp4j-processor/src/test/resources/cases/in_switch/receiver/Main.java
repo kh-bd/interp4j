@@ -1,4 +1,4 @@
-package cases.in_switch;
+package cases.in_switch.receiver;
 
 import static dev.khbd.interp4j.core.Interpolations.s;
 
@@ -24,25 +24,6 @@ public class Main {
 
     private static String chooseGreet(boolean isBos) {
         return isBos ? "Hello" : "Hi";
-    }
-
-    public static String greetExpression(String name) {
-        String result = switch (name) {
-            case "Alex" -> s("Hello, $name");
-            default     -> "Who are you?";
-        };
-        return result;
-    }
-
-    public static String greetYield(String name) {
-        String result = switch (name) {
-            case "Alex" -> {
-                System.out.println("Some statements...");
-                yield s("Hello, $name");
-            }
-            default     -> "Who are you?";
-        };
-        return result;
     }
 
 }

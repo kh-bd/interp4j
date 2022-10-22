@@ -1,10 +1,10 @@
 package dev.khbd.interp4j.javac.plugin.s;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Method;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sergei_Khadanovich
@@ -13,12 +13,12 @@ public class InterpolateSwitchTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_sInReceiverExpression_interpolate() throws Exception {
-        CompilationResult result = compiler.compile("/cases/in_switch/Main.java");
+        CompilationResult result = compiler.compile("/cases/in_switch/receiver/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
         ClassLoader classLoader = result.getClassLoader();
-        Class<?> clazz = classLoader.loadClass("cases.in_switch.Main");
+        Class<?> clazz = classLoader.loadClass("cases.in_switch.receiver.Main");
         Method method = clazz.getMethod("greet", boolean.class, String.class);
 
         String greet = (String) method.invoke(null, true, "Alex");
@@ -29,13 +29,13 @@ public class InterpolateSwitchTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_sInCaseExpression_interpolate() throws Exception {
-        CompilationResult result = compiler.compile("/cases/in_switch/Main.java");
+        CompilationResult result = compiler.compile("/cases/in_switch/expression/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
         ClassLoader classLoader = result.getClassLoader();
-        Class<?> clazz = classLoader.loadClass("cases.in_switch.Main");
-        Method method = clazz.getMethod("greetExpression", String.class);
+        Class<?> clazz = classLoader.loadClass("cases.in_switch.expression.Main");
+        Method method = clazz.getMethod("greet", String.class);
 
         String greet = (String) method.invoke(null, "Alex");
         assertThat(greet).isEqualTo("Hello, Alex");
@@ -45,13 +45,13 @@ public class InterpolateSwitchTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_sInCaseStatementWithYield_interpolate() throws Exception {
-        CompilationResult result = compiler.compile("/cases/in_switch/Main.java");
+        CompilationResult result = compiler.compile("/cases/in_switch/statement/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
         ClassLoader classLoader = result.getClassLoader();
-        Class<?> clazz = classLoader.loadClass("cases.in_switch.Main");
-        Method method = clazz.getMethod("greetYield", String.class);
+        Class<?> clazz = classLoader.loadClass("cases.in_switch.statement.Main");
+        Method method = clazz.getMethod("greet", String.class);
 
         String greet = (String) method.invoke(null, "Alex");
         assertThat(greet).isEqualTo("Hello, Alex");
