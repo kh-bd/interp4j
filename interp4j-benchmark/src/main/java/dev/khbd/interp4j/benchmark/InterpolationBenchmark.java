@@ -18,7 +18,7 @@ import static dev.khbd.interp4j.core.Interpolations.s;
 /**
  * @author Sergei_Khadanovich
  */
-@Fork(value = 1, warmups = 5)
+@Fork(value = 5, warmups = 10)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class InterpolationBenchmark {
