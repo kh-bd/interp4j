@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Value;
+import org.testng.annotations.DataProvider;
 
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
@@ -30,6 +31,14 @@ import java.util.stream.Stream;
  * @author Sergei_Khadanovich
  */
 public abstract class AbstractPluginTest {
+
+    @DataProvider(name = "optionsDataProvider")
+    public static Object[][] optionsDataProvider() {
+        return new Object[][]{
+                {new PluginOptions(true, false)},
+                {new PluginOptions(true, true)}
+        };
+    }
 
     protected final TestCompiler compiler = new TestCompiler();
 
@@ -127,7 +136,7 @@ public abstract class AbstractPluginTest {
 
     protected static class TestCompiler {
 
-        CompilationResult compile(String... paths) {
+        CompilationResult compile(PluginOptions options, String... paths) {
             TestDiagnosticListener diagnostic = new TestDiagnosticListener();
 
             JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -142,7 +151,7 @@ public abstract class AbstractPluginTest {
             List<String> arguments = new ArrayList<>();
             arguments.add("-classpath");
             arguments.add(System.getProperty("java.class.path"));
-            arguments.add("-Xplugin:interp4j prettyPrint.after.interpolation=true");
+            arguments.add(options.toString());
             arguments.add("--release=17");
             arguments.add("--enable-preview");
 
@@ -158,6 +167,15 @@ public abstract class AbstractPluginTest {
         @SneakyThrows
         private URI toUri(String path) {
             return this.getClass().getResource(path).toURI();
+        }
+    }
+
+    protected record PluginOptions(boolean prettyPrint, boolean inlined) {
+
+        @Override
+        public String toString() {
+            return "-Xplugin:interp4j prettyPrint.after.interpolation=" + prettyPrint +
+                    " interpolation.inlined=" + inlined;
         }
     }
 

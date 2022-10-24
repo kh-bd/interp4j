@@ -11,9 +11,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class InterpolateSwitchTest extends AbstractPluginTest {
 
-    @Test
-    public void interpolate_sInReceiverExpression_interpolate() throws Exception {
-        CompilationResult result = compiler.compile("/cases/in_switch/receiver/Main.java");
+    @Test(dataProvider = "optionsDataProvider")
+    public void interpolate_sInReceiverExpression_interpolate(PluginOptions options) throws Exception {
+        CompilationResult result = compiler.compile(options, "/cases/in_switch/receiver/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
@@ -27,9 +27,9 @@ public class InterpolateSwitchTest extends AbstractPluginTest {
         assertThat(greet).isEqualTo("Alex was greeted incorrectly");
     }
 
-    @Test
-    public void interpolate_sInCaseExpression_interpolate() throws Exception {
-        CompilationResult result = compiler.compile("/cases/in_switch/expression/Main.java");
+    @Test(dataProvider = "optionsDataProvider")
+    public void interpolate_sInCaseExpression_interpolate(PluginOptions options) throws Exception {
+        CompilationResult result = compiler.compile(options, "/cases/in_switch/expression/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
@@ -43,9 +43,9 @@ public class InterpolateSwitchTest extends AbstractPluginTest {
         assertThat(greet).isEqualTo("Who are you?");
     }
 
-    @Test
-    public void interpolate_sInCaseStatementWithYield_interpolate() throws Exception {
-        CompilationResult result = compiler.compile("/cases/in_switch/statement/Main.java");
+    @Test(dataProvider = "optionsDataProvider")
+    public void interpolate_sInCaseStatementWithYield_interpolate(PluginOptions options) throws Exception {
+        CompilationResult result = compiler.compile(options, "/cases/in_switch/statement/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
@@ -59,9 +59,9 @@ public class InterpolateSwitchTest extends AbstractPluginTest {
         assertThat(greet).isEqualTo("Who are you?");
     }
 
-    @Test
-    public void interpolate_sInCaseGuard_interpolate() throws Exception {
-        CompilationResult result = compiler.compile("/cases/in_switch/guard/Main.java");
+    @Test(dataProvider = "optionsDataProvider")
+    public void interpolate_sInCaseGuard_interpolate(PluginOptions options) throws Exception {
+        CompilationResult result = compiler.compile(options, "/cases/in_switch/guard/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 

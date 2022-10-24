@@ -11,9 +11,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class InterpolateConstructorTest extends AbstractPluginTest {
 
-    @Test
-    public void interpolate_inConstructorArguments_interpolate() throws Exception {
-        CompilationResult result = compiler.compile("/cases/constructor_call/Main.java");
+    @Test(dataProvider = "optionsDataProvider")
+    public void interpolate_inConstructorArguments_interpolate(PluginOptions options) throws Exception {
+        CompilationResult result = compiler.compile(options, "/cases/constructor_call/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
