@@ -172,11 +172,10 @@ All benchmarks were run on:
 - Processor: 2.2 GHz Quad-Core Intel Core i7
 - Memory: 16 GB 1600MHz DDR3
 
-See latest benchmark result [here](https://jmh.morethan.io/?source=https://raw.githubusercontent.com/kh-bd/interp4j/main/readme/beanchmark/jmh_v020_j17_result.json).
+See latest benchmark result [here](https://jmh.morethan.io/?source=https://raw.githubusercontent.com/kh-bd/interp4j/main/readme/beanchmark/jmh_v020_j17_inlined_result.json).
 
-As you can see, compile time interpolation is more than 10 times
-faster than `String.format`. At the same time, it is about 3 times
-slower than manual string concatenation. Benchmarks source code can
+As you can see, compile time interpolation is about 20 times faster then `String.format`
+and at the same time as fast as manual string concatenation. Benchmarks source code can
 be found in `interp4j-benchmark` module.
 
 ### Run benchmarks on your own machine
