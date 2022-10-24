@@ -2,7 +2,7 @@
 
 [![Interp4j Maven](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j)
 
-[![CI latest](https://github.com/kh-bd/interp4j/main/actions/workflows/main-tests.yml/badge.svg)](https://github.com/kh-bd/interp4j/actions/workflows/main-tests.yml)
+[![CI latest](https://github.com/kh-bd/interp4j/actions/workflows/main-tests.yml/badge.svg)](https://github.com/kh-bd/interp4j/actions/workflows/main-tests.yml)
 [![CI backport jdk11](https://github.com/kh-bd/interp4j/actions/workflows/backport-jdk11-tests.yml/badge.svg)](https://github.com/kh-bd/interp4j/actions/workflows/backport-jdk11-tests.yml)
 
 ## Why do we need it?
