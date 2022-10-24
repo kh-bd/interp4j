@@ -20,8 +20,12 @@ public class Options {
     private static final Key<Boolean> PRETTY_PRINTING_ENABLED =
             new Key<>("prettyPrint.after.interpolation", Boolean::parseBoolean, () -> false);
 
+    private static final Key<Boolean> INLINED_INTERPOLATION_ENABLED =
+            new Key<>("interpolation.inlined", Boolean::parseBoolean, () -> false);
+
     private static final List<Key<?>> KEYS = List.of(
-            PRETTY_PRINTING_ENABLED
+            PRETTY_PRINTING_ENABLED,
+            INLINED_INTERPOLATION_ENABLED
     );
 
     @EqualsAndHashCode(of = "name")
@@ -75,6 +79,10 @@ public class Options {
 
     public boolean prettyPrintAfterInterpolationEnabled() {
         return getKeyValue(PRETTY_PRINTING_ENABLED);
+    }
+
+    public boolean inlinedInterpolationEnabled() {
+        return getKeyValue(INLINED_INTERPOLATION_ENABLED);
     }
 
     @SuppressWarnings("unchecked")

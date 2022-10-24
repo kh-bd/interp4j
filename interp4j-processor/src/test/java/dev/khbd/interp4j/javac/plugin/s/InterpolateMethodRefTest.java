@@ -11,9 +11,9 @@ import java.lang.reflect.Method;
  */
 public class InterpolateMethodRefTest extends AbstractPluginTest {
 
-    @Test
-    public void interpolate_sInMethodRef_interpolate() throws Exception {
-        CompilationResult result = compiler.compile("/cases/member_ref/Main.java");
+    @Test(dataProvider = "optionsDataProvider")
+    public void interpolate_sInMethodRef_interpolate(PluginOptions options) throws Exception {
+        CompilationResult result = compiler.compile(options, "/cases/member_ref/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 

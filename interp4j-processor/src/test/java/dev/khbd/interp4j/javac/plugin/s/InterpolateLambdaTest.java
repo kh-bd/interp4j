@@ -11,9 +11,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class InterpolateLambdaTest extends AbstractPluginTest {
 
-    @Test
-    public void interpolate_interpolationAtReturnStatementPositionInLambda_interpolate() throws Exception {
-        CompilationResult result = compiler.compile("/cases/lambda/statement/Main.java");
+    @Test(dataProvider = "optionsDataProvider")
+    public void interpolate_interpolationAtReturnStatementPositionInLambda_interpolate(PluginOptions options) throws Exception {
+        CompilationResult result = compiler.compile(options, "/cases/lambda/statement/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
@@ -25,9 +25,9 @@ public class InterpolateLambdaTest extends AbstractPluginTest {
         assertThat(greet).isEqualTo("Hello, Alex");
     }
 
-    @Test
-    public void interpolate_interpolationAtReturnExpressionPositionInLambda_interpolate() throws Exception {
-        CompilationResult result = compiler.compile("/cases/lambda/expression/Main.java");
+    @Test(dataProvider = "optionsDataProvider")
+    public void interpolate_interpolationAtReturnExpressionPositionInLambda_interpolate(PluginOptions options) throws Exception {
+        CompilationResult result = compiler.compile(options, "/cases/lambda/expression/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 

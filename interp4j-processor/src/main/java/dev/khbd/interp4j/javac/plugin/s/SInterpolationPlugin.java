@@ -23,7 +23,6 @@ import com.sun.source.util.TaskEvent;
 import com.sun.source.util.TaskListener;
 import com.sun.source.util.TreeScanner;
 import com.sun.tools.javac.api.BasicJavacTask;
-import com.sun.tools.javac.parser.JavacParser;
 import com.sun.tools.javac.parser.ParserFactory;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.Pretty;
@@ -33,14 +32,9 @@ import com.sun.tools.javac.util.JCDiagnostic;
 import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.Log;
 import com.sun.tools.javac.util.Names;
-import dev.khbd.interp4j.javac.plugin.s.expr.ExpressionPart;
 import dev.khbd.interp4j.javac.plugin.s.expr.SExpression;
 import dev.khbd.interp4j.javac.plugin.s.expr.SExpressionParser;
-import dev.khbd.interp4j.javac.plugin.s.expr.SExpressionPart;
-import dev.khbd.interp4j.javac.plugin.s.expr.SExpressionVisitor;
-import dev.khbd.interp4j.javac.plugin.s.expr.TextPart;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -72,7 +66,7 @@ public class SInterpolationPlugin implements Plugin {
 
                 BundleInitializer.initPluginBundle(context);
 
-                SInterpolationTreeScanner interpolator = new SInterpolationTreeScanner(context);
+                SInterpolationTreeScanner interpolator = new SInterpolationTreeScanner(context, options);
                 unit.accept(interpolator, null);
 
                 if (interpolator.interpolationTakePlace && options.prettyPrintAfterInterpolationEnabled()) {
@@ -99,21 +93,22 @@ public class SInterpolationPlugin implements Plugin {
     private static class SInterpolationTreeScanner extends TreeScanner<Void, Void> {
 
         final SImports imports;
-
-        final TreeMaker factory;
-        final Names symbolsTable;
-        final ParserFactory parserFactory;
+        final InterpolationStrategy interpolationStrategy;
+        final TreeMaker treeMaker;
         final Log logger;
 
         @Getter
         boolean interpolationTakePlace = false;
 
-        private SInterpolationTreeScanner(Context context) {
+        private SInterpolationTreeScanner(Context context, Options options) {
             this.imports = new SImports();
-            this.factory = TreeMaker.instance(context);
-            this.symbolsTable = Names.instance(context);
-            this.parserFactory = ParserFactory.instance(context);
+            this.treeMaker = TreeMaker.instance(context);
             this.logger = Log.instance(context);
+            if (options.inlinedInterpolationEnabled()) {
+                this.interpolationStrategy = new InlinedInterpolationStrategy(treeMaker, ParserFactory.instance(context));
+            } else {
+                this.interpolationStrategy = new SInterpolatorInvocationInterpolationStrategy(treeMaker, ParserFactory.instance(context), Names.instance(context));
+            }
         }
 
         @Override
@@ -322,70 +317,12 @@ public class SInterpolationPlugin implements Plugin {
 
         private JCTree.JCExpression interpolateWithoutExpressions(String literal,
                                                                   int basePosition) {
-            return factory.at(basePosition).Literal(literal);
+            return treeMaker.at(basePosition).Literal(literal);
         }
 
         private JCTree.JCExpression interpolateWithExpressions(SExpression sExpr, int basePosition) {
-            ArgumentsCollector argumentsCollector = new ArgumentsCollector(basePosition);
-            sExpr.visit(argumentsCollector);
-
-            JCTree.JCNewClass jcNew = factory
-                    .NewClass(null, List.nil(),
-                            select("dev.khbd.interp4j.core.internal.s.SInterpolator"),
-                            argumentsCollector.constructorArguments,
-                            null
-                    );
-            return factory.at(basePosition).Apply(List.nil(),
-                    factory.Select(jcNew, symbolsTable.fromString("interpolate")),
-                    argumentsCollector.methodArguments);
+            return interpolationStrategy.interpolate(sExpr, basePosition);
         }
 
-        private JCTree.JCExpression select(String path) {
-            String[] parts = path.split("\\.");
-            JCTree.JCExpression result = factory.Ident(symbolsTable.fromString(parts[0]));
-            for (int i = 1; i < parts.length; i++) {
-                result = factory.Select(result, symbolsTable.fromString(parts[i]));
-            }
-            return result;
-        }
-
-        @RequiredArgsConstructor
-        private class ArgumentsCollector implements SExpressionVisitor {
-
-            private final int basePosition;
-
-            private List<JCTree.JCExpression> constructorArguments = List.nil();
-            private List<JCTree.JCExpression> methodArguments = List.nil();
-
-            private SExpressionPart lastPart;
-
-            @Override
-            public void visitExpressionPart(ExpressionPart expressionPart) {
-                if (Objects.isNull(lastPart) || lastPart.isExpression()) {
-                    constructorArguments = constructorArguments.append(factory.Literal(""));
-                }
-                lastPart = expressionPart;
-
-                JavacParser parser = parserFactory.newParser(
-                        expressionPart.getExpression(), false,
-                        false, false);
-                JCTree.JCExpression expr = parser.parseExpression();
-                expr.pos = basePosition;
-                methodArguments = methodArguments.append(expr);
-            }
-
-            @Override
-            public void visitTextPart(TextPart textPart) {
-                lastPart = textPart;
-                constructorArguments = constructorArguments.append(factory.Literal(textPart.getText()));
-            }
-
-            @Override
-            public void finish() {
-                if (lastPart.isExpression()) {
-                    constructorArguments = constructorArguments.append(factory.Literal(""));
-                }
-            }
-        }
     }
 }

@@ -11,9 +11,9 @@ import java.lang.reflect.Method;
  */
 public class InterpolateMethodInvocationTest extends AbstractPluginTest {
 
-    @Test
-    public void interpolate_sAtMethodArgumentPosition_interpolate() throws Exception {
-        CompilationResult result = compiler.compile("/cases/method_invocation/at_arguments_position/Main.java");
+    @Test(dataProvider = "optionsDataProvider")
+    public void interpolate_sAtMethodArgumentPosition_interpolate(PluginOptions options) throws Exception {
+        CompilationResult result = compiler.compile(options, "/cases/method_invocation/at_arguments_position/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
@@ -25,9 +25,9 @@ public class InterpolateMethodInvocationTest extends AbstractPluginTest {
         assertThat(greet).isEqualTo("It's Alex. Alex is 20");
     }
 
-    @Test
-    public void interpolate_sAtReceiverPosition_interpolate() throws Exception {
-        CompilationResult result = compiler.compile("/cases/method_invocation/at_receiver_position/Main.java");
+    @Test(dataProvider = "optionsDataProvider")
+    public void interpolate_sAtReceiverPosition_interpolate(PluginOptions options) throws Exception {
+        CompilationResult result = compiler.compile(options, "/cases/method_invocation/at_receiver_position/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
