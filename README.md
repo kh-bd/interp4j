@@ -125,13 +125,32 @@ in progress
 To support `interp4j` by intellij, install
 [interp4j-intellij-plugin](https://github.com/kh-bd/interp4j-intellij-plugin).
 
+## Inlined interpolation (experimental)
+
+Performance of resulted code can be significantly improved by setting plugin options `interpolation.inlined` to `true`.
+For backward compatability this option is disabled by default.
+For example, in maven-based projects you can enable it like this:
+
+```xml
+<plugin>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <configuration>
+    <compilerArgs>
+      <arg>-Xplugin:interp4j interpolation.inlined=true</arg>
+    </compilerArgs>
+    ...
+  </configuration>
+</plugin>
+```
+
+See comparison between inlined and default interpolations' performance [here](https://jmh.morethan.io/?sources=https://raw.githubusercontent.com/kh-bd/interp4j/main/readme/beanchmark/jmh_v020_j17_result.json,https://raw.githubusercontent.com/kh-bd/interp4j/main/readme/beanchmark/jmh_v020_j17_inlined_result.json).
+
 ## How to look at modified source code?
 
 To look at modified source code after interpolation, set flag `prettyPrint.after.interpolation` to `true`. For example,
 for maven-based projects it can look like that:
 
 ```xml
-
 <plugin>
     <artifactId>maven-compiler-plugin</artifactId>
     <configuration>
@@ -153,11 +172,7 @@ All benchmarks were run on:
 - Processor: 2.2 GHz Quad-Core Intel Core i7
 - Memory: 16 GB 1600MHz DDR3
 
-![Benchmark results](readme/imgs/bench_result.jpg)
-
 See latest benchmark result [here](https://jmh.morethan.io/?source=https://raw.githubusercontent.com/kh-bd/interp4j/main/readme/beanchmark/jmh_v020_j17_result.json).
-
-Jdk11 and Jdk17 benchmark comparison [here](https://jmh.morethan.io/?sources=https://raw.githubusercontent.com/kh-bd/interp4j/main/readme/beanchmark/jmh_v018_j11_result.json,https://raw.githubusercontent.com/kh-bd/interp4j/main/readme/beanchmark/jmh_v020_j17_result.json).
 
 As you can see, compile time interpolation is more than 10 times
 faster than `String.format`. At the same time, it is about 3 times
