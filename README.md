@@ -1,9 +1,6 @@
 # Interp4j is a string interpolation library for Java
 
-[![Interp4j Maven](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j)
-
 [![CI latest](https://github.com/kh-bd/interp4j/actions/workflows/main-tests.yml/badge.svg)](https://github.com/kh-bd/interp4j/actions/workflows/main-tests.yml)
-[![CI backport jdk11](https://github.com/kh-bd/interp4j/actions/workflows/backport-jdk11-tests.yml/badge.svg)](https://github.com/kh-bd/interp4j/actions/workflows/backport-jdk11-tests.yml)
 
 ## Why do we need it?
 
@@ -65,12 +62,20 @@ Now, you can use `Interpolations.s` function in your code. This function is entr
 
 Second, you need to configure your build tool to run interpolation process before source files compilation.
 
+## Versions
+
+| Java<br/> version | Interp4j version<br/> prefix | Latest release                                                                                                                                                                         |
+|-------------------|------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 11                | 0.1.*                        | [![Maven jdk11](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen&versionPrefix=0.1)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j) |
+| 17                | 0.2.*                        | [![Maven jdk17](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen&versionPrefix=0.2)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j) |
+
 ## Maven support
 
 To interpolate strings in maven-based projects you have to configure compiler to enable interp4j compiler plugin during
 compilation. Add the following configuration to your `pom.xml` file and that's it.
 
 ```xml
+
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-compiler-plugin</artifactId>
@@ -95,27 +100,28 @@ this api is [strongly encapsulated by default](https://openjdk.org/jeps/403) in 
 To relax it at compile time configuration should be changed accordingly.
 
 ```xml
+
 <plugin>
-  <groupId>org.apache.maven.plugins</groupId>
-  <artifactId>maven-compiler-plugin</artifactId>
-  <configuration>
-    <fork>true</fork>
-    <compilerArgs>
-      <!-- enable interp4j compiler plugin -->
-      <arg>-Xplugin:interp4j</arg>
-      <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
-      <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
-      <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
-      <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</arg>
-    </compilerArgs>
-    <annotationProcessorPaths>
-      <path>
-        <groupId>dev.khbd.interp4j</groupId>
-        <artifactId>interp4j-processor</artifactId>
-        <version>LATEST</version>
-      </path>
-    </annotationProcessorPaths>
-  </configuration>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <configuration>
+        <fork>true</fork>
+        <compilerArgs>
+            <!-- enable interp4j compiler plugin -->
+            <arg>-Xplugin:interp4j</arg>
+            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
+            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
+            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
+            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</arg>
+        </compilerArgs>
+        <annotationProcessorPaths>
+            <path>
+                <groupId>dev.khbd.interp4j</groupId>
+                <artifactId>interp4j-processor</artifactId>
+                <version>LATEST</version>
+            </path>
+        </annotationProcessorPaths>
+    </configuration>
 </plugin>
 ```
 
@@ -137,18 +143,21 @@ For backward compatability this option is disabled by default.
 For example, in maven-based projects you can enable it like this:
 
 ```xml
+
 <plugin>
-  <artifactId>maven-compiler-plugin</artifactId>
-  <configuration>
-    <compilerArgs>
-      <arg>-Xplugin:interp4j interpolation.inlined=true</arg>
-    </compilerArgs>
-    ...
-  </configuration>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <configuration>
+        <compilerArgs>
+            <arg>-Xplugin:interp4j interpolation.inlined=true</arg>
+        </compilerArgs>
+        ...
+    </configuration>
 </plugin>
 ```
 
-See comparison between inlined and default interpolations' performance [here](https://jmh.morethan.io/?sources=https://raw.githubusercontent.com/kh-bd/interp4j/main/readme/beanchmark/jmh_v020_j17_result.json,https://raw.githubusercontent.com/kh-bd/interp4j/main/readme/beanchmark/jmh_v020_j17_inlined_result.json).
+See comparison between inlined and default interpolations'
+performance [here](https://jmh.morethan.io/?sources=https://raw.githubusercontent.com/kh-bd/interp4j/main/readme/beanchmark/jmh_v020_j17_result.json,https://raw.githubusercontent.com/kh-bd/interp4j/main/readme/beanchmark/jmh_v020_j17_inlined_result.json)
+.
 
 ## How to look at modified source code?
 
@@ -156,6 +165,7 @@ To look at modified source code after interpolation, set flag `prettyPrint.after
 for maven-based projects it can look like that:
 
 ```xml
+
 <plugin>
     <artifactId>maven-compiler-plugin</artifactId>
     <configuration>
@@ -177,7 +187,9 @@ All benchmarks were run on:
 - Processor: 2.2 GHz Quad-Core Intel Core i7
 - Memory: 16 GB 1600MHz DDR3
 
-See latest benchmark result [here](https://jmh.morethan.io/?source=https://raw.githubusercontent.com/kh-bd/interp4j/main/readme/beanchmark/jmh_v020_j17_inlined_result.json).
+See latest benchmark
+result [here](https://jmh.morethan.io/?source=https://raw.githubusercontent.com/kh-bd/interp4j/main/readme/beanchmark/jmh_v020_j17_inlined_result.json)
+.
 
 As you can see, compile time interpolation is about 20 times faster then `String.format`
 and at the same time as fast as manual string concatenation. Benchmarks source code can
@@ -189,7 +201,8 @@ To run benchmarks do several steps:
 
 - pull project to your machine
 - run from root directory `mvn package -Pbenchmark`
-- go to `interp4j-benchmark/target` directory. `interp4j-benchmark-${version}-jar-with-dependencies.jar` should be generated
+- go to `interp4j-benchmark/target` directory. `interp4j-benchmark-${version}-jar-with-dependencies.jar` should be
+  generated
 - run
   command `java -cp ./interp4j-benchmark-${version}-jar-with-dependencies.jar dev.khbd.interp4j.benchmark.BenchmarkRunner -rf json`
 - `jmh-result.json` report should be generated
