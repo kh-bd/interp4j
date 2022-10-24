@@ -66,7 +66,7 @@ public class SInterpolationPlugin implements Plugin {
 
                 BundleInitializer.initPluginBundle(context);
 
-                SInterpolationTreeScanner interpolator = new SInterpolationTreeScanner(context);
+                SInterpolationTreeScanner interpolator = new SInterpolationTreeScanner(context, options);
                 unit.accept(interpolator, null);
 
                 if (interpolator.interpolationTakePlace && options.prettyPrintAfterInterpolationEnabled()) {
@@ -100,11 +100,15 @@ public class SInterpolationPlugin implements Plugin {
         @Getter
         boolean interpolationTakePlace = false;
 
-        private SInterpolationTreeScanner(Context context) {
+        private SInterpolationTreeScanner(Context context, Options options) {
             this.imports = new SImports();
             this.treeMaker = TreeMaker.instance(context);
             this.logger = Log.instance(context);
-            this.interpolationStrategy = new SInterpolatorInvocationInterpolationStrategy(treeMaker, ParserFactory.instance(context), Names.instance(context));
+            if (options.inlinedInterpolationEnabled()) {
+                this.interpolationStrategy = new InlinedInterpolationStrategy(treeMaker, ParserFactory.instance(context));
+            } else {
+                this.interpolationStrategy = new SInterpolatorInvocationInterpolationStrategy(treeMaker, ParserFactory.instance(context), Names.instance(context));
+            }
         }
 
         @Override
