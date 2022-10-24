@@ -143,6 +143,8 @@ public abstract class AbstractPluginTest {
             arguments.add("-classpath");
             arguments.add(System.getProperty("java.class.path"));
             arguments.add("-Xplugin:interp4j prettyPrint.after.interpolation=true");
+            arguments.add("--release=17");
+            arguments.add("--enable-preview");
 
             JavaCompiler.CompilationTask task
                     = compiler.getTask(new StringWriter(), fileManager, diagnostic, arguments, null,

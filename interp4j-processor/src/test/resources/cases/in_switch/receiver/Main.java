@@ -1,4 +1,4 @@
-package cases.in_switch;
+package cases.in_switch.receiver;
 
 import static dev.khbd.interp4j.core.Interpolations.s;
 
@@ -25,4 +25,5 @@ public class Main {
     private static String chooseGreet(boolean isBos) {
         return isBos ? "Hello" : "Hi";
     }
+
 }
