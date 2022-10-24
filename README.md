@@ -155,7 +155,9 @@ All benchmarks were run on:
 
 ![Benchmark results](readme/imgs/bench_result.jpg)
 
-See latest benchmark result [here](https://jmh.morethan.io/?source=https://raw.githubusercontent.com/kh-bd/interp4j/main/interp4j-benchmark/src/main/resources/benchmark/result/jmh_v_020_result.json).
+See latest benchmark result [here](https://jmh.morethan.io/?source=https://raw.githubusercontent.com/kh-bd/interp4j/main/readme/beanchmark/jmh_v020_j17_result.json).
+
+Jdk11 and Jdk17 benchmark comparison [here](https://jmh.morethan.io/?sources=https://raw.githubusercontent.com/kh-bd/interp4j/main/readme/beanchmark/jmh_v018_j11_result.json,https://raw.githubusercontent.com/kh-bd/interp4j/main/readme/beanchmark/jmh_v020_j17_result.json).
 
 As you can see, compile time interpolation is more than 10 times
 faster than `String.format`. At the same time, it is about 3 times
