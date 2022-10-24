@@ -11,9 +11,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class InterpolateConcatenatedTest extends AbstractPluginTest {
 
-    @Test
-    public void interpolate_sMethodInvokedWithConcatenatedLiterals_interpolate() throws Exception {
-        CompilationResult result = compiler.compile("/cases/literals_concatenation/Main.java");
+    @Test(dataProvider = "optionsDataProvider")
+    public void interpolate_sMethodInvokedWithConcatenatedLiterals_interpolate(PluginOptions options) throws Exception {
+        CompilationResult result = compiler.compile(options, "/cases/literals_concatenation/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 

@@ -11,9 +11,9 @@ import java.lang.reflect.Method;
  */
 public class InterpolateSwitchTest extends AbstractPluginTest {
 
-    @Test
-    public void interpolate_sInExpression_interpolate() throws Exception {
-        CompilationResult result = compiler.compile("/cases/in_switch/Main.java");
+    @Test(dataProvider = "optionsDataProvider")
+    public void interpolate_sInReceiverExpression_interpolate(PluginOptions options) throws Exception {
+        CompilationResult result = compiler.compile(options, "/cases/in_switch/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 

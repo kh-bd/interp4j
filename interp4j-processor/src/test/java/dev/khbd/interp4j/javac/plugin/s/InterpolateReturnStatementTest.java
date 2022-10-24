@@ -11,9 +11,9 @@ import java.lang.reflect.Method;
  */
 public class InterpolateReturnStatementTest extends AbstractPluginTest {
 
-    @Test
-    public void interpolate_sInReturnStatement_interpolate() throws Exception {
-        CompilationResult result = compiler.compile("/cases/return_statement/Main.java");
+    @Test(dataProvider = "optionsDataProvider")
+    public void interpolate_sInReturnStatement_interpolate(PluginOptions options) throws Exception {
+        CompilationResult result = compiler.compile(options, "/cases/return_statement/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
