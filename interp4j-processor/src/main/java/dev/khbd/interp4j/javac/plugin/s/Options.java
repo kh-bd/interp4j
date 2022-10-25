@@ -21,7 +21,7 @@ public class Options {
             new Key<>("prettyPrint.after.interpolation", Boolean::parseBoolean, () -> false);
 
     private static final Key<Boolean> INLINED_INTERPOLATION_ENABLED =
-            new Key<>("interpolation.inlined", Boolean::parseBoolean, () -> false);
+            new Key<>("interpolation.inlined", Boolean::parseBoolean, () -> true);
 
     private static final List<Key<?>> KEYS = List.of(
             PRETTY_PRINTING_ENABLED,
