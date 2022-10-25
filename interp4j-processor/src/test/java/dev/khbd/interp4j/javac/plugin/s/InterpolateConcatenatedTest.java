@@ -13,7 +13,24 @@ public class InterpolateConcatenatedTest extends AbstractPluginTest {
 
     @Test(dataProvider = "optionsDataProvider")
     public void interpolate_sMethodInvokedWithConcatenatedLiterals_interpolate(PluginOptions options) throws Exception {
-        CompilationResult result = compiler.compile(options, "/cases/literals_concatenation/Main.java");
+        String source = """
+                package cases.literals_concatenation;
+                               
+                import static dev.khbd.interp4j.core.Interpolations.s;
+                                
+                public class Main {
+                                
+                    public static String greet() {
+                        String name = "Alex";
+                        return s("Hello, "
+                                + "$name. "
+                                + "How are you?"
+                        );
+                    }
+                }
+                """;
+
+        CompilationResult result = compiler.compile(options, "cases/literals_concatenation/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 

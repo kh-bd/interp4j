@@ -55,6 +55,21 @@ public abstract class AbstractPluginTest {
         }
     }
 
+    private static class InMemoryTestSourceFile extends SimpleJavaFileObject {
+
+        private final String source;
+
+        InMemoryTestSourceFile(String path, String source) {
+            super(URI.create("string://" + path), Kind.SOURCE);
+            this.source = source;
+        }
+
+        @Override
+        public CharSequence getCharContent(boolean ignoreEncodingErrors) {
+            return source;
+        }
+    }
+
     private static class InMemoryClassFile extends SimpleJavaFileObject {
 
         @Getter
@@ -136,17 +151,26 @@ public abstract class AbstractPluginTest {
 
     protected static class TestCompiler {
 
+        CompilationResult compile(PluginOptions options, String path, String source) {
+            InMemoryTestSourceFile toCompile = new InMemoryTestSourceFile(path, source);
+            return compile(options, List.of(toCompile));
+        }
+
         CompilationResult compile(PluginOptions options, String... paths) {
+            List<TestSourceFile> toCompile = Stream.of(paths)
+                    .map(this::toUri)
+                    .map(TestSourceFile::new)
+                    .collect(Collectors.toList());
+
+            return compile(options, toCompile);
+        }
+
+        CompilationResult compile(PluginOptions options, List<? extends JavaFileObject> toCompile) {
             TestDiagnosticListener diagnostic = new TestDiagnosticListener();
 
             JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
             TestFileManager fileManager = new TestFileManager(
                     compiler.getStandardFileManager(diagnostic, null, null));
-
-            List<TestSourceFile> toCompile = Stream.of(paths)
-                    .map(this::toUri)
-                    .map(TestSourceFile::new)
-                    .collect(Collectors.toList());
 
             List<String> arguments = new ArrayList<>();
             arguments.add("-classpath");

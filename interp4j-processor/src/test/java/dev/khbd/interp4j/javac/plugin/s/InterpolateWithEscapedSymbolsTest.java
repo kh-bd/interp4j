@@ -13,7 +13,21 @@ public class InterpolateWithEscapedSymbolsTest extends AbstractPluginTest {
 
     @Test(dataProvider = "optionsDataProvider")
     public void interpolate_stringLiteralWithEscapedSymbols_interpolate(PluginOptions options) throws Exception {
-        CompilationResult result = compiler.compile(options, "/cases/escaped_symbols/Main.java");
+        String source = """
+                package cases.escaped_symbols;
+                
+                import static dev.khbd.interp4j.core.Interpolations.s;
+                
+                public class Main {
+                
+                    public static String greet() {
+                        String name = "Alex";
+                        return s("Hello, \\"\\"$name\\"\\"");
+                    }
+                }
+                """;
+
+        CompilationResult result = compiler.compile(options, "cases/escaped_symbols/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 

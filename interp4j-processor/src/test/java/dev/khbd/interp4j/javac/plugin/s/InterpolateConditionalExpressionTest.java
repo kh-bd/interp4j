@@ -11,9 +11,23 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class InterpolateConditionalExpressionTest extends AbstractPluginTest {
 
+    private static final String SOURCE = """
+            package cases.conditional_expression;
+                       
+            import static dev.khbd.interp4j.core.Interpolations.s;
+                        
+            public class Main {
+                        
+                 public static String greet(boolean flag) {
+                      String name = "Alex";
+                      return flag ? s("Hello, ${name}") : s("Hi, ${name}");
+                 }
+            }
+            """;
+
     @Test(dataProvider = "optionsDataProvider")
     public void interpolate_sInTrueCondition_interpolate(PluginOptions options) throws Exception {
-        CompilationResult result = compiler.compile(options, "/cases/conditional_expression/Main.java");
+        CompilationResult result = compiler.compile(options, "cases/conditional_expression/Main.java", SOURCE);
 
         assertThat(result.isSuccess()).isTrue();
 
@@ -27,7 +41,7 @@ public class InterpolateConditionalExpressionTest extends AbstractPluginTest {
 
     @Test(dataProvider = "optionsDataProvider")
     public void interpolate_sInFalseCondition_interpolate(PluginOptions options) throws Exception {
-        CompilationResult result = compiler.compile(options, "/cases/conditional_expression/Main.java");
+        CompilationResult result = compiler.compile(options, "cases/conditional_expression/Main.java", SOURCE);
 
         assertThat(result.isSuccess()).isTrue();
 

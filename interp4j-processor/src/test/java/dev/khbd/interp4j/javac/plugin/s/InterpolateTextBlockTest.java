@@ -9,33 +9,36 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Sergei_Khadanovich
  */
-public class InterpolateReturnStatementTest extends AbstractPluginTest {
+public class InterpolateTextBlockTest extends AbstractPluginTest {
 
     @Test(dataProvider = "optionsDataProvider")
-    public void interpolate_sInReturnStatement_interpolate(PluginOptions options) throws Exception {
+    public void interpolate_localVariableWithTextBlock_interpolate(PluginOptions options) throws Exception {
         String source = """
-                package cases.return_statement;
-                               
+                package cases.text_block;
+                                
                 import static dev.khbd.interp4j.core.Interpolations.s;
                                 
                 public class Main {
                                 
                     public static String greet() {
                         String name = "Alex";
-                        return s("Hello, ${name}");
+                        String greet = s(\"""
+                            Hello, ${name}\""");
+                        return greet;
                     }
                 }
                 """;
 
-        CompilationResult result = compiler.compile(options, "cases/return_statement/Main.java", source);
+        CompilationResult result = compiler.compile(options, "cases/text_block/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 
         ClassLoader classLoader = result.getClassLoader();
-        Class<?> clazz = classLoader.loadClass("cases.return_statement.Main");
+        Class<?> clazz = classLoader.loadClass("cases.text_block.Main");
         Method method = clazz.getMethod("greet");
         String greet = (String) method.invoke(null);
 
         assertThat(greet).isEqualTo("Hello, Alex");
     }
+
 }

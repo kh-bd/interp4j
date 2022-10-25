@@ -13,7 +13,25 @@ public class InterpolateLambdaTest extends AbstractPluginTest {
 
     @Test(dataProvider = "optionsDataProvider")
     public void interpolate_interpolationAtReturnStatementPositionInLambda_interpolate(PluginOptions options) throws Exception {
-        CompilationResult result = compiler.compile(options, "/cases/lambda/statement/Main.java");
+        String source = """
+                package cases.lambda.statement;
+                                
+                import java.util.function.Function;
+                                
+                import static dev.khbd.interp4j.core.Interpolations.s;
+                                
+                public class Main {
+                                
+                    public static String greet() {
+                        Function<String, String> f = (name) -> {
+                            return s("Hello, $name");
+                        };
+                        return f.apply("Alex");
+                    }
+                }
+                """;
+
+        CompilationResult result = compiler.compile(options, "cases/lambda/statement/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 
@@ -27,7 +45,23 @@ public class InterpolateLambdaTest extends AbstractPluginTest {
 
     @Test(dataProvider = "optionsDataProvider")
     public void interpolate_interpolationAtReturnExpressionPositionInLambda_interpolate(PluginOptions options) throws Exception {
-        CompilationResult result = compiler.compile(options, "/cases/lambda/expression/Main.java");
+        String source = """
+                package cases.lambda.expression;
+                               
+                import java.util.function.Function;
+                                
+                import static dev.khbd.interp4j.core.Interpolations.s;
+                                
+                public class Main {
+                                
+                    public static String greet() {
+                        Function<String, String> f = (name) -> s("Hello, $name");
+                        return f.apply("Alex");
+                    }
+                }
+                """;
+
+        CompilationResult result = compiler.compile(options, "cases/lambda/expression/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 

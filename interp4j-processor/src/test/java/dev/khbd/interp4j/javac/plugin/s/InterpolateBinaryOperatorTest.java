@@ -13,7 +13,21 @@ public class InterpolateBinaryOperatorTest extends AbstractPluginTest {
 
     @Test(dataProvider = "optionsDataProvider")
     public void interpolate_inBinaryOperator_interpolate(PluginOptions options) throws Exception {
-        CompilationResult result = compiler.compile(options, "/cases/in_binary_operator/Main.java");
+        String source = """
+                package cases.in_binary_operator;
+                
+                import static dev.khbd.interp4j.core.Interpolations.s;
+                
+                public class Main {
+                
+                    public static String greet() {
+                        String name = "Alex";
+                        return s("I'm ${name}. ") + s("I'm ${name.toUpperCase()}");
+                    }
+                }
+                """;
+
+        CompilationResult result = compiler.compile(options, "cases/in_binary_operator/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 
