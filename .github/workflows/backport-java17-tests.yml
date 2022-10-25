@@ -2,9 +2,9 @@ name: Tests (latest)
 
 on:
   push:
-    branches: [ main ]
+    branches: [ backport-java17 ]
   pull_request:
-    branches: [ main ]
+    branches: [ backport-java17 ]
 
 jobs:
   build:
