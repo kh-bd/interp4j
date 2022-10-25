@@ -139,7 +139,7 @@ public class InterpolateSwitchTest extends AbstractPluginTest {
                                 
                     public static String greet(Object name) {
                         String result = switch (name) {
-                            case String str && s("_${str.toUpperCase()}_").length() > 4 -> str;
+                            case String str when s("_${str.toUpperCase()}_").length() > 4 -> str;
                             default -> "Opps!";
                         };
                         return result;

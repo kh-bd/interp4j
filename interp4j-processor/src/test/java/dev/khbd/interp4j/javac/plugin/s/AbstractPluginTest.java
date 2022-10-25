@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -176,7 +177,7 @@ public abstract class AbstractPluginTest {
             arguments.add("-classpath");
             arguments.add(System.getProperty("java.class.path"));
             arguments.add(options.toString());
-            arguments.add("--release=17");
+            arguments.add("--release=19");
             arguments.add("--enable-preview");
 
             JavaCompiler.CompilationTask task
@@ -188,9 +189,12 @@ public abstract class AbstractPluginTest {
             return new CompilationResult(new TestClassLoader(fileManager.getCompiled()), diagnostic.getDiagnostics());
         }
 
-        @SneakyThrows
         private URI toUri(String path) {
-            return this.getClass().getResource(path).toURI();
+            try {
+                return this.getClass().getResource(path).toURI();
+            } catch (URISyntaxException se) {
+                throw new RuntimeException(se);
+            }
         }
     }
 

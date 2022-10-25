@@ -4,7 +4,7 @@
     <groupId>dev.khbd.interp4j</groupId>
     <artifactId>interp4j</artifactId>
     <packaging>pom</packaging>
-    <version>0.2.1</version>
+    <version>LATEST-SNAPSHOT</version>
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -135,8 +135,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <target>17</target>
-                    <source>17</source>
+                    <target>19</target>
+                    <source>19</source>
                     <fork>true</fork>
                     <compilerArgs>
                         <arg>--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
