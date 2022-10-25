@@ -1,10 +1,10 @@
 package dev.khbd.interp4j.javac.plugin.s;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Method;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sergei_Khadanovich
@@ -13,7 +13,26 @@ public class InterpolateMethodInvocationTest extends AbstractPluginTest {
 
     @Test(dataProvider = "optionsDataProvider")
     public void interpolate_sAtMethodArgumentPosition_interpolate(PluginOptions options) throws Exception {
-        CompilationResult result = compiler.compile(options, "/cases/method_invocation/at_arguments_position/Main.java");
+        String source = """
+                package cases.method_invocation.at_arguments_position;
+                               
+                import static dev.khbd.interp4j.core.Interpolations.s;
+                                
+                public class Main {
+                                
+                    private static final int AGE = 20;
+                                
+                    public static String greet(String name) {
+                        return concat(s("It's ${name}. "), s("$name is $AGE"));
+                    }
+                                
+                    private static String concat(String str1, String str2) {
+                        return str1 + str2;
+                    }
+                }
+                """;
+
+        CompilationResult result = compiler.compile(options, "cases/method_invocation/at_arguments_position/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 
@@ -27,7 +46,21 @@ public class InterpolateMethodInvocationTest extends AbstractPluginTest {
 
     @Test(dataProvider = "optionsDataProvider")
     public void interpolate_sAtReceiverPosition_interpolate(PluginOptions options) throws Exception {
-        CompilationResult result = compiler.compile(options, "/cases/method_invocation/at_receiver_position/Main.java");
+        String source = """
+                package cases.method_invocation.at_receiver_position;
+                                
+                import static dev.khbd.interp4j.core.Interpolations.s;
+                                
+                public class Main {
+                                
+                    public static String greet() {
+                        String name = "Alex";
+                        return s("  Hello, $name  ").trim().replace("Hello", "Hi").toUpperCase();
+                    }
+                }
+                """;
+
+        CompilationResult result = compiler.compile(options, "cases/method_invocation/at_receiver_position/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 

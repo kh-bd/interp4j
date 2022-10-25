@@ -13,7 +13,33 @@ public class InterpolateConstructorTest extends AbstractPluginTest {
 
     @Test(dataProvider = "optionsDataProvider")
     public void interpolate_inConstructorArguments_interpolate(PluginOptions options) throws Exception {
-        CompilationResult result = compiler.compile(options, "/cases/constructor_call/Main.java");
+        String source = """
+                package cases.constructor_call;
+                
+                import static dev.khbd.interp4j.core.Interpolations.s;
+                
+                public class Main {
+                                
+                    public static String greet() {
+                        String name = "Alex";
+                        return new Greeter(s("Hello, $name")).greet();
+                    }
+                
+                    private static class Greeter {
+                        final String name;
+                
+                        Greeter(String name) {
+                            this.name = name;
+                        }
+                
+                        String greet() {
+                            return name;
+                        }
+                    }
+                }
+                """;
+
+        CompilationResult result = compiler.compile(options, "cases/constructor_call/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 
