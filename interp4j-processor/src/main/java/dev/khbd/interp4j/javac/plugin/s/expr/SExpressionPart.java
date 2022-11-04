@@ -3,7 +3,7 @@ package dev.khbd.interp4j.javac.plugin.s.expr;
 /**
  * @author Sergei_Khadanovich
  */
-public interface SExpressionPart {
+public sealed interface SExpressionPart permits TextPart, ExpressionPart {
 
     /**
      * Get part kind.

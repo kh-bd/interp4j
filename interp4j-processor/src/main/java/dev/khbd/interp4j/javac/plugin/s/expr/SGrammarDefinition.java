@@ -51,7 +51,7 @@ class SGrammarDefinition extends GrammarDefinition {
     }
 
     private void addNotEmptyTextPart(SExpression expression, TextPart text) {
-        if (text.getText().isEmpty()) {
+        if (text.text().isEmpty()) {
             return;
         }
         expression.addPart(text);

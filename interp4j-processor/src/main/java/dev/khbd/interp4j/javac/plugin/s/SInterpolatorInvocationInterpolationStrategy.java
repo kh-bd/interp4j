@@ -70,7 +70,7 @@ class SInterpolatorInvocationInterpolationStrategy implements InterpolationStrat
             lastPart = expressionPart;
 
             JavacParser parser = parserFactory.newParser(
-                    expressionPart.getExpression(), false,
+                    expressionPart.expression(), false,
                     false, false);
             JCTree.JCExpression expr = parser.parseExpression();
             expr.pos = basePosition;
@@ -80,7 +80,7 @@ class SInterpolatorInvocationInterpolationStrategy implements InterpolationStrat
         @Override
         public void visitTextPart(TextPart textPart) {
             lastPart = textPart;
-            constructorArguments = constructorArguments.append(treeMaker.Literal(textPart.getText()));
+            constructorArguments = constructorArguments.append(treeMaker.Literal(textPart.text()));
         }
 
         @Override

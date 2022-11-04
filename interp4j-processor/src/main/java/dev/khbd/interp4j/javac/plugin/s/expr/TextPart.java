@@ -1,15 +1,9 @@
 package dev.khbd.interp4j.javac.plugin.s.expr;
 
-import lombok.Value;
-
 /**
  * @author Sergei_Khadanovich
  */
-@Value
-public class TextPart implements SExpressionPart {
-    String text;
-    int start;
-    int end;
+public record TextPart(String text, int start, int end) implements SExpressionPart {
 
     @Override
     public SExpressionPartKind kind() {
