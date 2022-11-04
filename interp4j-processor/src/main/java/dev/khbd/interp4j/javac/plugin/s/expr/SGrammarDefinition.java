@@ -1,6 +1,5 @@
 package dev.khbd.interp4j.javac.plugin.s.expr;
 
-import lombok.Value;
 import org.petitparser.context.Token;
 import org.petitparser.parser.Parser;
 import org.petitparser.parser.primitive.CharacterParser;
@@ -32,8 +31,8 @@ class SGrammarDefinition extends GrammarDefinition {
             if (seq.size() > 1) {
                 List<ExpressionAndText> other = (List<ExpressionAndText>) seq.get(1);
                 for (ExpressionAndText exprAndText : other) {
-                    expression.addPart(exprAndText.getExpression());
-                    addNotEmptyTextPart(expression, exprAndText.getText());
+                    expression.addPart(exprAndText.expression());
+                    addNotEmptyTextPart(expression, exprAndText.text());
                 }
             }
             return expression;
@@ -96,9 +95,6 @@ class SGrammarDefinition extends GrammarDefinition {
                 .token();
     }
 
-    @Value
-    private static class ExpressionAndText {
-        ExpressionPart expression;
-        TextPart text;
+    private record ExpressionAndText(ExpressionPart expression, TextPart text) {
     }
 }
