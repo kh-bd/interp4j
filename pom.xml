@@ -45,9 +45,9 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- plugins versions -->
-        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
-        <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
         <maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
         <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
         <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
@@ -135,18 +135,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                    <compilerArgs>
-                        <arg>--add-exports</arg>
-                        <arg>jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
-                        <arg>--add-exports</arg>
-                        <arg>jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
-                        <arg>--add-exports</arg>
-                        <arg>jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
-                        <arg>--add-exports</arg>
-                        <arg>jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</arg>
-                    </compilerArgs>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -163,7 +153,7 @@
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
-                    <argLine>-Dfile.encoding=UTF-8 --illegal-access=permit</argLine>
+                    <argLine>-Dfile.encoding=UTF-8</argLine>
                     <useSystemClassLoader>false</useSystemClassLoader>
                 </configuration>
             </plugin>
@@ -198,18 +188,6 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
-                        <configuration>
-                            <additionalJOptions>
-                                <additionalJOption>--add-exports</additionalJOption>
-                                <additionalJOption>jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</additionalJOption>
-                                <additionalJOption>--add-exports</additionalJOption>
-                                <additionalJOption>jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</additionalJOption>
-                                <additionalJOption>--add-exports</additionalJOption>
-                                <additionalJOption>jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</additionalJOption>
-                                <additionalJOption>--add-exports</additionalJOption>
-                                <additionalJOption>jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</additionalJOption>
-                            </additionalJOptions>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
