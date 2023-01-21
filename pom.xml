@@ -54,7 +54,7 @@
         <maven-deploy-plugin.version>2.7</maven-deploy-plugin.version>
 
         <!-- dependencies versions -->
-        <petitparser.version>2.3.1</petitparser.version>
+        <petitparser.version>2.2.0</petitparser.version>
         <lombok.version>1.18.22</lombok.version>
         <jmh.version>1.19</jmh.version>
 
@@ -232,6 +232,23 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>tools-unix</id>
+            <activation>
+                <file>
+                    <exists>${java.home}/../lib/tools.jar</exists>
+                </file>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>jdk.tools</groupId>
+                    <artifactId>jdk.tools</artifactId>
+                    <scope>system</scope>
+                    <version>1.8</version>
+                    <systemPath>${java.home}/../lib/tools.jar</systemPath>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
 

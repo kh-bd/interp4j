@@ -43,7 +43,7 @@ public class SExpression implements Iterable<SExpressionPart> {
         // Don't use ArrayList#iterator, because underling implementation supports
         // Iterator#remove, but our structure is immutable
         Iterator<SExpressionPart> iterator = parts.iterator();
-        return new Iterator<>() {
+        return new Iterator<SExpressionPart>() {
             @Override
             public boolean hasNext() {
                 return iterator.hasNext();

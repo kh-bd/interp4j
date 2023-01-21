@@ -51,7 +51,7 @@ public abstract class AbstractPluginTest {
         @Override
         public CharSequence getCharContent(boolean ignoreEncodingErrors) throws IOException {
             Path path = Paths.get(toUri());
-            return Files.readString(path);
+            return String.join(System.lineSeparator(), Files.readAllLines(path));
         }
     }
 

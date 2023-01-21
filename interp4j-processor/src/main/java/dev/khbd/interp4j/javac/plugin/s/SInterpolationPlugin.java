@@ -28,13 +28,13 @@ import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.Pretty;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.JCDiagnostic;
 import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.Log;
 import com.sun.tools.javac.util.Names;
 import dev.khbd.interp4j.javac.plugin.s.expr.SExpression;
 import dev.khbd.interp4j.javac.plugin.s.expr.SExpressionParser;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -54,40 +54,52 @@ public class SInterpolationPlugin implements Plugin {
     @Override
     public void init(JavacTask task, String... args) {
         Options options = new Options(args);
-        task.addTaskListener(new TaskListener() {
-            @Override
-            public void finished(TaskEvent event) {
-                if (event.getKind() != TaskEvent.Kind.PARSE) {
-                    return;
-                }
-
-                CompilationUnitTree unit = event.getCompilationUnit();
-                Context context = ((BasicJavacTask) task).getContext();
-
-                BundleInitializer.initPluginBundle(context);
-
-                SInterpolationTreeScanner interpolator = new SInterpolationTreeScanner(context, options);
-                unit.accept(interpolator, null);
-
-                if (interpolator.interpolationTakePlace && options.prettyPrintAfterInterpolationEnabled()) {
-                    prettyPrintTree(((JCTree.JCCompilationUnit) unit));
-                }
-            }
-        });
+        task.addTaskListener(new SInterpolationTaskListener(task, options));
     }
 
-    private static void prettyPrintTree(JCTree tree) {
-        OutputStreamWriter writer = new OutputStreamWriter(System.out);
+    @RequiredArgsConstructor
+    private static class SInterpolationTaskListener implements TaskListener {
 
-        Pretty pretty = new Pretty(writer, true);
-        tree.accept(pretty);
+        private final JavacTask task;
+        private final Options options;
 
-        try {
-            writer.write(System.getProperty("line.separator"));
-            writer.flush();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
+        @Override
+        public void started(TaskEvent taskEvent) {
         }
+
+        @Override
+        public void finished(TaskEvent event) {
+            if (event.getKind() != TaskEvent.Kind.PARSE) {
+                return;
+            }
+
+            CompilationUnitTree unit = event.getCompilationUnit();
+            Context context = ((BasicJavacTask) task).getContext();
+
+            BundleInitializer.initPluginBundle(context);
+
+            SInterpolationTreeScanner interpolator = new SInterpolationTreeScanner(context, options);
+            unit.accept(interpolator, null);
+
+            if (interpolator.interpolationTakePlace && options.prettyPrintAfterInterpolationEnabled()) {
+                prettyPrintTree(((JCTree.JCCompilationUnit) unit));
+            }
+        }
+
+        private static void prettyPrintTree(JCTree tree) {
+            OutputStreamWriter writer = new OutputStreamWriter(System.out);
+
+            Pretty pretty = new Pretty(writer, true);
+            tree.accept(pretty);
+
+            try {
+                writer.write(System.getProperty("line.separator"));
+                writer.flush();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+        }
+
     }
 
     private static class SInterpolationTreeScanner extends TreeScanner<Void, Void> {
@@ -285,7 +297,7 @@ public class SInterpolationPlugin implements Plugin {
             }
             ExpressionTree firstArgument = getFirstArgument(expression);
             if (firstArgument.getKind() != Tree.Kind.STRING_LITERAL) {
-                logger.error(expression.pos(), new JCDiagnostic.Error("compiler", "non.string.literal"));
+                logger.error(expression.pos(), "non.string.literal");
                 return null;
             }
 
@@ -294,7 +306,7 @@ public class SInterpolationPlugin implements Plugin {
 
             SExpression sExpr = SExpressionParser.getInstance().parse(literal).orElse(null);
             if (Objects.isNull(sExpr)) {
-                logger.error(expression.pos(), new JCDiagnostic.Error("compiler", "wrong.expression.format"));
+                logger.error(expression.pos(), "wrong.expression.format");
                 return null;
             }
 

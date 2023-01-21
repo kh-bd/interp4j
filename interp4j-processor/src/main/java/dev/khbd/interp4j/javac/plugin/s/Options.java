@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ public class Options {
     private static final Key<Boolean> INLINED_INTERPOLATION_ENABLED =
             new Key<>("interpolation.inlined", Boolean::parseBoolean, () -> false);
 
-    private static final List<Key<?>> KEYS = List.of(
+    private static final List<Key<?>> KEYS = Arrays.asList(
             PRETTY_PRINTING_ENABLED,
             INLINED_INTERPOLATION_ENABLED
     );
