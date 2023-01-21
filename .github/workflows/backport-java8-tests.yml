@@ -1,13 +1,13 @@
 # This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Tests (jdk11 backport)
+name: Tests (jdk8 backport)
 
 on:
   push:
-    branches: [ backport-java11 ]
+    branches: [ backport-java8 ]
   pull_request:
-    branches: [ backport-java11 ]
+    branches: [ backport-java8 ]
 
 jobs:
   build:
@@ -20,7 +20,7 @@ jobs:
       - name: Set up java
         uses: actions/setup-java@v2
         with:
-          java-version: '11'
+          java-version: '8'
           distribution: 'adopt'
           cache: maven
 
