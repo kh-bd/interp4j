@@ -133,7 +133,43 @@ Additional exports are needed only for compiling process, resulted code will not
 
 ## Gradle support
 
-in progress
+To interpolate strings in gradle-based projects you have to configure compiler to enable interp4j compiler plugin during
+compilation. Add the following configuration to your `build.gradle` file and that's it.
+
+```groovy
+dependencies {
+    compileOnly group: 'dev.khbd.interp4j', name: 'interp4j-core', version: interp4j_version
+    annotationProcessor group: 'dev.khbd.interp4j', name: 'interp4j-processor', version: interp4j_version
+}
+
+task.withType(JavaCompile) {
+    options.fork = true
+    options.compilerArgs.add('-Xplugin:interp4j interpolation.inlined=true')
+}
+```
+
+If you use jdk 17 or higher additional options are required to allow compiler plugin
+to use internal jdk api.
+
+```groovy
+dependencies {
+    compileOnly group: 'dev.khbd.interp4j', name: 'interp4j-core', version: interp4j_version
+    annotationProcessor group: 'dev.khbd.interp4j', name: 'interp4j-processor', version: interp4j_version
+}
+
+task.withType(JavaCompile) {
+    options.fork = true
+    options.compilerArgs.add('-Xplugin:interp4j interpolation.inlined=true')
+    options.forkOptions.jvmArgs.addAll([
+            '--add-exports', 'jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
+            '--add-exports', 'jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
+            '--add-exports', 'jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
+            '--add-exports', 'jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED'
+    ])
+}
+```
+
+Additional exports are needed only for compiling process, resulted code will not be dependent on internal jdk api.
 
 ## Intellij support
 
