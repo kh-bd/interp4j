@@ -177,7 +177,7 @@ public abstract class AbstractPluginTest {
             arguments.add("-classpath");
             arguments.add(System.getProperty("java.class.path"));
             arguments.add(options.toString());
-            arguments.add("--release=19");
+            arguments.add("--release=21");
             arguments.add("--enable-preview");
 
             JavaCompiler.CompilationTask task

@@ -55,7 +55,7 @@
 
         <!-- dependencies versions -->
         <petitparser.version>2.3.1</petitparser.version>
-        <lombok.version>1.18.22</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <jmh.version>1.35</jmh.version>
 
         <testng.version>7.6.1</testng.version>
@@ -135,8 +135,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <target>19</target>
-                    <source>19</source>
+                    <target>21</target>
+                    <source>21</source>
                     <fork>true</fork>
                     <compilerArgs>
                         <arg>--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>

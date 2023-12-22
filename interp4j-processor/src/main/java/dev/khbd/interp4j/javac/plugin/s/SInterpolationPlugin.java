@@ -190,10 +190,12 @@ public class SInterpolationPlugin implements Plugin {
         // case label -> yield expression;
         @Override
         public Void visitCase(CaseTree tree, Void unused) {
+            super.visitCase(tree, unused);
+
             JCTree.JCCase jcCase = (JCTree.JCCase) tree;
 
-            for (JCTree.JCCaseLabel label : jcCase.getLabels()) {
-                label.accept(this, unused);
+            if (Objects.nonNull(jcCase.guard)) {
+                interpolateIfNeeded(jcCase.guard, ie -> jcCase.guard = ie);
             }
 
             for (StatementTree stat : jcCase.stats) {
