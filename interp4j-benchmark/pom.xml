@@ -5,7 +5,7 @@
     <parent>
         <artifactId>interp4j</artifactId>
         <groupId>dev.khbd.interp4j</groupId>
-        <version>LATEST-SNAPSHOT</version>
+        <version>1.0.0_jre21</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
