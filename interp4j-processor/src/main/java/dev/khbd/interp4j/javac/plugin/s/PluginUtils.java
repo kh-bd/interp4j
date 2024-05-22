@@ -84,15 +84,11 @@ class PluginUtils {
 
         // s() method call
         if (IS_S.test(methodSelect)) {
-            // static exact method import
-            // static wildcard import
             return imports.isSimpleMethodCallAllowed();
         }
 
         // Interpolations.s() method call
         if (IS_INTERPOLATIONS_S.test(methodSelect)) {
-            // class import
-            // package wildcard import
             return imports.isQualifiedMethodCallAllowed();
         }
 
