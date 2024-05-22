@@ -18,10 +18,9 @@ class PluginUtils {
 
     static final Predicate<Tree> IS_S = pathPredicate("s");
     static final Predicate<Tree> IS_INTERPOLATIONS_S = pathPredicate("Interpolations.s");
-    static final Predicate<Tree> IS_FQN_INTERPOLATIONS = pathPredicate("dev.khbd.interp4j.core.Interpolations");
     static final Predicate<Tree> IS_FQN_INTERPOLATIONS_S = pathPredicate("dev.khbd.interp4j.core.Interpolations.s");
 
-    private static Predicate<Tree> pathPredicate(String path) {
+    static Predicate<Tree> pathPredicate(String path) {
         String[] parts = path.split("\\.");
         if (parts.length == 1) {
             return identifierPredicate(parts[0]);
@@ -66,7 +65,7 @@ class PluginUtils {
      * @return {@literal true} if supplied expression is `s` method call and {@literal false}
      * otherwise
      */
-    static boolean isSMethodInvocation(ExpressionTree tree, SImports imports) {
+    static boolean isSMethodInvocation(ExpressionTree tree, Imports imports) {
         if (tree.getKind() != Tree.Kind.METHOD_INVOCATION) {
             return false;
         }
@@ -80,17 +79,21 @@ class PluginUtils {
         return arguments.size() == 1;
     }
 
-    private boolean isSMethodInvocation(MethodInvocationTree methodInvocation, SImports imports) {
+    private boolean isSMethodInvocation(MethodInvocationTree methodInvocation, Imports imports) {
         ExpressionTree methodSelect = methodInvocation.getMethodSelect();
 
         // s() method call
         if (IS_S.test(methodSelect)) {
-            return imports.isStaticMethodImportPresent();
+            // static exact method import
+            // static wildcard import
+            return imports.isSimpleMethodCallAllowed();
         }
 
         // Interpolations.s() method call
         if (IS_INTERPOLATIONS_S.test(methodSelect)) {
-            return imports.isClassImportPresent();
+            // class import
+            // package wildcard import
+            return imports.isQualifiedMethodCallAllowed();
         }
 
         // FQN.s() method call
