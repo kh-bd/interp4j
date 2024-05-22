@@ -6,7 +6,6 @@ import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.CompoundAssignmentTree;
 import com.sun.source.tree.ConditionalExpressionTree;
 import com.sun.source.tree.ExpressionTree;
-import com.sun.source.tree.ImportTree;
 import com.sun.source.tree.LambdaExpressionTree;
 import com.sun.source.tree.LambdaExpressionTree.BodyKind;
 import com.sun.source.tree.LiteralTree;
@@ -66,7 +65,9 @@ public class SInterpolationPlugin implements Plugin {
 
                 BundleInitializer.initPluginBundle(context);
 
-                SInterpolationTreeScanner interpolator = new SInterpolationTreeScanner(context, options);
+                Imports sImports = Imports.collector(Interpolation.S).collect(unit.getImports());
+
+                SInterpolationTreeScanner interpolator = new SInterpolationTreeScanner(context, options, sImports);
                 unit.accept(interpolator, null);
 
                 if (interpolator.interpolationTakePlace && options.prettyPrintAfterInterpolationEnabled()) {
@@ -92,7 +93,7 @@ public class SInterpolationPlugin implements Plugin {
 
     private static class SInterpolationTreeScanner extends TreeScanner<Void, Void> {
 
-        final SImports imports;
+        final Imports imports;
         final InterpolationStrategy interpolationStrategy;
         final TreeMaker treeMaker;
         final Log logger;
@@ -100,8 +101,8 @@ public class SInterpolationPlugin implements Plugin {
         @Getter
         boolean interpolationTakePlace = false;
 
-        private SInterpolationTreeScanner(Context context, Options options) {
-            this.imports = new SImports();
+        private SInterpolationTreeScanner(Context context, Options options, Imports imports) {
+            this.imports = imports;
             this.treeMaker = TreeMaker.instance(context);
             this.logger = Log.instance(context);
             if (options.inlinedInterpolationEnabled()) {
@@ -109,23 +110,6 @@ public class SInterpolationPlugin implements Plugin {
             } else {
                 this.interpolationStrategy = new SInterpolatorInvocationInterpolationStrategy(treeMaker, ParserFactory.instance(context), Names.instance(context));
             }
-        }
-
-        @Override
-        public Void visitImport(ImportTree importTree, Void unused) {
-            super.visitImport(importTree, unused);
-
-            if (isInterpolationsImport(importTree)) {
-                imports.add(SImport.of(importTree.isStatic()));
-            }
-
-            return null;
-        }
-
-        private boolean isInterpolationsImport(ImportTree importTree) {
-            return PluginUtils.IS_FQN_INTERPOLATIONS_S
-                    .or(PluginUtils.IS_FQN_INTERPOLATIONS)
-                    .test(importTree.getQualifiedIdentifier());
         }
 
         @Override
