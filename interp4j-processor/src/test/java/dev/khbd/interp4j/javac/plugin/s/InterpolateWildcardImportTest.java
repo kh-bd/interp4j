@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 /**
  * @author Sergei_Khadanovich
  */
-public class WildcardImportTest extends AbstractPluginTest {
+public class InterpolateWildcardImportTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_wildcardMethodsImport_interpolate() throws Exception {
