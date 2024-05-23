@@ -11,9 +11,9 @@ import java.lang.reflect.Method;
  */
 public class InterpolateWildcardImportTest extends AbstractPluginTest {
 
-    @Test(dataProvider = "optionsDataProvider")
-    public void interpolate_wildcardMethodsImport_interpolate(PluginOptions options) throws Exception {
-        CompilationResult result = compiler.compile(options, "/cases/wildcard/methods/Main.java");
+    @Test
+    public void interpolate_wildcardMethodsImport_interpolate() throws Exception {
+        CompilationResult result = compiler.compile("/cases/wildcard/methods/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
@@ -25,9 +25,9 @@ public class InterpolateWildcardImportTest extends AbstractPluginTest {
         assertThat(greet).isEqualTo("I'm Alex. I'm ALEX");
     }
 
-    @Test(dataProvider = "optionsDataProvider")
-    public void interpolate_wildcardPackageImport_interpolate(PluginOptions options) throws Exception {
-        CompilationResult result = compiler.compile(options, "/cases/wildcard/classes/Main.java");
+    @Test
+    public void interpolate_wildcardPackageImport_interpolate() throws Exception {
+        CompilationResult result = compiler.compile("/cases/wildcard/classes/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 

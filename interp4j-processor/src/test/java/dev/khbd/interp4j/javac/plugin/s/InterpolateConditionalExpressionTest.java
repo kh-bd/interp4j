@@ -1,19 +1,19 @@
 package dev.khbd.interp4j.javac.plugin.s;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Method;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sergei_Khadanovich
  */
 public class InterpolateConditionalExpressionTest extends AbstractPluginTest {
 
-    @Test(dataProvider = "optionsDataProvider")
-    public void interpolate_sInTrueCondition_interpolate(PluginOptions options) throws Exception {
-        CompilationResult result = compiler.compile(options, "/cases/conditional_expression/Main.java");
+    @Test
+    public void interpolate_sInTrueCondition_interpolate() throws Exception {
+        CompilationResult result = compiler.compile("/cases/conditional_expression/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
@@ -25,9 +25,9 @@ public class InterpolateConditionalExpressionTest extends AbstractPluginTest {
         assertThat(greet).isEqualTo("Hello, Alex");
     }
 
-    @Test(dataProvider = "optionsDataProvider")
-    public void interpolate_sInFalseCondition_interpolate(PluginOptions options) throws Exception {
-        CompilationResult result = compiler.compile(options, "/cases/conditional_expression/Main.java");
+    @Test
+    public void interpolate_sInFalseCondition_interpolate() throws Exception {
+        CompilationResult result = compiler.compile("/cases/conditional_expression/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 

@@ -11,9 +11,9 @@ import java.lang.reflect.Method;
  */
 public class InterpolateExpressionInParenthesesTest extends AbstractPluginTest {
 
-    @Test(dataProvider = "optionsDataProvider")
-    public void interpolate_sInReturnStatement_interpolate(PluginOptions options) throws Exception {
-        CompilationResult result = compiler.compile(options, "/cases/in_parentheses/Main.java");
+    @Test
+    public void interpolate_sInReturnStatement_interpolate() throws Exception {
+        CompilationResult result = compiler.compile("/cases/in_parentheses/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 

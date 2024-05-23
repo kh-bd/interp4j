@@ -29,11 +29,9 @@ import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.Log;
-import com.sun.tools.javac.util.Names;
 import dev.khbd.interp4j.javac.plugin.s.expr.SExpression;
 import dev.khbd.interp4j.javac.plugin.s.expr.SExpressionParser;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -53,54 +51,47 @@ public class SInterpolationPlugin implements Plugin {
     @Override
     public void init(JavacTask task, String... args) {
         Options options = new Options(args);
-        task.addTaskListener(new SInterpolationTaskListener(task, options));
+        task.addTaskListener(new TaskListener() {
+
+            @Override
+            public void started(TaskEvent event) {
+            }
+
+            @Override
+            public void finished(TaskEvent event) {
+                if (event.getKind() != TaskEvent.Kind.PARSE) {
+                    return;
+                }
+
+                CompilationUnitTree unit = event.getCompilationUnit();
+                Context context = ((BasicJavacTask) task).getContext();
+
+                BundleInitializer.initPluginBundle(context);
+
+                Imports sImports = Imports.collector(Interpolation.S).collect(unit.getImports());
+
+                SInterpolationTreeScanner interpolator = new SInterpolationTreeScanner(context, sImports);
+                unit.accept(interpolator, null);
+
+                if (interpolator.interpolationTakePlace && options.prettyPrintAfterInterpolationEnabled()) {
+                    prettyPrintTree(((JCTree.JCCompilationUnit) unit));
+                }
+            }
+        });
     }
 
-    @RequiredArgsConstructor
-    private static class SInterpolationTaskListener implements TaskListener {
+    private static void prettyPrintTree(JCTree tree) {
+        OutputStreamWriter writer = new OutputStreamWriter(System.out);
 
-        private final JavacTask task;
-        private final Options options;
+        Pretty pretty = new Pretty(writer, true);
+        tree.accept(pretty);
 
-        @Override
-        public void started(TaskEvent taskEvent) {
+        try {
+            writer.write(System.getProperty("line.separator"));
+            writer.flush();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
         }
-
-        @Override
-        public void finished(TaskEvent event) {
-            if (event.getKind() != TaskEvent.Kind.PARSE) {
-                return;
-            }
-
-            CompilationUnitTree unit = event.getCompilationUnit();
-            Context context = ((BasicJavacTask) task).getContext();
-
-            BundleInitializer.initPluginBundle(context);
-
-            Imports sImports = Imports.collector(Interpolation.S).collect(unit.getImports());
-
-            SInterpolationTreeScanner interpolator = new SInterpolationTreeScanner(context, options, sImports);
-            unit.accept(interpolator, null);
-
-            if (interpolator.interpolationTakePlace && options.prettyPrintAfterInterpolationEnabled()) {
-                prettyPrintTree(((JCTree.JCCompilationUnit) unit));
-            }
-        }
-
-        private static void prettyPrintTree(JCTree tree) {
-            OutputStreamWriter writer = new OutputStreamWriter(System.out);
-
-            Pretty pretty = new Pretty(writer, true);
-            tree.accept(pretty);
-
-            try {
-                writer.write(System.getProperty("line.separator"));
-                writer.flush();
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
-            }
-        }
-
     }
 
     private static class SInterpolationTreeScanner extends TreeScanner<Void, Void> {
@@ -113,15 +104,11 @@ public class SInterpolationPlugin implements Plugin {
         @Getter
         boolean interpolationTakePlace = false;
 
-        private SInterpolationTreeScanner(Context context, Options options, Imports imports) {
+        private SInterpolationTreeScanner(Context context, Imports imports) {
             this.imports = imports;
             this.treeMaker = TreeMaker.instance(context);
             this.logger = Log.instance(context);
-            if (options.inlinedInterpolationEnabled()) {
-                this.interpolationStrategy = new InlinedInterpolationStrategy(treeMaker, ParserFactory.instance(context));
-            } else {
-                this.interpolationStrategy = new SInterpolatorInvocationInterpolationStrategy(treeMaker, ParserFactory.instance(context), Names.instance(context));
-            }
+            this.interpolationStrategy = new InlinedInterpolationStrategy(treeMaker, ParserFactory.instance(context));
         }
 
         @Override
@@ -281,7 +268,7 @@ public class SInterpolationPlugin implements Plugin {
             }
             ExpressionTree firstArgument = getFirstArgument(expression);
             if (firstArgument.getKind() != Tree.Kind.STRING_LITERAL) {
-                logger.error(expression.pos(),  "non.string.literal");
+                logger.error(expression.pos(), "non.string.literal");
                 return null;
             }
 
