@@ -1,14 +1,12 @@
-package dev.khbd.interp4j.javac.plugin.s;
+package dev.khbd.interp4j.javac.plugin;
 
 import com.sun.source.tree.AssignmentTree;
 import com.sun.source.tree.BinaryTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.CompoundAssignmentTree;
 import com.sun.source.tree.ConditionalExpressionTree;
-import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.LambdaExpressionTree;
 import com.sun.source.tree.LambdaExpressionTree.BodyKind;
-import com.sun.source.tree.LiteralTree;
 import com.sun.source.tree.MemberReferenceTree;
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.tree.NewClassTree;
@@ -22,26 +20,28 @@ import com.sun.source.util.TaskEvent;
 import com.sun.source.util.TaskListener;
 import com.sun.source.util.TreeScanner;
 import com.sun.tools.javac.api.BasicJavacTask;
-import com.sun.tools.javac.parser.ParserFactory;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.Pretty;
-import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.List;
-import com.sun.tools.javac.util.Log;
-import dev.khbd.interp4j.javac.plugin.s.expr.SExpression;
-import dev.khbd.interp4j.javac.plugin.s.expr.SExpressionParser;
+import dev.khbd.interp4j.javac.plugin.s.SInterpolatorFactoryImpl;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @author Sergei_Khadanovich
  */
-public class SInterpolationPlugin implements Plugin {
+public class InterpolationPlugin implements Plugin {
+
+    private static final List<InterpolatorFactory> FACTORIES = List.of(
+            new SInterpolatorFactoryImpl()
+    );
 
     @Override
     public String getName() {
@@ -68,16 +68,24 @@ public class SInterpolationPlugin implements Plugin {
 
                 BundleInitializer.initPluginBundle(context);
 
-                Imports sImports = Imports.collector(Interpolation.S).collect(unit.getImports());
+                List<Interpolator> interpolators = map(FACTORIES, factory -> factory.create(context, unit));
 
-                SInterpolationTreeScanner interpolator = new SInterpolationTreeScanner(context, sImports);
-                unit.accept(interpolator, null);
+                SInterpolationTreeScanner interpolationScanner = new SInterpolationTreeScanner(interpolators);
+                unit.accept(interpolationScanner, null);
 
-                if (interpolator.interpolationTakePlace && options.prettyPrintAfterInterpolationEnabled()) {
+                if (interpolationScanner.interpolationTakePlace && options.prettyPrintAfterInterpolationEnabled()) {
                     prettyPrintTree(((JCTree.JCCompilationUnit) unit));
                 }
             }
         });
+    }
+
+    private static <T, V> List<V> map(List<T> list, Function<? super T, V> f) {
+        List<V> result = List.nil();
+        for (T t : list) {
+            result = result.append(f.apply(t));
+        }
+        return result.reverse();
     }
 
     private static void prettyPrintTree(JCTree tree) {
@@ -94,22 +102,13 @@ public class SInterpolationPlugin implements Plugin {
         }
     }
 
+    @RequiredArgsConstructor
     private static class SInterpolationTreeScanner extends TreeScanner<Void, Void> {
 
-        final Imports imports;
-        final InterpolationStrategy interpolationStrategy;
-        final TreeMaker treeMaker;
-        final Log logger;
+        final List<Interpolator> interpolators;
 
         @Getter
         boolean interpolationTakePlace = false;
-
-        private SInterpolationTreeScanner(Context context, Imports imports) {
-            this.imports = imports;
-            this.treeMaker = TreeMaker.instance(context);
-            this.logger = Log.instance(context);
-            this.interpolationStrategy = new InlinedInterpolationStrategy(treeMaker, ParserFactory.instance(context));
-        }
 
         @Override
         public Void visitParenthesized(ParenthesizedTree tree, Void unused) {
@@ -263,49 +262,19 @@ public class SInterpolationPlugin implements Plugin {
         }
 
         private JCTree.JCExpression interpolateIfNeeded(JCTree.JCExpression expression) {
-            if (!PluginUtils.isSMethodInvocation(expression, imports)) {
-                return null;
-            }
-            ExpressionTree firstArgument = getFirstArgument(expression);
-            if (firstArgument.getKind() != Tree.Kind.STRING_LITERAL) {
-                logger.error(expression.pos(), "non.string.literal");
+            if (expression.getKind() != Tree.Kind.METHOD_INVOCATION) {
                 return null;
             }
 
-            LiteralTree literalTree = (LiteralTree) firstArgument;
-            String literal = (String) literalTree.getValue();
+            JCTree.JCMethodInvocation invocation = (JCTree.JCMethodInvocation) expression;
 
-            SExpression sExpr = SExpressionParser.getInstance().parse(literal).orElse(null);
-            if (Objects.isNull(sExpr)) {
-                logger.error(expression.pos(), "wrong.expression.format");
-                return null;
+            for (Interpolator interpolator : interpolators) {
+                if (interpolator.isInterpolateCall(invocation)) {
+                    return interpolator.interpolate(invocation);
+                }
             }
 
-            return interpolate(literal, sExpr, expression.pos);
+            return null;
         }
-
-        private ExpressionTree getFirstArgument(ExpressionTree tree) {
-            MethodInvocationTree methodInvocation = (MethodInvocationTree) tree;
-            return methodInvocation.getArguments().get(0);
-        }
-
-        private JCTree.JCExpression interpolate(String literal, SExpression sExpr, int basePosition) {
-            if (!sExpr.hasAnyExpression()) {
-                // It means, `s` expression doesn't contain any string parts,
-                // so we can replace our method call with original string literal
-                return interpolateWithoutExpressions(literal, basePosition);
-            }
-            return interpolateWithExpressions(sExpr, basePosition);
-        }
-
-        private JCTree.JCExpression interpolateWithoutExpressions(String literal,
-                                                                  int basePosition) {
-            return treeMaker.at(basePosition).Literal(literal);
-        }
-
-        private JCTree.JCExpression interpolateWithExpressions(SExpression sExpr, int basePosition) {
-            return interpolationStrategy.interpolate(sExpr, basePosition);
-        }
-
     }
 }

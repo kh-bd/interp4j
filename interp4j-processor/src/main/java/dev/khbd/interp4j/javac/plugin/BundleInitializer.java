@@ -1,4 +1,4 @@
-package dev.khbd.interp4j.javac.plugin.s;
+package dev.khbd.interp4j.javac.plugin;
 
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.JavacMessages;
@@ -8,11 +8,11 @@ import lombok.experimental.UtilityClass;
  * @author Sergei_Khadanovich
  */
 @UtilityClass
-public class BundleInitializer {
+class BundleInitializer {
 
-    private static final String BUNDLE_NAME = "dev.khbd.interp4j.javac.plugin.s.i18n.Interp4jBundle";
+    private static final String BUNDLE_NAME = "dev.khbd.interp4j.javac.plugin.i18n.Interp4jBundle";
 
-    public static void initPluginBundle(Context context) {
+    static void initPluginBundle(Context context) {
         JavacMessages messages = JavacMessages.instance(context);
         messages.add(BUNDLE_NAME);
     }
