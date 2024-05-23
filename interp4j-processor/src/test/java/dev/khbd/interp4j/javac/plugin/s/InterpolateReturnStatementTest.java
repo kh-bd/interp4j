@@ -11,15 +11,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class InterpolateReturnStatementTest extends AbstractPluginTest {
 
-    @Test(dataProvider = "optionsDataProvider")
-    public void interpolate_sInReturnStatement_interpolate(PluginOptions options) throws Exception {
+    @Test
+    public void interpolate_sInReturnStatement_interpolate() throws Exception {
         String source = """
                 package cases.return_statement;
-                               
+                
                 import static dev.khbd.interp4j.core.Interpolations.s;
-                                
+                
                 public class Main {
-                                
+                
                     public static String greet() {
                         String name = "Alex";
                         return s("Hello, ${name}");
@@ -27,7 +27,7 @@ public class InterpolateReturnStatementTest extends AbstractPluginTest {
                 }
                 """;
 
-        CompilationResult result = compiler.compile(options, "cases/return_statement/Main.java", source);
+        CompilationResult result = compiler.compile("cases/return_statement/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 

@@ -1,18 +1,18 @@
 package dev.khbd.interp4j.javac.plugin.s;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Method;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sergei_Khadanovich
  */
 public class InterpolateBinaryOperatorTest extends AbstractPluginTest {
 
-    @Test(dataProvider = "optionsDataProvider")
-    public void interpolate_inBinaryOperator_interpolate(PluginOptions options) throws Exception {
+    @Test
+    public void interpolate_inBinaryOperator_interpolate() throws Exception {
         String source = """
                 package cases.in_binary_operator;
                 
@@ -27,7 +27,7 @@ public class InterpolateBinaryOperatorTest extends AbstractPluginTest {
                 }
                 """;
 
-        CompilationResult result = compiler.compile(options, "cases/in_binary_operator/Main.java", source);
+        CompilationResult result = compiler.compile("cases/in_binary_operator/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 

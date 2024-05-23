@@ -13,11 +13,9 @@ import java.util.function.Supplier;
 public class Options {
 
     private static final OptionsKey<Boolean> PRETTY_PRINTING_ENABLED = new OptionsKey<>("prettyPrint.after.interpolation");
-    private static final OptionsKey<Boolean> INLINED_INTERPOLATION_ENABLED = new OptionsKey<>("interpolation.inlined");
 
     private static final List<OptionsDescription<?>> DESCRIPTIONS = List.of(
-            new OptionsDescription<>(PRETTY_PRINTING_ENABLED, Boolean::parseBoolean, () -> false),
-            new OptionsDescription<>(INLINED_INTERPOLATION_ENABLED, Boolean::parseBoolean, () -> true)
+            new OptionsDescription<>(PRETTY_PRINTING_ENABLED, Boolean::parseBoolean, () -> false)
     );
 
     private final Map<OptionsKey<?>, Object> params = new HashMap<>();
@@ -56,10 +54,6 @@ public class Options {
 
     public boolean prettyPrintAfterInterpolationEnabled() {
         return getKeyValue(PRETTY_PRINTING_ENABLED);
-    }
-
-    public boolean inlinedInterpolationEnabled() {
-        return getKeyValue(INLINED_INTERPOLATION_ENABLED);
     }
 
     @SuppressWarnings("unchecked")

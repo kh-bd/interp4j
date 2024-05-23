@@ -2,9 +2,7 @@ package dev.khbd.interp4j.javac.plugin.s;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.Value;
-import org.testng.annotations.DataProvider;
 
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
@@ -32,14 +30,6 @@ import java.util.stream.Stream;
  * @author Sergei_Khadanovich
  */
 public abstract class AbstractPluginTest {
-
-    @DataProvider(name = "optionsDataProvider")
-    public static Object[][] optionsDataProvider() {
-        return new Object[][]{
-                {new PluginOptions(true, false)},
-                {new PluginOptions(true, true)}
-        };
-    }
 
     protected final TestCompiler compiler = new TestCompiler();
 
@@ -152,6 +142,10 @@ public abstract class AbstractPluginTest {
 
     protected static class TestCompiler {
 
+        CompilationResult compile(String path, String source) {
+            return compile(new PluginOptions(true), path, source);
+        }
+
         CompilationResult compile(PluginOptions options, String path, String source) {
             InMemoryTestSourceFile toCompile = new InMemoryTestSourceFile(path, source);
             return compile(options, List.of(toCompile));
@@ -198,12 +192,11 @@ public abstract class AbstractPluginTest {
         }
     }
 
-    protected record PluginOptions(boolean prettyPrint, boolean inlined) {
+    protected record PluginOptions(boolean prettyPrint) {
 
         @Override
         public String toString() {
-            return "-Xplugin:interp4j prettyPrint.after.interpolation=" + prettyPrint +
-                    " interpolation.inlined=" + inlined;
+            return "-Xplugin:interp4j prettyPrint.after.interpolation=" + prettyPrint;
         }
     }
 

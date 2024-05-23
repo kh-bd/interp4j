@@ -11,8 +11,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class InterpolateWithEscapedSymbolsTest extends AbstractPluginTest {
 
-    @Test(dataProvider = "optionsDataProvider")
-    public void interpolate_stringLiteralWithEscapedSymbols_interpolate(PluginOptions options) throws Exception {
+    @Test
+    public void interpolate_stringLiteralWithEscapedSymbols_interpolate() throws Exception {
         String source = """
                 package cases.escaped_symbols;
                 
@@ -27,7 +27,7 @@ public class InterpolateWithEscapedSymbolsTest extends AbstractPluginTest {
                 }
                 """;
 
-        CompilationResult result = compiler.compile(options, "cases/escaped_symbols/Main.java", source);
+        CompilationResult result = compiler.compile("cases/escaped_symbols/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 
