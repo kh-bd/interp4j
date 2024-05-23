@@ -1,4 +1,4 @@
-package dev.khbd.interp4j.javac.plugin.s;
+package dev.khbd.interp4j.javac.plugin;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-enum Interpolation {
+public enum Interpolation {
 
     S("dev.khbd.interp4j.core", "Interpolations", "s");
 
