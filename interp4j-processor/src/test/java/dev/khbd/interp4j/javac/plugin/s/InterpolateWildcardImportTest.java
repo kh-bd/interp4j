@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 /**
  * @author Sergei_Khadanovich
  */
-public class WildcardImportTest extends AbstractPluginTest {
+public class InterpolateWildcardImportTest extends AbstractPluginTest {
 
     @Test(dataProvider = "optionsDataProvider")
     public void interpolate_wildcardMethodsImport_interpolate(PluginOptions options) throws Exception {
@@ -27,7 +27,7 @@ public class WildcardImportTest extends AbstractPluginTest {
 
     @Test(dataProvider = "optionsDataProvider")
     public void interpolate_wildcardPackageImport_interpolate(PluginOptions options) throws Exception {
-        CompilationResult result = compiler.compile(options, "cases/wildcard/classes/Main.java");
+        CompilationResult result = compiler.compile(options, "/cases/wildcard/classes/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
