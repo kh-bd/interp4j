@@ -13,10 +13,6 @@
 
     <artifactId>interp4j-benchmark</artifactId>
 
-    <properties>
-        <inlined>false</inlined>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>dev.khbd.interp4j</groupId>
@@ -43,7 +39,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <compilerArgs>
-                        <arg>-Xplugin:interp4j interpolation.inlined=${inlined}</arg>
+                        <arg>-Xplugin:interp4j</arg>
                     </compilerArgs>
                     <annotationProcessorPaths>
                         <path>
@@ -63,12 +59,6 @@
     </build>
 
     <profiles>
-        <profile>
-            <id>inlined</id>
-            <properties>
-                <inlined>true</inlined>
-            </properties>
-        </profile>
         <profile>
             <id>benchmark</id>
             <build>

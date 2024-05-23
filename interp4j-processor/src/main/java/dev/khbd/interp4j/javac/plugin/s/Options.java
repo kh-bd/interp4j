@@ -1,8 +1,6 @@
 package dev.khbd.interp4j.javac.plugin.s;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Value;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,39 +12,15 @@ import java.util.function.Supplier;
 /**
  * @author Sergei_Khadanovich
  */
-@Getter
 public class Options {
 
-    private static final Key<Boolean> PRETTY_PRINTING_ENABLED =
-            new Key<>("prettyPrint.after.interpolation", Boolean::parseBoolean, () -> false);
+    private static final OptionsKey<Boolean> PRETTY_PRINTING_ENABLED = new OptionsKey<>("prettyPrint.after.interpolation");
 
-    private static final Key<Boolean> INLINED_INTERPOLATION_ENABLED =
-            new Key<>("interpolation.inlined", Boolean::parseBoolean, () -> false);
-
-    private static final List<Key<?>> KEYS = List.of(
-            PRETTY_PRINTING_ENABLED,
-            INLINED_INTERPOLATION_ENABLED
+    private static final List<OptionsDescription<?>> DESCRIPTIONS = List.of(
+            new OptionsDescription<>(PRETTY_PRINTING_ENABLED, Boolean::parseBoolean, () -> false)
     );
 
-    @EqualsAndHashCode(of = "name")
-    @RequiredArgsConstructor
-    private static class Key<V> {
-
-        @Getter
-        final String name;
-        final Function<String, ? extends V> parser;
-        final Supplier<? extends V> defaultValueSupplier;
-
-        V parse(String str) {
-            return parser.apply(str);
-        }
-
-        V defaultValue() {
-            return defaultValueSupplier.get();
-        }
-    }
-
-    private final Map<Key<?>, Object> params = new HashMap<>();
+    private final Map<OptionsKey<?>, Object> params = new HashMap<>();
 
     public Options(String... args) {
         for (String arg : args) {
@@ -54,39 +28,51 @@ public class Options {
             if (parts.length != 2) {
                 continue;
             }
-            Key<?> key = findKey(parts[0]);
-            if (Objects.isNull(key)) {
+            OptionsDescription<?> description = findDescription(new OptionsKey<>(parts[0]));
+            if (Objects.isNull(description)) {
                 continue;
             }
-            params.put(key, parseValueOrDefault(key, parts[1]));
+            params.put(description.getKey(), parseValueOrDefault(description, parts[1]));
+        }
+        for (OptionsDescription<?> description : DESCRIPTIONS) {
+            params.putIfAbsent(description.getKey(), description.getDefaultValue().get());
         }
     }
 
-    private static Object parseValueOrDefault(Key<?> key, String str) {
-        try {
-            return key.parse(str);
-        } catch (Exception e) {
-            return key.defaultValue();
-        }
-    }
-
-    private static Key<?> findKey(String str) {
-        return KEYS.stream()
-                .filter(key -> key.getName().equals(str))
+    private static OptionsDescription<?> findDescription(OptionsKey<?> key) {
+        return DESCRIPTIONS.stream()
+                .filter(description -> description.getKey().equals(key))
                 .findFirst()
                 .orElse(null);
+    }
+
+    private static Object parseValueOrDefault(OptionsDescription<?> description, String value) {
+        try {
+            return description.getParser().apply(value);
+        } catch (Exception e) {
+            return description.getDefaultValue().get();
+        }
     }
 
     public boolean prettyPrintAfterInterpolationEnabled() {
         return getKeyValue(PRETTY_PRINTING_ENABLED);
     }
 
-    public boolean inlinedInterpolationEnabled() {
-        return getKeyValue(INLINED_INTERPOLATION_ENABLED);
+    @SuppressWarnings("unchecked")
+    private <T> T getKeyValue(OptionsKey<T> key) {
+        return (T) params.get(key);
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> T getKeyValue(Key<T> key) {
-        return (T) params.getOrDefault(key, key.defaultValue());
+    @Value
+    private static class OptionsKey<V> {
+        String name;
     }
+
+    @Value
+    private static class OptionsDescription<V> {
+        OptionsKey<V> key;
+        Function<String, ? extends V> parser;
+        Supplier<? extends V> defaultValue;
+    }
+
 }
