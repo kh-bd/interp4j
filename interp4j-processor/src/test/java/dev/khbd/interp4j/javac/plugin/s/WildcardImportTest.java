@@ -13,26 +13,12 @@ public class WildcardImportTest extends AbstractPluginTest {
 
     @Test(dataProvider = "optionsDataProvider")
     public void interpolate_wildcardMethodsImport_interpolate(PluginOptions options) throws Exception {
-        String source = """
-                package cases.wildcard_import;
-                
-                import static dev.khbd.interp4j.core.Interpolations.*;
-                
-                public class Main {
-                
-                    public static String greet() {
-                        String name = "Alex";
-                        return s("I'm ${name}. ") + s("I'm ${name.toUpperCase()}");
-                    }
-                }
-                """;
-
-        CompilationResult result = compiler.compile(options, "cases/wildcard_import/Main.java", source);
+        CompilationResult result = compiler.compile(options, "/cases/wildcard/methods/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
         ClassLoader classLoader = result.getClassLoader();
-        Class<?> clazz = classLoader.loadClass("cases.wildcard_import.Main");
+        Class<?> clazz = classLoader.loadClass("cases.wildcard.methods.Main");
         Method method = clazz.getMethod("greet");
         String greet = (String) method.invoke(null);
 
@@ -41,26 +27,12 @@ public class WildcardImportTest extends AbstractPluginTest {
 
     @Test(dataProvider = "optionsDataProvider")
     public void interpolate_wildcardPackageImport_interpolate(PluginOptions options) throws Exception {
-        String source = """
-                package cases.wildcard_import;
-                
-                import dev.khbd.interp4j.core.*;
-                
-                public class Main {
-                
-                    public static String greet() {
-                        String name = "Alex";
-                        return Interpolations.s("I'm ${name}. ") + Interpolations.s("I'm ${name.toUpperCase()}");
-                    }
-                }
-                """;
-
-        CompilationResult result = compiler.compile(options, "cases/wildcard_import/Main.java", source);
+        CompilationResult result = compiler.compile(options, "cases/wildcard/classes/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
         ClassLoader classLoader = result.getClassLoader();
-        Class<?> clazz = classLoader.loadClass("cases.wildcard_import.Main");
+        Class<?> clazz = classLoader.loadClass("cases.wildcard.classes.Main");
         Method method = clazz.getMethod("greet");
         String greet = (String) method.invoke(null);
 

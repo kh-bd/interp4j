@@ -79,7 +79,7 @@ public class SInterpolationPlugin implements Plugin {
 
             Imports sImports = Imports.collector(Interpolation.S).collect(unit.getImports());
 
-                SInterpolationTreeScanner interpolator = new SInterpolationTreeScanner(context, options, sImports);
+            SInterpolationTreeScanner interpolator = new SInterpolationTreeScanner(context, options, sImports);
             unit.accept(interpolator, null);
 
             if (interpolator.interpolationTakePlace && options.prettyPrintAfterInterpolationEnabled()) {
@@ -281,7 +281,7 @@ public class SInterpolationPlugin implements Plugin {
             }
             ExpressionTree firstArgument = getFirstArgument(expression);
             if (firstArgument.getKind() != Tree.Kind.STRING_LITERAL) {
-                logger.error(expression.pos(), "non.string.literal");
+                logger.error(expression.pos(),  "non.string.literal");
                 return null;
             }
 
