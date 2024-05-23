@@ -6,7 +6,10 @@ package dev.khbd.interp4j.core.internal.s;
  * <p>Note: This class is implementation detail, don't use yourself.
  *
  * @author Sergei_Khadanovich
+ * @deprecated This class is deprecated because inlined interpolation
+ * is going to be used in the future releases.
  */
+@Deprecated(since = "1.0.0", forRemoval = true)
 public class SInterpolator {
 
     /**
