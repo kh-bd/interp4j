@@ -1,10 +1,11 @@
 package dev.khbd.interp4j.javac.plugin.s;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import dev.khbd.interp4j.javac.plugin.AbstractPluginTest;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Method;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sergei_Khadanovich
@@ -13,11 +14,11 @@ public class InterpolateConditionalExpressionTest extends AbstractPluginTest {
 
     private static final String SOURCE = """
             package cases.conditional_expression;
-                       
+            
             import static dev.khbd.interp4j.core.Interpolations.s;
-                        
+            
             public class Main {
-                        
+            
                  public static String greet(boolean flag) {
                       String name = "Alex";
                       return flag ? s("Hello, ${name}") : s("Hi, ${name}");
@@ -25,9 +26,9 @@ public class InterpolateConditionalExpressionTest extends AbstractPluginTest {
             }
             """;
 
-    @Test(dataProvider = "optionsDataProvider")
-    public void interpolate_sInTrueCondition_interpolate(PluginOptions options) throws Exception {
-        CompilationResult result = compiler.compile(options, "cases/conditional_expression/Main.java", SOURCE);
+    @Test
+    public void interpolate_sInTrueCondition_interpolate() throws Exception {
+        CompilationResult result = compiler.compile("cases/conditional_expression/Main.java", SOURCE);
 
         assertThat(result.isSuccess()).isTrue();
 
@@ -39,9 +40,9 @@ public class InterpolateConditionalExpressionTest extends AbstractPluginTest {
         assertThat(greet).isEqualTo("Hello, Alex");
     }
 
-    @Test(dataProvider = "optionsDataProvider")
-    public void interpolate_sInFalseCondition_interpolate(PluginOptions options) throws Exception {
-        CompilationResult result = compiler.compile(options, "cases/conditional_expression/Main.java", SOURCE);
+    @Test
+    public void interpolate_sInFalseCondition_interpolate() throws Exception {
+        CompilationResult result = compiler.compile("cases/conditional_expression/Main.java", SOURCE);
 
         assertThat(result.isSuccess()).isTrue();
 
