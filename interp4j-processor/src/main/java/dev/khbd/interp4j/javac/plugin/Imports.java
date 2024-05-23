@@ -1,4 +1,4 @@
-package dev.khbd.interp4j.javac.plugin.s;
+package dev.khbd.interp4j.javac.plugin;
 
 import com.sun.source.tree.ImportTree;
 import com.sun.source.tree.Tree;
@@ -19,15 +19,15 @@ import java.util.function.Predicate;
  */
 @ToString
 @RequiredArgsConstructor
-class Imports {
+public class Imports {
 
     private final Set<ImportType> imports;
 
-    boolean isSimpleMethodCallAllowed() {
+    public boolean isSimpleMethodCallAllowed() {
         return imports.contains(ImportType.METHOD) || imports.contains(ImportType.CLASS_WILDCARD);
     }
 
-    boolean isQualifiedMethodCallAllowed() {
+    public boolean isQualifiedMethodCallAllowed() {
         return imports.contains(ImportType.CLASS) || imports.contains(ImportType.PACKAGE_WILDCARD);
     }
 
@@ -36,7 +36,7 @@ class Imports {
      *
      * @param interpolation interpolation type
      */
-    static ImportsCollector collector(Interpolation interpolation) {
+    public static ImportsCollector collector(Interpolation interpolation) {
         return new ImportsCollectorImpl(interpolation);
     }
 
@@ -54,7 +54,7 @@ class Imports {
         CLASS {
             @Override
             ImportTypePredicate buildPredicate(Interpolation interpolation) {
-                return new ImportTypePredicate(this, PluginUtils.pathPredicate(interpolation.getPackageName() + "." + interpolation.getClassName()));
+                return new ImportTypePredicate(this, PluginUtils.pathPredicate(interpolation.getPackageName(), interpolation.getClassName()));
             }
         },
 
@@ -67,7 +67,7 @@ class Imports {
         METHOD {
             @Override
             ImportTypePredicate buildPredicate(Interpolation interpolation) {
-                return new ImportTypePredicate(this, PluginUtils.pathPredicate(interpolation.getPackageName() + "." + interpolation.getClassName() + "." + interpolation.getMethod()));
+                return new ImportTypePredicate(this, PluginUtils.pathPredicate(interpolation.getPackageName(), interpolation.getClassName(), interpolation.getMethod()));
             }
         },
 
@@ -80,7 +80,7 @@ class Imports {
         CLASS_WILDCARD {
             @Override
             ImportTypePredicate buildPredicate(Interpolation interpolation) {
-                return new ImportTypePredicate(this, PluginUtils.pathPredicate(interpolation.getPackageName() + "." + interpolation.getClassName() + ".*"));
+                return new ImportTypePredicate(this, PluginUtils.pathPredicate(interpolation.getPackageName(), interpolation.getClassName(), "*"));
             }
         },
 
@@ -93,7 +93,7 @@ class Imports {
         PACKAGE_WILDCARD {
             @Override
             ImportTypePredicate buildPredicate(Interpolation interpolation) {
-                return new ImportTypePredicate(this, PluginUtils.pathPredicate(interpolation.getPackageName() + ".*"));
+                return new ImportTypePredicate(this, PluginUtils.pathPredicate(interpolation.getPackageName(), "*"));
             }
         };
 

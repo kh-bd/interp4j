@@ -1,4 +1,4 @@
-package dev.khbd.interp4j.javac.plugin.s;
+package dev.khbd.interp4j.javac.plugin;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 /**
  * @author Sergei_Khadanovich
  */
-public class Options {
+class Options {
 
     private static final OptionsKey<Boolean> PRETTY_PRINTING_ENABLED = new OptionsKey<>("prettyPrint.after.interpolation");
 
@@ -20,7 +20,7 @@ public class Options {
 
     private final Map<OptionsKey<?>, Object> params = new HashMap<>();
 
-    public Options(String... args) {
+    Options(String... args) {
         for (String arg : args) {
             String[] parts = arg.split("=");
             if (parts.length != 2) {
@@ -52,7 +52,10 @@ public class Options {
         }
     }
 
-    public boolean prettyPrintAfterInterpolationEnabled() {
+    /**
+     * Check if pretty printing enabled or not.
+     */
+    boolean prettyPrintAfterInterpolationEnabled() {
         return getKeyValue(PRETTY_PRINTING_ENABLED);
     }
 

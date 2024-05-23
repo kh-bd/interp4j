@@ -1,4 +1,4 @@
-package dev.khbd.interp4j.javac.plugin.s;
+package dev.khbd.interp4j.javac.plugin;
 
 import com.sun.source.tree.ImportTree;
 
@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @author Sergei Khadanovich
  */
-interface ImportsCollector {
+public interface ImportsCollector {
 
     /**
      * Collect all import infos

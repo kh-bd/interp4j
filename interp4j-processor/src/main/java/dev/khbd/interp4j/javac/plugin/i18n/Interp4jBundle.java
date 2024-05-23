@@ -1,4 +1,4 @@
-package dev.khbd.interp4j.javac.plugin.s.i18n;
+package dev.khbd.interp4j.javac.plugin.i18n;
 
 import java.util.ListResourceBundle;
 
