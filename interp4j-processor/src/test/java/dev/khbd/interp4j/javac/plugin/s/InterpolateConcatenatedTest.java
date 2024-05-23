@@ -1,25 +1,26 @@
 package dev.khbd.interp4j.javac.plugin.s;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import dev.khbd.interp4j.javac.plugin.AbstractPluginTest;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Method;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sergei_Khadanovich
  */
 public class InterpolateConcatenatedTest extends AbstractPluginTest {
 
-    @Test(dataProvider = "optionsDataProvider")
-    public void interpolate_sMethodInvokedWithConcatenatedLiterals_interpolate(PluginOptions options) throws Exception {
+    @Test
+    public void interpolate_sMethodInvokedWithConcatenatedLiterals_interpolate() throws Exception {
         String source = """
                 package cases.literals_concatenation;
-                               
+                
                 import static dev.khbd.interp4j.core.Interpolations.s;
-                                
+                
                 public class Main {
-                                
+                
                     public static String greet() {
                         String name = "Alex";
                         return s("Hello, "
@@ -30,7 +31,7 @@ public class InterpolateConcatenatedTest extends AbstractPluginTest {
                 }
                 """;
 
-        CompilationResult result = compiler.compile(options, "cases/literals_concatenation/Main.java", source);
+        CompilationResult result = compiler.compile("cases/literals_concatenation/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 

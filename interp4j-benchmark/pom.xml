@@ -13,10 +13,6 @@
 
     <artifactId>interp4j-benchmark</artifactId>
 
-    <properties>
-        <inlined>false</inlined>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>dev.khbd.interp4j</groupId>
@@ -46,7 +42,7 @@
                     <target>17</target>
                     <fork>true</fork>
                     <compilerArgs>
-                        <arg>-Xplugin:interp4j interpolation.inlined=${inlined}</arg>
+                        <arg>-Xplugin:interp4j</arg>
                         <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
                         <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
                         <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
@@ -70,12 +66,6 @@
     </build>
 
     <profiles>
-        <profile>
-            <id>inlined</id>
-            <properties>
-                <inlined>true</inlined>
-            </properties>
-        </profile>
         <profile>
             <id>benchmark</id>
             <build>

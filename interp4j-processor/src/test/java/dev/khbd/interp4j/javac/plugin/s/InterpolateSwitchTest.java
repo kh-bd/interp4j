@@ -1,25 +1,26 @@
 package dev.khbd.interp4j.javac.plugin.s;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import dev.khbd.interp4j.javac.plugin.AbstractPluginTest;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Method;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sergei_Khadanovich
  */
 public class InterpolateSwitchTest extends AbstractPluginTest {
 
-    @Test(dataProvider = "optionsDataProvider")
-    public void interpolate_sInReceiverExpression_interpolate(PluginOptions options) throws Exception {
+    @Test
+    public void interpolate_sInReceiverExpression_interpolate() throws Exception {
         String source = """
                 package cases.in_switch.receiver;
-                                
+                
                 import static dev.khbd.interp4j.core.Interpolations.s;
-                                
+                
                 public class Main {
-                                
+                
                     public static String greet(boolean isBos, String name) {
                         String result;
                         // really weird case to support s function here, but maybe someone will need it
@@ -35,15 +36,15 @@ public class InterpolateSwitchTest extends AbstractPluginTest {
                         }
                         return result;
                     }
-                                
+                
                     private static String chooseGreet(boolean isBos) {
                         return isBos ? "Hello" : "Hi";
                     }
-                                
+                
                 }
                 """;
 
-        CompilationResult result = compiler.compile(options, "cases/in_switch/receiver/Main.java", source);
+        CompilationResult result = compiler.compile("cases/in_switch/receiver/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 
@@ -57,15 +58,15 @@ public class InterpolateSwitchTest extends AbstractPluginTest {
         assertThat(greet).isEqualTo("Alex was greeted incorrectly");
     }
 
-    @Test(dataProvider = "optionsDataProvider")
-    public void interpolate_sInCaseExpression_interpolate(PluginOptions options) throws Exception {
+    @Test
+    public void interpolate_sInCaseExpression_interpolate() throws Exception {
         String source = """
                 package cases.in_switch.expression;
-                                
+                
                 import static dev.khbd.interp4j.core.Interpolations.s;
-                                
+                
                 public class Main {
-                                
+                
                     public static String greet(String name) {
                         String result = switch (name) {
                             case "Alex" -> s("Hello, $name");
@@ -73,11 +74,11 @@ public class InterpolateSwitchTest extends AbstractPluginTest {
                         };
                         return result;
                     }
-                                
+                
                 }
                 """;
 
-        CompilationResult result = compiler.compile(options, "/cases/in_switch/expression/Main.java", source);
+        CompilationResult result = compiler.compile("/cases/in_switch/expression/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 
@@ -91,15 +92,15 @@ public class InterpolateSwitchTest extends AbstractPluginTest {
         assertThat(greet).isEqualTo("Who are you?");
     }
 
-    @Test(dataProvider = "optionsDataProvider")
-    public void interpolate_sInCaseStatementWithYield_interpolate(PluginOptions options) throws Exception {
+    @Test
+    public void interpolate_sInCaseStatementWithYield_interpolate() throws Exception {
         String source = """
                 package cases.in_switch.statement;
-                                
+                
                 import static dev.khbd.interp4j.core.Interpolations.s;
-                                
+                
                 public class Main {
-                                
+                
                     public static String greet(String name) {
                         String result = switch (name) {
                             case "Alex" -> {
@@ -110,11 +111,11 @@ public class InterpolateSwitchTest extends AbstractPluginTest {
                         };
                         return result;
                     }
-                                
+                
                 }
                 """;
 
-        CompilationResult result = compiler.compile(options, "cases/in_switch/statement/Main.java", source);
+        CompilationResult result = compiler.compile("cases/in_switch/statement/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 
@@ -128,15 +129,15 @@ public class InterpolateSwitchTest extends AbstractPluginTest {
         assertThat(greet).isEqualTo("Who are you?");
     }
 
-    @Test(dataProvider = "optionsDataProvider")
-    public void interpolate_sInCaseGuard_interpolate(PluginOptions options) throws Exception {
+    @Test
+    public void interpolate_sInCaseGuard_interpolate() throws Exception {
         String source = """
                 package cases.in_switch.guard;
-                                
+                
                 import static dev.khbd.interp4j.core.Interpolations.s;
-                               
+                
                 public class Main {
-                                
+                
                     public static String greet(Object name) {
                         String result = switch (name) {
                             case String str && s("_${str.toUpperCase()}_").length() > 4 -> str;
@@ -144,11 +145,11 @@ public class InterpolateSwitchTest extends AbstractPluginTest {
                         };
                         return result;
                     }
-                                
+                
                 }
                 """;
 
-        CompilationResult result = compiler.compile(options, "cases/in_switch/guard/Main.java", source);
+        CompilationResult result = compiler.compile("cases/in_switch/guard/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 

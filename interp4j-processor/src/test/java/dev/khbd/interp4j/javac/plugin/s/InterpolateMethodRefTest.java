@@ -1,18 +1,19 @@
 package dev.khbd.interp4j.javac.plugin.s;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import dev.khbd.interp4j.javac.plugin.AbstractPluginTest;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Method;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sergei_Khadanovich
  */
 public class InterpolateMethodRefTest extends AbstractPluginTest {
 
-    @Test(dataProvider = "optionsDataProvider")
-    public void interpolate_sInMethodRef_interpolate(PluginOptions options) throws Exception {
+    @Test
+    public void interpolate_sInMethodRef_interpolate() throws Exception {
         String source = """
                 package cases.member_ref;
                 
@@ -32,7 +33,7 @@ public class InterpolateMethodRefTest extends AbstractPluginTest {
                 }
                 """;
 
-        CompilationResult result = compiler.compile(options, "cases/member_ref/Main.java", source);
+        CompilationResult result = compiler.compile("cases/member_ref/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 

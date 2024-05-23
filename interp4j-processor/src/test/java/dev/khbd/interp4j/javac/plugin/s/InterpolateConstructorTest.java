@@ -1,25 +1,26 @@
 package dev.khbd.interp4j.javac.plugin.s;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import dev.khbd.interp4j.javac.plugin.AbstractPluginTest;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Method;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Sergei_Khadanovich
  */
 public class InterpolateConstructorTest extends AbstractPluginTest {
 
-    @Test(dataProvider = "optionsDataProvider")
-    public void interpolate_inConstructorArguments_interpolate(PluginOptions options) throws Exception {
+    @Test
+    public void interpolate_inConstructorArguments_interpolate() throws Exception {
         String source = """
                 package cases.constructor_call;
                 
                 import static dev.khbd.interp4j.core.Interpolations.s;
                 
                 public class Main {
-                                
+                
                     public static String greet() {
                         String name = "Alex";
                         return new Greeter(s("Hello, $name")).greet();
@@ -39,7 +40,7 @@ public class InterpolateConstructorTest extends AbstractPluginTest {
                 }
                 """;
 
-        CompilationResult result = compiler.compile(options, "cases/constructor_call/Main.java", source);
+        CompilationResult result = compiler.compile("cases/constructor_call/Main.java", source);
 
         assertThat(result.isSuccess()).isTrue();
 

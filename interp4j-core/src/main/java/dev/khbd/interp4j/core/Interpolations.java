@@ -31,4 +31,14 @@ public final class Interpolations {
     public static String s(String str) {
         throw new UnsupportedOperationException("Operation is not supported");
     }
+
+    /**
+     * Interpolate specified string literal.
+     *
+     * @param str string literal
+     * @return interpolated string
+     */
+    public static String fmt(String str) {
+        throw new UnsupportedOperationException("Operation is not supported");
+    }
 }
