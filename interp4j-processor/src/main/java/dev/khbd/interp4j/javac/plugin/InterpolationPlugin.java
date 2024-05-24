@@ -23,7 +23,9 @@ import com.sun.tools.javac.api.BasicJavacTask;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.Pretty;
 import com.sun.tools.javac.util.Context;
+import com.sun.tools.javac.util.JCDiagnostic;
 import com.sun.tools.javac.util.List;
+import com.sun.tools.javac.util.Log;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -63,7 +65,7 @@ public class InterpolationPlugin implements Plugin {
 
                 List<Interpolator> interpolators = FACTORIES.map(factory -> factory.create(context, unit));
 
-                SInterpolationTreeScanner interpolationScanner = new SInterpolationTreeScanner(interpolators);
+                SInterpolationTreeScanner interpolationScanner = new SInterpolationTreeScanner(interpolators, Log.instance(context));
                 unit.accept(interpolationScanner, null);
 
                 if (interpolationScanner.interpolationTakePlace && options.prettyPrintAfterInterpolationEnabled()) {
@@ -91,6 +93,7 @@ public class InterpolationPlugin implements Plugin {
     private static class SInterpolationTreeScanner extends TreeScanner<Void, Void> {
 
         final List<Interpolator> interpolators;
+        final Log logger;
 
         @Getter
         boolean interpolationTakePlace = false;
@@ -255,7 +258,14 @@ public class InterpolationPlugin implements Plugin {
 
             for (Interpolator interpolator : interpolators) {
                 if (interpolator.isInterpolateCall(invocation)) {
-                    return interpolator.interpolate(invocation);
+                    Result<java.util.List<Message>, JCTree.JCExpression> result = interpolator.interpolate(invocation);
+                    if (!result.isError()) {
+                        return result.getValue();
+                    }
+                    for (Message error : result.getError()) {
+                        logger.error(error.getPosition(), new JCDiagnostic.Error("compiler", error.getCode()));
+                    }
+                    return null;
                 }
             }
 
