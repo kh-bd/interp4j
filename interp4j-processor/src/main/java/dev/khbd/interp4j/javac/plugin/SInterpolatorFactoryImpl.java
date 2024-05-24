@@ -1,7 +1,6 @@
 package dev.khbd.interp4j.javac.plugin;
 
 import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.LiteralTree;
 import com.sun.source.tree.Tree;
 import com.sun.tools.javac.parser.JavacParser;
@@ -9,7 +8,6 @@ import com.sun.tools.javac.parser.ParserFactory;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.Log;
 import dev.khbd.interp4j.javac.plugin.s.SCode;
 import dev.khbd.interp4j.javac.plugin.s.SExpression;
 import dev.khbd.interp4j.javac.plugin.s.SExpressionParser;
@@ -17,6 +15,8 @@ import dev.khbd.interp4j.javac.plugin.s.SExpressionVisitor;
 import dev.khbd.interp4j.javac.plugin.s.SText;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -35,24 +35,21 @@ class SInterpolatorFactoryImpl extends AbstractInterpolatorFactory {
 
     private class SInterpolator extends AbstractInterpolator {
 
-        private final Log logger;
         private final TreeMaker treeMaker;
         private final ParserFactory parserFactory;
 
         SInterpolator(Context context, CompilationUnitTree unit) {
             super(unit);
 
-            this.logger = Log.instance(context);
             this.treeMaker = TreeMaker.instance(context);
             this.parserFactory = ParserFactory.instance(context);
         }
 
         @Override
-        public JCTree.JCExpression interpolate(JCTree.JCMethodInvocation invocation) {
-            ExpressionTree firstArgument = invocation.getArguments().get(0);
+        public Result<List<Message>, JCTree.JCExpression> interpolate(JCTree.JCMethodInvocation invocation) {
+            JCTree.JCExpression firstArgument = invocation.getArguments().get(0);
             if (firstArgument.getKind() != Tree.Kind.STRING_LITERAL) {
-                logger.error(invocation.pos(), "non.string.literal");
-                return null;
+                return Result.error(Collections.singletonList(new Message("non.string.literal", firstArgument)));
             }
 
             LiteralTree literalTree = (LiteralTree) firstArgument;
@@ -60,11 +57,10 @@ class SInterpolatorFactoryImpl extends AbstractInterpolatorFactory {
 
             SExpression sExpr = SExpressionParser.getInstance().parse(literal).orElse(null);
             if (Objects.isNull(sExpr)) {
-                logger.error(invocation.pos(), "wrong.expression.format");
-                return null;
+                return Result.error(Collections.singletonList(new Message("wrong.expression.format", firstArgument)));
             }
 
-            return interpolate(literal, sExpr, invocation.pos);
+            return Result.success(interpolate(literal, sExpr, invocation.pos));
         }
 
         private JCTree.JCExpression interpolate(String literal, SExpression sExpr, int basePosition) {
