@@ -1,4 +1,4 @@
-package dev.khbd.interp4j.javac.plugin.s;
+package dev.khbd.interp4j.javac.plugin;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
@@ -11,16 +11,11 @@ import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.Log;
-import dev.khbd.interp4j.javac.plugin.Imports;
-import dev.khbd.interp4j.javac.plugin.Interpolation;
-import dev.khbd.interp4j.javac.plugin.Interpolator;
-import dev.khbd.interp4j.javac.plugin.InterpolatorFactory;
-import dev.khbd.interp4j.javac.plugin.PluginUtils;
-import dev.khbd.interp4j.javac.plugin.s.expr.SCode;
-import dev.khbd.interp4j.javac.plugin.s.expr.SExpression;
-import dev.khbd.interp4j.javac.plugin.s.expr.SExpressionParser;
-import dev.khbd.interp4j.javac.plugin.s.expr.SExpressionVisitor;
-import dev.khbd.interp4j.javac.plugin.s.expr.SText;
+import dev.khbd.interp4j.javac.plugin.s.SCode;
+import dev.khbd.interp4j.javac.plugin.s.SExpression;
+import dev.khbd.interp4j.javac.plugin.s.SExpressionParser;
+import dev.khbd.interp4j.javac.plugin.s.SExpressionVisitor;
+import dev.khbd.interp4j.javac.plugin.s.SText;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -30,7 +25,7 @@ import java.util.function.Predicate;
 /**
  * @author Sergei Khadanovich
  */
-public class SInterpolatorFactoryImpl implements InterpolatorFactory {
+class SInterpolatorFactoryImpl implements InterpolatorFactory {
 
     private static final Predicate<Tree> METHOD_PREDICATE = PluginUtils.pathPredicate(Interpolation.S.getMethod());
     private static final Predicate<Tree> QUALIFIED_METHOD_PREDICATE =

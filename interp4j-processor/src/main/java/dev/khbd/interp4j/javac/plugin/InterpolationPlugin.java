@@ -24,7 +24,6 @@ import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.Pretty;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.List;
-import dev.khbd.interp4j.javac.plugin.s.SInterpolatorFactoryImpl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
