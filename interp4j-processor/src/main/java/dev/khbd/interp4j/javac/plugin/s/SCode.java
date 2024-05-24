@@ -5,7 +5,7 @@ package dev.khbd.interp4j.javac.plugin.s;
  *
  * @author Sergei_Khadanovich
  */
-public record SCode(String expression, int start, int end) implements SExpressionPart {
+public record SCode(String expression, Position position) implements SExpressionPart {
 
     @Override
     public SExpressionPartKind kind() {
