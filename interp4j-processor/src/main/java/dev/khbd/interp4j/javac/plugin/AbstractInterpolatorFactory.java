@@ -58,12 +58,17 @@ abstract class AbstractInterpolatorFactory implements InterpolatorFactory {
                 return Result.error(List.of(new Message("non.string.literal", firstArgument)));
             }
 
-            LiteralTree literalTree = (LiteralTree) firstArgument;
+            JCTree.JCLiteral literalTree = (JCTree.JCLiteral) firstArgument;
             String literal = (String) literalTree.getValue();
 
             E expression = parse(literal);
             if (Objects.isNull(expression)) {
                 return Result.error(List.of(new Message("wrong.expression.format", firstArgument)));
+            }
+
+            List<Message> errors = validate(literalTree, expression);
+            if (!errors.isEmpty()) {
+                return Result.error(errors);
             }
 
             return Result.success(interpolate(invocation, literal, expression));
@@ -79,7 +84,7 @@ abstract class AbstractInterpolatorFactory implements InterpolatorFactory {
         /**
          * Validate expression for correctness.
          */
-        protected List<Message> validate(E expression) {
+        protected List<Message> validate(JCTree.JCLiteral literal, E expression) {
             return List.of();
         }
 
