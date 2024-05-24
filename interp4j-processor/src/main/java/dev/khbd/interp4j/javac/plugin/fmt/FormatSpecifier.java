@@ -48,4 +48,18 @@ public record FormatSpecifier(Index index, String flags, Integer width, Integer 
         builder.append(conversion.symbols());
         return builder.toString();
     }
+
+    /**
+     * Check if specifier is special %% specifier.
+     */
+    public boolean isPercent() {
+        return conversion.symbols().equals("%");
+    }
+
+    /**
+     * Check if specifier is special %n specifier.
+     */
+    public boolean isNextLine() {
+        return conversion.symbols().equals("n");
+    }
 }

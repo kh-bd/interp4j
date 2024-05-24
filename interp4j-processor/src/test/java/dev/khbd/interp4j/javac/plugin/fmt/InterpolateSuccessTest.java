@@ -146,4 +146,33 @@ public class InterpolateSuccessTest extends AbstractPluginTest {
 
         assertThat(greet).isEqualTo("55%. Okey?");
     }
+
+    @Test
+    public void interpolate_validExpressionWithCodes_interpolate() throws Exception {
+        String source = """
+                package cases.simple;
+                
+                import static dev.khbd.interp4j.core.Interpolations.*;
+                
+                public class Main {
+                
+                    public static String greet() {
+                        String name = "Alex";
+                        int age = 20;
+                        return fmt("Hello, %s${name}. Are you %d${age}?");
+                    }
+                }
+                """;
+
+        CompilationResult result = compiler.compile("cases/simple/Main.java", source);
+
+        assertThat(result.isSuccess()).isTrue();
+
+        ClassLoader classLoader = result.getClassLoader();
+        Class<?> clazz = classLoader.loadClass("cases.simple.Main");
+        Method method = clazz.getMethod("greet");
+        String greet = (String) method.invoke(null);
+
+        assertThat(greet).isEqualTo("Hello, Alex. Are you 20?");
+    }
 }
