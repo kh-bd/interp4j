@@ -1,5 +1,8 @@
 package dev.khbd.interp4j.javac.plugin.fmt;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +11,8 @@ import java.util.List;
  *
  * @author Sergei Khadanovich
  */
+@ToString
+@EqualsAndHashCode
 public class FormatExpression {
 
     private final List<FormatExpressionPart> parts;

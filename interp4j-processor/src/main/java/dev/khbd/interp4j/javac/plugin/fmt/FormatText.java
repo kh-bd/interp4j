@@ -22,4 +22,11 @@ public class FormatText implements FormatExpressionPart {
     public void visit(FormatExpressionVisitor visitor) {
         visitor.visitTextPart(this);
     }
+
+    /**
+     * Check if text block is empty or not.
+     */
+    boolean isEmpty() {
+        return text.isEmpty();
+    }
 }
