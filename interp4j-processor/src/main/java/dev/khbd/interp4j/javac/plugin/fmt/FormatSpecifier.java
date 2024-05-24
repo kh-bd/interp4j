@@ -1,4 +1,4 @@
-package dev.khbd.interp4j.javac.plugin.fmt.expr;
+package dev.khbd.interp4j.javac.plugin.fmt;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;

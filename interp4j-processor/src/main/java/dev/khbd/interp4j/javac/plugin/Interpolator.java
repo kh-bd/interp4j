@@ -7,7 +7,7 @@ import com.sun.tools.javac.tree.JCTree;
  *
  * @author Sergei Khadanovich
  */
-public interface Interpolator {
+interface Interpolator {
 
     /**
      * Check if method call is interpolation call.

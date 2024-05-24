@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @author Sergei Khadanovich
  */
-public interface ImportsCollector {
+interface ImportsCollector {
 
     /**
      * Collect all import infos

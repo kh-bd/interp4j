@@ -1,26 +1,26 @@
-package dev.khbd.interp4j.javac.plugin.s.expr;
+package dev.khbd.interp4j.javac.plugin.s;
 
 import lombok.Value;
 
 /**
- * Code model.
+ * Text part model.
  *
  * @author Sergei_Khadanovich
  */
 @Value
-public class SCode implements SExpressionPart {
+public class SText implements SExpressionPart {
 
-    String expression;
+    String text;
     int start;
     int end;
 
     @Override
     public SExpressionPartKind kind() {
-        return SExpressionPartKind.CODE;
+        return SExpressionPartKind.TEXT;
     }
 
     @Override
     public void visit(SExpressionVisitor visitor) {
-        visitor.visitCodePart(this);
+        visitor.visitTextPart(this);
     }
 }
