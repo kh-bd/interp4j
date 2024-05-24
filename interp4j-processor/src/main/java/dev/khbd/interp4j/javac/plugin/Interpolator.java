@@ -2,6 +2,8 @@ package dev.khbd.interp4j.javac.plugin;
 
 import com.sun.tools.javac.tree.JCTree;
 
+import java.util.List;
+
 /**
  * Extension point to implement interpolation logic.
  *
@@ -22,5 +24,5 @@ interface Interpolator {
      * @param invocation method invocation tree
      * @return {@literal null} if interpolation failed
      */
-    JCTree.JCExpression interpolate(JCTree.JCMethodInvocation invocation);
+    Result<List<Message>, JCTree.JCExpression> interpolate(JCTree.JCMethodInvocation invocation);
 }
