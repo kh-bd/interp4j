@@ -10,12 +10,16 @@ import com.sun.tools.javac.util.Names;
 import dev.khbd.interp4j.javac.plugin.fmt.FormatCode;
 import dev.khbd.interp4j.javac.plugin.fmt.FormatExpression;
 import dev.khbd.interp4j.javac.plugin.fmt.FormatExpressionParser;
+import dev.khbd.interp4j.javac.plugin.fmt.FormatExpressionPart;
 import dev.khbd.interp4j.javac.plugin.fmt.FormatExpressionVisitor;
 import dev.khbd.interp4j.javac.plugin.fmt.FormatSpecifier;
 import dev.khbd.interp4j.javac.plugin.fmt.FormatText;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Sergei Khadanovich
@@ -51,8 +55,10 @@ class FmtInterpolatorFactoryImpl extends AbstractInterpolatorFactory {
         }
 
         @Override
-        protected List<Message> validate(FormatExpression expression) {
-            return super.validate(expression);
+        protected List<Message> validate(JCTree.JCLiteral literal, FormatExpression expression) {
+            FormatValidator validator = new FormatValidator(literal);
+            expression.visit(validator);
+            return validator.getMessages();
         }
 
         @Override
@@ -101,6 +107,64 @@ class FmtInterpolatorFactoryImpl extends AbstractInterpolatorFactory {
 
             public String getTemplate() {
                 return template.toString();
+            }
+        }
+
+        @RequiredArgsConstructor
+        private static final class FormatValidator implements FormatExpressionVisitor {
+
+            @Getter
+            private final List<Message> messages = new ArrayList<>();
+            private final JCTree.JCExpression literal;
+
+            private FormatExpressionPart prev;
+
+            @Override
+            public void visitTextPart(FormatText text) {
+                if (Objects.nonNull(prev)) {
+                    if (prev.isSpecifier()) {
+                        // text after specifier is wrong
+                        messages.add(new Message("fmt.specifier.without.expression", literal, prev.position().start()));
+                    }
+                }
+                this.prev = text;
+            }
+
+            @Override
+            public void visitCodePart(FormatCode code) {
+                if (Objects.isNull(prev)) {
+                    // code part is first in expression. wrong
+                    messages.add(new Message("fmt.expression.without.specifier", literal, code.position().start()));
+                } else {
+                    if (!prev.isSpecifier()) {
+                        // specifier must be present before each expression
+                        messages.add(new Message("fmt.expression.without.specifier", literal, code.position().start()));
+                    } else {
+                        // specifier present
+                        // but, %% and %n are not allowed before expression
+                        FormatSpecifier specifier = (FormatSpecifier) prev;
+                        if (specifier.conversion().symbols().equals("%") || specifier.conversion().symbols().equals("n")) {
+                            messages.add(new Message("fmt.expression.after.special.specifiers", literal, code.position().start()));
+                        }
+                    }
+                }
+                this.prev = code;
+            }
+
+            @Override
+            public void visitSpecifierPart(FormatSpecifier specifier) {
+                if (Objects.nonNull(specifier.index())) {
+                    messages.add(new Message("fmt.indexing", literal, specifier.position().start()));
+                }
+                this.prev = specifier;
+            }
+
+            @Override
+            public void finish() {
+                if (prev.isSpecifier()) {
+                    // specifier is last part. wrong
+                    messages.add(new Message("fmt.specifier.without.expression", literal, prev.position().start()));
+                }
             }
         }
     }
