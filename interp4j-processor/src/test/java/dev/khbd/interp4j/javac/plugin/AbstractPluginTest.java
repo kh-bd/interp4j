@@ -1,4 +1,4 @@
-package dev.khbd.interp4j.javac.plugin.s;
+package dev.khbd.interp4j.javac.plugin;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -127,11 +127,11 @@ public abstract class AbstractPluginTest {
 
     protected static class TestCompiler {
 
-        CompilationResult compile(String... paths) {
+        public CompilationResult compile(String... paths) {
             return compile(new PluginOptions(true), paths);
         }
 
-        CompilationResult compile(PluginOptions options, String... paths) {
+        public CompilationResult compile(PluginOptions options, String... paths) {
             TestDiagnosticListener diagnostic = new TestDiagnosticListener();
 
             JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -179,16 +179,16 @@ public abstract class AbstractPluginTest {
         ClassLoader classLoader;
         List<Diagnostic<? extends JavaFileObject>> diagnostics;
 
-        boolean isSuccess() {
+        public boolean isSuccess() {
             return diagnostics.stream()
                     .noneMatch(d -> d.getKind() == Diagnostic.Kind.ERROR);
         }
 
-        boolean isFail() {
+        public boolean isFail() {
             return !isSuccess();
         }
 
-        List<Diagnostic<? extends JavaFileObject>> getErrors() {
+        public List<Diagnostic<? extends JavaFileObject>> getErrors() {
             return diagnostics.stream()
                     .filter(d -> d.getKind() == Diagnostic.Kind.ERROR)
                     .collect(Collectors.toList());
