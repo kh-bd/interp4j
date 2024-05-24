@@ -11,8 +11,7 @@ import lombok.Value;
 public class SText implements SExpressionPart {
 
     String text;
-    int start;
-    int end;
+    Position position;
 
     @Override
     public SExpressionPartKind kind() {

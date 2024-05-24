@@ -44,10 +44,10 @@ class SGrammarDefinition extends GrammarDefinition {
                 new ExpressionAndText((SCode) seq.get(0), (SText) seq.get(1)));
 
         def(EXPRESSION, expressionWithBrackets().or(expressionWithoutBrackets()));
-        action(EXPRESSION, (Token token) -> new SCode(token.getValue(), token.getStart(), token.getStop()));
+        action(EXPRESSION, (Token token) -> new SCode(token.getValue(), new Position(token.getStart(), token.getStop())));
 
         def(TEXT, textParser());
-        action(TEXT, (Token token) -> new SText(token.getValue(), token.getStart(), token.getStop()));
+        action(TEXT, (Token token) -> new SText(token.getValue(), new Position(token.getStart(), token.getStop())));
     }
 
     private void addNotEmptyTextPart(SExpression expression, SText text) {
