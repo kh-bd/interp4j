@@ -1,6 +1,8 @@
 package dev.khbd.interp4j.javac.plugin.s.expr;
 
 /**
+ * Expression part model.
+ *
  * @author Sergei_Khadanovich
  */
 public interface SExpressionPart {
@@ -29,37 +31,11 @@ public interface SExpressionPart {
     }
 
     /**
-     * Is expression part expression or not.
+     * Is expression part code or not.
      *
      * @return {@literal true} if expression part is expression and {@literal false} otherwise
      */
-    default boolean isExpression() {
-        return kind() == SExpressionPartKind.EXPRESSION;
-    }
-
-    /**
-     * Try to cast current part to text part.
-     *
-     * @return text part
-     * @throws IllegalStateException if current part is not a text
-     */
-    default TextPart asText() {
-        if (!isText()) {
-            throw new IllegalStateException("Not a text part");
-        }
-        return (TextPart) this;
-    }
-
-    /**
-     * Try to cast current part to expression part.
-     *
-     * @return expression part
-     * @throws IllegalStateException if currency part is not an expression
-     */
-    default ExpressionPart asExpression() {
-        if (!isExpression()) {
-            throw new IllegalStateException("Not an expression part");
-        }
-        return (ExpressionPart) this;
+    default boolean isCode() {
+        return kind() == SExpressionPartKind.CODE;
     }
 }

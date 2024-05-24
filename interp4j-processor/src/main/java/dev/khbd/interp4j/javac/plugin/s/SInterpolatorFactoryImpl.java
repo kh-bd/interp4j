@@ -16,11 +16,11 @@ import dev.khbd.interp4j.javac.plugin.Interpolation;
 import dev.khbd.interp4j.javac.plugin.Interpolator;
 import dev.khbd.interp4j.javac.plugin.InterpolatorFactory;
 import dev.khbd.interp4j.javac.plugin.PluginUtils;
-import dev.khbd.interp4j.javac.plugin.s.expr.ExpressionPart;
+import dev.khbd.interp4j.javac.plugin.s.expr.SCode;
 import dev.khbd.interp4j.javac.plugin.s.expr.SExpression;
 import dev.khbd.interp4j.javac.plugin.s.expr.SExpressionParser;
 import dev.khbd.interp4j.javac.plugin.s.expr.SExpressionVisitor;
-import dev.khbd.interp4j.javac.plugin.s.expr.TextPart;
+import dev.khbd.interp4j.javac.plugin.s.expr.SText;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -102,20 +102,20 @@ public class SInterpolatorFactoryImpl implements InterpolatorFactory {
         }
 
         private JCTree.JCExpression interpolate(String literal, SExpression sExpr, int basePosition) {
-            if (!sExpr.hasAnyExpression()) {
+            if (!sExpr.hasAnyCodePart()) {
                 // It means, `s` expression doesn't contain any string parts,
                 // so we can replace our method call with original string literal
-                return interpolateWithoutExpressions(literal, basePosition);
+                return interpolateWithoutCodeParts(literal, basePosition);
             }
-            return interpolateWithExpressions(sExpr, basePosition);
+            return interpolateWithCodeParts(sExpr, basePosition);
         }
 
-        private JCTree.JCExpression interpolateWithoutExpressions(String literal,
-                                                                  int basePosition) {
+        private JCTree.JCExpression interpolateWithoutCodeParts(String literal,
+                                                                int basePosition) {
             return treeMaker.at(basePosition).Literal(literal);
         }
 
-        private JCTree.JCExpression interpolateWithExpressions(SExpression sExpr, int basePosition) {
+        private JCTree.JCExpression interpolateWithCodeParts(SExpression sExpr, int basePosition) {
             ArgumentsCollector argumentsCollector = new ArgumentsCollector(basePosition);
             sExpr.visit(argumentsCollector);
             return treeMaker.at(basePosition).Parens(combineWithBinaryPlus(argumentsCollector.arguments));
@@ -143,18 +143,16 @@ public class SInterpolatorFactoryImpl implements InterpolatorFactory {
             private com.sun.tools.javac.util.List<JCTree.JCExpression> arguments = com.sun.tools.javac.util.List.nil();
 
             @Override
-            public void visitExpressionPart(ExpressionPart expressionPart) {
-                JavacParser parser = parserFactory.newParser(
-                        expressionPart.getExpression(), false,
-                        false, false);
+            public void visitCodePart(SCode code) {
+                JavacParser parser = parserFactory.newParser(code.getExpression(), false, false, false);
                 JCTree.JCExpression expr = parser.parseExpression();
                 expr.pos = basePosition;
                 arguments = arguments.append(expr);
             }
 
             @Override
-            public void visitTextPart(TextPart textPart) {
-                arguments = arguments.append(treeMaker.Literal(textPart.getText()));
+            public void visitTextPart(SText text) {
+                arguments = arguments.append(treeMaker.Literal(text.getText()));
             }
 
         }
