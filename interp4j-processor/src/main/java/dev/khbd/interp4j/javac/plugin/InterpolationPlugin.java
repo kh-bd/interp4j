@@ -44,7 +44,8 @@ import java.util.function.Consumer;
 public class InterpolationPlugin implements Plugin {
 
     private static final List<InterpolatorFactory> FACTORIES = List.of(
-            new SInterpolatorFactoryImpl()
+            new SInterpolatorFactoryImpl(),
+            new FmtInterpolatorFactoryImpl()
     );
 
     @Override

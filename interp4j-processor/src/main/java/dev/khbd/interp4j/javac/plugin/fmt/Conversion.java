@@ -9,4 +9,9 @@ package dev.khbd.interp4j.javac.plugin.fmt;
  * @author Sergei_Khadanovich
  */
 public record Conversion(String symbols) {
+
+    @Override
+    public String toString() {
+        return symbols;
+    }
 }

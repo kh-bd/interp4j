@@ -2,11 +2,13 @@ package dev.khbd.interp4j.javac.plugin;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.LiteralTree;
 import com.sun.source.tree.Tree;
 import com.sun.tools.javac.tree.JCTree;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
@@ -25,7 +27,7 @@ abstract class AbstractInterpolatorFactory implements InterpolatorFactory {
     /**
      * Base class for an interpolator.
      */
-    abstract protected class AbstractInterpolator implements Interpolator {
+    abstract protected class AbstractInterpolator<E> implements Interpolator {
 
         private final Predicate<Tree> METHOD_PREDICATE = PluginUtils.pathPredicate(interpolation.getMethod());
         private final Predicate<Tree> QUALIFIED_METHOD_PREDICATE =
@@ -48,6 +50,48 @@ abstract class AbstractInterpolatorFactory implements InterpolatorFactory {
             // otherwise, it's a compile-time error
             return arguments.size() == 1;
         }
+
+        @Override
+        public Result<List<Message>, JCTree.JCExpression> interpolate(JCTree.JCMethodInvocation invocation) {
+            JCTree.JCExpression firstArgument = invocation.getArguments().get(0);
+            if (firstArgument.getKind() != Tree.Kind.STRING_LITERAL) {
+                return Result.error(List.of(new Message("non.string.literal", firstArgument)));
+            }
+
+            LiteralTree literalTree = (LiteralTree) firstArgument;
+            String literal = (String) literalTree.getValue();
+
+            E expression = parse(literal);
+            if (Objects.isNull(expression)) {
+                return Result.error(List.of(new Message("wrong.expression.format", firstArgument)));
+            }
+
+            return Result.success(interpolate(invocation, literal, expression));
+        }
+
+        /**
+         * Parse string literal to expression model.
+         *
+         * @param literal string literal
+         */
+        abstract protected E parse(String literal);
+
+        /**
+         * Validate expression for correctness.
+         */
+        protected List<Message> validate(E expression) {
+            return List.of();
+        }
+
+        /**
+         * Interpolate valid expression.
+         *
+         * @param invocation original method invocation
+         * @param literal    string literal
+         * @param expression parsed expression
+         */
+        abstract protected JCTree.JCExpression interpolate(JCTree.JCMethodInvocation invocation,
+                                                           String literal, E expression);
 
         private boolean isInterpolateCall(ExpressionTree methodSelect) {
             // s() method call

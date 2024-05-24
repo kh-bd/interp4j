@@ -1,8 +1,6 @@
 package dev.khbd.interp4j.javac.plugin;
 
 import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.LiteralTree;
-import com.sun.source.tree.Tree;
 import com.sun.tools.javac.parser.JavacParser;
 import com.sun.tools.javac.parser.ParserFactory;
 import com.sun.tools.javac.tree.JCTree;
@@ -15,7 +13,6 @@ import dev.khbd.interp4j.javac.plugin.s.SExpressionVisitor;
 import dev.khbd.interp4j.javac.plugin.s.SText;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -32,7 +29,7 @@ class SInterpolatorFactoryImpl extends AbstractInterpolatorFactory {
         return new SInterpolator(context, unit);
     }
 
-    private class SInterpolator extends AbstractInterpolator {
+    private class SInterpolator extends AbstractInterpolator<SExpression> {
 
         private final TreeMaker treeMaker;
         private final ParserFactory parserFactory;
@@ -45,30 +42,19 @@ class SInterpolatorFactoryImpl extends AbstractInterpolatorFactory {
         }
 
         @Override
-        public Result<List<Message>, JCTree.JCExpression> interpolate(JCTree.JCMethodInvocation invocation) {
-            JCTree.JCExpression firstArgument = invocation.getArguments().get(0);
-            if (firstArgument.getKind() != Tree.Kind.STRING_LITERAL) {
-                return Result.error(List.of(new Message("non.string.literal", firstArgument)));
-            }
-
-            LiteralTree literalTree = (LiteralTree) firstArgument;
-            String literal = (String) literalTree.getValue();
-
-            SExpression sExpr = SExpressionParser.getInstance().parse(literal).orElse(null);
-            if (Objects.isNull(sExpr)) {
-                return Result.error(List.of(new Message("wrong.expression.format", firstArgument)));
-            }
-
-            return Result.success(interpolate(literal, sExpr, invocation.pos));
+        protected SExpression parse(String literal) {
+            return SExpressionParser.getInstance().parse(literal).orElse(null);
         }
 
-        private JCTree.JCExpression interpolate(String literal, SExpression sExpr, int basePosition) {
-            if (!sExpr.hasAnyCodePart()) {
+        @Override
+        protected JCTree.JCExpression interpolate(JCTree.JCMethodInvocation invocation,
+                                                  String literal, SExpression expression) {
+            if (!expression.hasAnyCodePart()) {
                 // It means, `s` expression doesn't contain any string parts,
                 // so we can replace our method call with original string literal
-                return interpolateWithoutCodeParts(literal, basePosition);
+                return interpolateWithoutCodeParts(literal, invocation.pos);
             }
-            return interpolateWithCodeParts(sExpr, basePosition);
+            return interpolateWithCodeParts(expression, invocation.pos);
         }
 
         private JCTree.JCExpression interpolateWithoutCodeParts(String literal,

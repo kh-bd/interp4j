@@ -16,7 +16,7 @@ import lombok.Value;
  */
 @Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-class Message {
+public class Message {
 
     String code;
     Position position;
