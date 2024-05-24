@@ -125,7 +125,7 @@ class FmtInterpolatorFactoryImpl extends AbstractInterpolatorFactory {
                     if (prev.isSpecifier()) {
                         // text after specifier is wrong
                         FormatSpecifier specifier = (FormatSpecifier) prev;
-                        if (!specifier.conversion().symbols().equals("%") && !specifier.conversion().symbols().equals("n")) {
+                        if (!specifier.isPercent() && !specifier.isNextLine()) {
                             messages.add(new Message("fmt.specifier.without.expression", literal, prev.position().start()));
                         }
                     }
@@ -146,7 +146,7 @@ class FmtInterpolatorFactoryImpl extends AbstractInterpolatorFactory {
                         // specifier present
                         // but, %% and %n are not allowed before expression
                         FormatSpecifier specifier = (FormatSpecifier) prev;
-                        if (specifier.conversion().symbols().equals("%") || specifier.conversion().symbols().equals("n")) {
+                        if (specifier.isPercent() || specifier.isNextLine()) {
                             messages.add(new Message("fmt.expression.after.special.specifiers", literal, code.position().start()));
                         }
                     }
@@ -165,9 +165,9 @@ class FmtInterpolatorFactoryImpl extends AbstractInterpolatorFactory {
             @Override
             public void finish() {
                 if (prev.isSpecifier()) {
-                    // specifier is last part and it is not special specifier type
+                    // specifier is last part, and it is not special specifier type
                     FormatSpecifier specifier = (FormatSpecifier) prev;
-                    if (!specifier.conversion().symbols().equals("%") && !specifier.conversion().symbols().equals("n")) {
+                    if (!specifier.isPercent() && !specifier.isNextLine()) {
                         messages.add(new Message("fmt.specifier.without.expression", literal, prev.position().start()));
                     }
                 }
