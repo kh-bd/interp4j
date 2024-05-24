@@ -124,7 +124,10 @@ class FmtInterpolatorFactoryImpl extends AbstractInterpolatorFactory {
                 if (Objects.nonNull(prev)) {
                     if (prev.isSpecifier()) {
                         // text after specifier is wrong
-                        messages.add(new Message("fmt.specifier.without.expression", literal, prev.position().start()));
+                        FormatSpecifier specifier = (FormatSpecifier) prev;
+                        if (!specifier.conversion().symbols().equals("%") && !specifier.conversion().symbols().equals("n")) {
+                            messages.add(new Message("fmt.specifier.without.expression", literal, prev.position().start()));
+                        }
                     }
                 }
                 this.prev = text;
@@ -162,8 +165,11 @@ class FmtInterpolatorFactoryImpl extends AbstractInterpolatorFactory {
             @Override
             public void finish() {
                 if (prev.isSpecifier()) {
-                    // specifier is last part. wrong
-                    messages.add(new Message("fmt.specifier.without.expression", literal, prev.position().start()));
+                    // specifier is last part and it is not special specifier type
+                    FormatSpecifier specifier = (FormatSpecifier) prev;
+                    if (!specifier.conversion().symbols().equals("%") && !specifier.conversion().symbols().equals("n")) {
+                        messages.add(new Message("fmt.specifier.without.expression", literal, prev.position().start()));
+                    }
                 }
             }
         }
