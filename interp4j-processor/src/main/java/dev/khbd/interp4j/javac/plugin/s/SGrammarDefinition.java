@@ -1,4 +1,4 @@
-package dev.khbd.interp4j.javac.plugin.s.expr;
+package dev.khbd.interp4j.javac.plugin.s;
 
 import org.petitparser.context.Token;
 import org.petitparser.parser.Parser;

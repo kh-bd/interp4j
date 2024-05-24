@@ -19,15 +19,15 @@ import java.util.function.Predicate;
  */
 @ToString
 @RequiredArgsConstructor
-public class Imports {
+class Imports {
 
     private final Set<ImportType> imports;
 
-    public boolean isSimpleMethodCallAllowed() {
+    boolean isSimpleMethodCallAllowed() {
         return imports.contains(ImportType.METHOD) || imports.contains(ImportType.CLASS_WILDCARD);
     }
 
-    public boolean isQualifiedMethodCallAllowed() {
+    boolean isQualifiedMethodCallAllowed() {
         return imports.contains(ImportType.CLASS) || imports.contains(ImportType.PACKAGE_WILDCARD);
     }
 
@@ -36,7 +36,7 @@ public class Imports {
      *
      * @param interpolation interpolation type
      */
-    public static ImportsCollector collector(Interpolation interpolation) {
+    static ImportsCollector collector(Interpolation interpolation) {
         return new ImportsCollectorImpl(interpolation);
     }
 

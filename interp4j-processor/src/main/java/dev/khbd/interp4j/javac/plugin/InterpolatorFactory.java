@@ -8,7 +8,7 @@ import com.sun.tools.javac.util.Context;
  *
  * @author Sergei Khadanovich
  */
-public interface InterpolatorFactory {
+interface InterpolatorFactory {
 
     /**
      * Create new interpolator.

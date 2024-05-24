@@ -2,6 +2,10 @@ package dev.khbd.interp4j.javac.plugin.fmt.expr;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import dev.khbd.interp4j.javac.plugin.fmt.FormatExpression;
+import dev.khbd.interp4j.javac.plugin.fmt.FormatExpressionParser;
+import dev.khbd.interp4j.javac.plugin.fmt.FormatText;
+import dev.khbd.interp4j.javac.plugin.fmt.Position;
 import org.testng.annotations.Test;
 
 import java.util.Optional;

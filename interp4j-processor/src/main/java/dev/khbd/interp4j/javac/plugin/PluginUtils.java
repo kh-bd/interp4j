@@ -11,13 +11,19 @@ import java.util.function.Predicate;
  * @author Sergei_Khadanovich
  */
 @UtilityClass
-public class PluginUtils {
+class PluginUtils {
 
-    public static Predicate<Tree> pathPredicate(String... path) {
+    /**
+     * Build path predicate.
+     */
+    static Predicate<Tree> pathPredicate(String... path) {
         return pathPredicate(String.join(".", path));
     }
 
-    public static Predicate<Tree> pathPredicate(String path) {
+    /**
+     * Build path predicate.
+     */
+    static Predicate<Tree> pathPredicate(String path) {
         String[] parts = path.split("\\.");
         if (parts.length == 1) {
             return identifierPredicate(parts[0]);
