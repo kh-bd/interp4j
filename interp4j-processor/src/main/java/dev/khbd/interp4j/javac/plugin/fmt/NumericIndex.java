@@ -11,4 +11,9 @@ import lombok.Value;
 public class NumericIndex implements Index {
 
     int position;
+
+    @Override
+    public String toString() {
+        return position + "$";
+    }
 }

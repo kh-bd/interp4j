@@ -3,6 +3,8 @@ package dev.khbd.interp4j.javac.plugin.fmt;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
+import java.util.Objects;
+
 /**
  * Format specifier in format expression.
  *
@@ -37,5 +39,24 @@ public class FormatSpecifier implements FormatExpressionPart {
     @Override
     public void visit(FormatExpressionVisitor visitor) {
         visitor.visitSpecifierPart(this);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("%");
+        if (Objects.nonNull(index)) {
+            builder.append(index);
+        }
+        if (Objects.nonNull(flags)) {
+            builder.append(flags);
+        }
+        if (Objects.nonNull(width)) {
+           builder.append(width);
+        }
+        if (Objects.nonNull(precision)) {
+            builder.append(".").append(precision);
+        }
+        builder.append(conversion.getSymbols());
+        return builder.toString();
     }
 }

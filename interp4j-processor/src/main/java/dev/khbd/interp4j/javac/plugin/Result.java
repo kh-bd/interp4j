@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 @ToString
 @EqualsAndHashCode
-class Result<E, V> {
+public class Result<E, V> {
 
     private final E error;
     private final V value;

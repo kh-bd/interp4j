@@ -14,4 +14,9 @@ import lombok.Value;
 public class Conversion {
 
     String symbols;
+
+    @Override
+    public String toString() {
+        return symbols;
+    }
 }
