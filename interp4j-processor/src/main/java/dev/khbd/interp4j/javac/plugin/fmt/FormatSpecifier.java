@@ -59,4 +59,18 @@ public class FormatSpecifier implements FormatExpressionPart {
         builder.append(conversion.getSymbols());
         return builder.toString();
     }
+
+    /**
+     * Check if specifier is special %% specifier.
+     */
+    public boolean isPercent() {
+        return conversion.symbols().equals("%");
+    }
+
+    /**
+     * Check if specifier is special %n specifier.
+     */
+    public boolean isNextLine() {
+        return conversion.symbols().equals("n");
+    }
 }
