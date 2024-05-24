@@ -3,21 +3,24 @@ package dev.khbd.interp4j.javac.plugin.s.expr;
 import lombok.Value;
 
 /**
+ * Code model.
+ *
  * @author Sergei_Khadanovich
  */
 @Value
-public class ExpressionPart implements SExpressionPart {
+public class SCode implements SExpressionPart {
+
     String expression;
     int start;
     int end;
 
     @Override
     public SExpressionPartKind kind() {
-        return SExpressionPartKind.EXPRESSION;
+        return SExpressionPartKind.CODE;
     }
 
     @Override
     public void visit(SExpressionVisitor visitor) {
-        visitor.visitExpressionPart(this);
+        visitor.visitCodePart(this);
     }
 }

@@ -7,15 +7,31 @@ package dev.khbd.interp4j.javac.plugin.s.expr;
  */
 public interface SExpressionVisitor {
 
+    /**
+     * Start traversing.
+     */
     default void start() {
     }
 
-    default void visitTextPart(TextPart textPart) {
+    /**
+     * Visit text part.
+     *
+     * @param text text part
+     */
+    default void visitTextPart(SText text) {
     }
 
-    default void visitExpressionPart(ExpressionPart expressionPart) {
+    /**
+     * Visit expression part.
+     *
+     * @param code expression part
+     */
+    default void visitCodePart(SCode code) {
     }
 
+    /**
+     * Finish traversing.
+     */
     default void finish() {
     }
 }

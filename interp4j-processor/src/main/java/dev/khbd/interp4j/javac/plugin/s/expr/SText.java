@@ -3,10 +3,13 @@ package dev.khbd.interp4j.javac.plugin.s.expr;
 import lombok.Value;
 
 /**
+ * Text part model.
+ *
  * @author Sergei_Khadanovich
  */
 @Value
-public class TextPart implements SExpressionPart {
+public class SText implements SExpressionPart {
+
     String text;
     int start;
     int end;
