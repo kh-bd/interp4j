@@ -71,4 +71,50 @@ public class FormatExpressionParserTest {
                         .build()
         );
     }
+
+    @Test
+    public void parse_specifierAndCodeAreSeparated_returnParsed() {
+        Optional<FormatExpression> expression = PARSER.parse("Hello! My name is %d ${name}");
+
+        assertThat(expression).hasValue(
+                FormatExpression.builder()
+                        .text(new FormatText("Hello! My name is ", new Position(0, 18)))
+                        .specifier(new FormatSpecifier(new Conversion("d"), new Position(18, 20)))
+                        .text(new FormatText(" ", new Position(20, 21)))
+                        .code(new FormatCode("name", new Position(23, 27)))
+                        .build()
+        );
+    }
+
+    @Test
+    public void parse_withExplicitPosition_returnParsed() {
+        Optional<FormatExpression> expression = PARSER.parse("Hello! My name is %1$s${name}. Age is %2$d${age}");
+
+        assertThat(expression).hasValue(
+                FormatExpression.builder()
+                        .text(new FormatText("Hello! My name is ", new Position(0, 18)))
+                        .specifier(new FormatSpecifier(new NumericIndex(1), new Conversion("s"), new Position(18, 22)))
+                        .code(new FormatCode("name", new Position(24, 28)))
+                        .text(new FormatText(". Age is ", new Position(29, 38)))
+                        .specifier(new FormatSpecifier(new NumericIndex(2), new Conversion("d"), new Position(38, 42)))
+                        .code(new FormatCode("age", new Position(44, 47)))
+                        .build()
+        );
+    }
+
+    @Test
+    public void parse_withImplicitPosition_returnParsed() {
+        Optional<FormatExpression> expression = PARSER.parse("Hello! My name is %1$s${name}. Age is %<d${age}");
+
+        assertThat(expression).hasValue(
+                FormatExpression.builder()
+                        .text(new FormatText("Hello! My name is ", new Position(0, 18)))
+                        .specifier(new FormatSpecifier(new NumericIndex(1), new Conversion("s"), new Position(18, 22)))
+                        .code(new FormatCode("name", new Position(24, 28)))
+                        .text(new FormatText(". Age is ", new Position(29, 38)))
+                        .specifier(new FormatSpecifier(new ImplicitIndex(), new Conversion("d"), new Position(38, 41)))
+                        .code(new FormatCode("age", new Position(43, 46)))
+                        .build()
+        );
+    }
 }
