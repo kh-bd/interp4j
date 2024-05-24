@@ -2,6 +2,7 @@ package dev.khbd.interp4j.javac.plugin.s;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import dev.khbd.interp4j.javac.plugin.AbstractPluginTest;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Field;

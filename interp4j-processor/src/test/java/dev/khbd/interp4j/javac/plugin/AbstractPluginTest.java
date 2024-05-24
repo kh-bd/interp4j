@@ -1,4 +1,4 @@
-package dev.khbd.interp4j.javac.plugin.s;
+package dev.khbd.interp4j.javac.plugin;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -142,16 +142,16 @@ public abstract class AbstractPluginTest {
 
     protected static class TestCompiler {
 
-        CompilationResult compile(String path, String source) {
+        public CompilationResult compile(String path, String source) {
             return compile(new PluginOptions(true), path, source);
         }
 
-        CompilationResult compile(PluginOptions options, String path, String source) {
+        public CompilationResult compile(PluginOptions options, String path, String source) {
             InMemoryTestSourceFile toCompile = new InMemoryTestSourceFile(path, source);
             return compile(options, List.of(toCompile));
         }
 
-        CompilationResult compile(PluginOptions options, String... paths) {
+        public CompilationResult compile(PluginOptions options, String... paths) {
             List<TestSourceFile> toCompile = Stream.of(paths)
                     .map(this::toUri)
                     .map(TestSourceFile::new)
@@ -160,7 +160,7 @@ public abstract class AbstractPluginTest {
             return compile(options, toCompile);
         }
 
-        CompilationResult compile(PluginOptions options, List<? extends JavaFileObject> toCompile) {
+        public CompilationResult compile(PluginOptions options, List<? extends JavaFileObject> toCompile) {
             TestDiagnosticListener diagnostic = new TestDiagnosticListener();
 
             JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -205,16 +205,16 @@ public abstract class AbstractPluginTest {
         ClassLoader classLoader;
         List<Diagnostic<? extends JavaFileObject>> diagnostics;
 
-        boolean isSuccess() {
+        public boolean isSuccess() {
             return diagnostics.stream()
                     .noneMatch(d -> d.getKind() == Diagnostic.Kind.ERROR);
         }
 
-        boolean isFail() {
+        public boolean isFail() {
             return !isSuccess();
         }
 
-        List<Diagnostic<? extends JavaFileObject>> getErrors() {
+        public List<Diagnostic<? extends JavaFileObject>> getErrors() {
             return diagnostics.stream()
                     .filter(d -> d.getKind() == Diagnostic.Kind.ERROR)
                     .collect(Collectors.toList());
