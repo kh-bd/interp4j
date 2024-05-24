@@ -28,4 +28,13 @@ public class FormatExpression {
         }
         visitor.finish();
     }
+
+    /**
+     * Create empty builder.
+     *
+     * @return builder
+     */
+    public static FormatExpressionBuilder builder() {
+        return new FormatExpressionBuilder();
+    }
 }
