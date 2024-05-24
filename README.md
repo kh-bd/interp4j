@@ -69,10 +69,10 @@ In the following table, you can find the latest interp4j version for each suppor
 
 | Java<br/> version | Latest release                                                                                                                                                                                           |
 |-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `1.8`             | [![Maven jdk1.8](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen&versionSuffix=_jre1.8)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j/1.0.0_jre1.8) |
-| `11`              | [![Maven jdk11](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen&versionSuffix=_jre11)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j/1.0.0_jre11)    |
-| `17`              | [![Maven jdk17](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen&versionSuffix=_jre17)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j/1.0.0_jre17)    |
-| `21`              | [![Maven jdk21](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen&versionSuffix=_jre21)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j/1.0.0_jre21)    |
+| `1.8`             | [![Maven jdk1.8](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen&versionSuffix=_jre1.8)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j/1.1.0_jre1.8) |
+| `11`              | [![Maven jdk11](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen&versionSuffix=_jre11)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j/1.1.0_jre11)    |
+| `17`              | [![Maven jdk17](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen&versionSuffix=_jre17)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j/1.1.0_jre17)    |
+| `21`              | [![Maven jdk21](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen&versionSuffix=_jre21)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j/1.1.0_jre21)    |
 
 ## Maven support
 
@@ -209,7 +209,7 @@ See latest benchmark
 result [here](https://jmh.morethan.io/?source=https://raw.githubusercontent.com/kh-bd/interp4j/main/readme/beanchmark/jmh_v1.1.0_j21.json)
 .
 
-As you can see, compile time interpolation is about 20 times faster then `String.format`
+As you can see, compile time interpolation is about 10 times faster then `String.format`
 and at the same time as fast as manual string concatenation. Benchmarks source code can
 be found in `interp4j-benchmark` module.
 
