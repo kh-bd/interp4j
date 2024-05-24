@@ -18,6 +18,11 @@ public sealed interface FormatExpressionPart permits FormatCode, FormatSpecifier
     void visit(FormatExpressionVisitor visitor);
 
     /**
+     * Get part position.
+     */
+    Position position();
+
+    /**
      * Is expression part text or not.
      *
      * @return {@literal true} if expression part is text and {@literal false} otherwise
