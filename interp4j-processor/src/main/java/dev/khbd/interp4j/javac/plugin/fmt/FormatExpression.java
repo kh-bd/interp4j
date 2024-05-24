@@ -35,6 +35,20 @@ public class FormatExpression {
     }
 
     /**
+     * Check if expression has any specifier part.
+     */
+    public boolean hasAnySpecifier() {
+        return parts.stream().anyMatch(FormatExpressionPart::isSpecifier);
+    }
+
+    /**
+     * Check if expression has any code part.
+     */
+    public boolean hasAnyCode() {
+        return parts.stream().anyMatch(FormatExpressionPart::isCode);
+    }
+
+    /**
      * Create empty builder.
      *
      * @return builder

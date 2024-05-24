@@ -12,7 +12,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Interpolation {
 
-    S("dev.khbd.interp4j.core", "Interpolations", "s");
+    S("dev.khbd.interp4j.core", "Interpolations", "s"),
+    FMT("dev.khbd.interp4j.core", "Interpolations", "fmt");
 
     private final String packageName;
     private final String className;

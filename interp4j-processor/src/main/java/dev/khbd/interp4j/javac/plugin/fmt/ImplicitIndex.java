@@ -7,5 +7,10 @@ package dev.khbd.interp4j.javac.plugin.fmt;
  */
 public enum ImplicitIndex implements Index {
 
-    INSTANCE
+    INSTANCE;
+
+    @Override
+    public String toString() {
+        return "<";
+    }
 }
