@@ -11,8 +11,7 @@ import lombok.Value;
 public class SCode implements SExpressionPart {
 
     String expression;
-    int start;
-    int end;
+    Position position;
 
     @Override
     public SExpressionPartKind kind() {
