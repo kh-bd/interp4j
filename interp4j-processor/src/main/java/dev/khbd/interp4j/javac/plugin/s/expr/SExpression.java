@@ -56,11 +56,7 @@ public class SExpression implements Iterable<SExpressionPart> {
         };
     }
 
-    public List<SExpressionPart> getParts() {
-        return new ArrayList<>(parts);
-    }
-
-    public boolean hasAnyExpression() {
-        return parts.stream().anyMatch(SExpressionPart::isExpression);
+    public boolean hasAnyCodePart() {
+        return parts.stream().anyMatch(part -> part.kind() == SExpressionPartKind.CODE);
     }
 }

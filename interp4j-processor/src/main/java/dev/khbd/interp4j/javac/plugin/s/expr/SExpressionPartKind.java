@@ -5,5 +5,5 @@ package dev.khbd.interp4j.javac.plugin.s.expr;
  */
 public enum SExpressionPartKind {
     TEXT,
-    EXPRESSION
+    CODE
 }

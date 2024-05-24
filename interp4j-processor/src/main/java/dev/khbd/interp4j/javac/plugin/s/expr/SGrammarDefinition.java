@@ -27,7 +27,7 @@ class SGrammarDefinition extends GrammarDefinition {
         );
         action("start", (List<Object> seq) -> {
             SExpression expression = new SExpression();
-            addNotEmptyTextPart(expression, (TextPart) seq.get(0));
+            addNotEmptyTextPart(expression, (SText) seq.get(0));
             if (seq.size() > 1) {
                 List<ExpressionAndText> other = (List<ExpressionAndText>) seq.get(1);
                 for (ExpressionAndText exprAndText : other) {
@@ -40,16 +40,16 @@ class SGrammarDefinition extends GrammarDefinition {
 
         def(EXPRESSION_AND_TEXT, ref(EXPRESSION).seq(ref(TEXT)));
         action(EXPRESSION_AND_TEXT, (List<Object> seq) ->
-                new ExpressionAndText((ExpressionPart) seq.get(0), (TextPart) seq.get(1)));
+                new ExpressionAndText((SCode) seq.get(0), (SText) seq.get(1)));
 
         def(EXPRESSION, expressionWithBrackets().or(expressionWithoutBrackets()));
-        action(EXPRESSION, (Token token) -> new ExpressionPart(token.getValue(), token.getStart(), token.getStop()));
+        action(EXPRESSION, (Token token) -> new SCode(token.getValue(), token.getStart(), token.getStop()));
 
         def(TEXT, textParser());
-        action(TEXT, (Token token) -> new TextPart(token.getValue(), token.getStart(), token.getStop()));
+        action(TEXT, (Token token) -> new SText(token.getValue(), token.getStart(), token.getStop()));
     }
 
-    private void addNotEmptyTextPart(SExpression expression, TextPart text) {
+    private void addNotEmptyTextPart(SExpression expression, SText text) {
         if (text.text().isEmpty()) {
             return;
         }
@@ -95,6 +95,6 @@ class SGrammarDefinition extends GrammarDefinition {
                 .token();
     }
 
-    private record ExpressionAndText(ExpressionPart expression, TextPart text) {
+    private record ExpressionAndText(SCode expression, SText text) {
     }
 }

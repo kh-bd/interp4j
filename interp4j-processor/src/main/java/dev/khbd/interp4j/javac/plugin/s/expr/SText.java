@@ -1,9 +1,11 @@
 package dev.khbd.interp4j.javac.plugin.s.expr;
 
 /**
+ * Text part model.
+ *
  * @author Sergei_Khadanovich
  */
-public record TextPart(String text, int start, int end) implements SExpressionPart {
+public record SText(String text, int start, int end) implements SExpressionPart {
 
     @Override
     public SExpressionPartKind kind() {

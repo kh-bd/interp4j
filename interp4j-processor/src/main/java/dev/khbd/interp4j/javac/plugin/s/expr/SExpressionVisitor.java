@@ -18,7 +18,7 @@ public interface SExpressionVisitor {
      *
      * @param textPart text part
      */
-    default void visitTextPart(TextPart textPart) {
+    default void visitTextPart(SText textPart) {
     }
 
     /**
@@ -26,7 +26,7 @@ public interface SExpressionVisitor {
      *
      * @param expressionPart expression part
      */
-    default void visitExpressionPart(ExpressionPart expressionPart) {
+    default void visitExpressionPart(SCode expressionPart) {
     }
 
     /**
