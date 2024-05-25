@@ -1,5 +1,8 @@
 package dev.khbd.interp4j.benchmark;
 
+import static dev.khbd.interp4j.core.Interpolations.fmt;
+import static dev.khbd.interp4j.core.Interpolations.s;
+
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -12,8 +15,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.infra.Blackhole;
 
 import java.util.concurrent.TimeUnit;
-
-import static dev.khbd.interp4j.core.Interpolations.s;
 
 /**
  * @author Sergei_Khadanovich
@@ -36,6 +37,11 @@ public class InterpolationBenchmark {
     @Benchmark
     public void string_format(Blackhole hole, Person person) {
         hole.consume(String.format("Hello! I am %s. I am %d", person.name, person.age));
+    }
+
+    @Benchmark
+    public void __fmt(Blackhole hole, Person person) {
+        hole.consume(fmt("Hello! I am %s${person.name}. I am %d${person.age}"));
     }
 
     @State(Scope.Benchmark)
