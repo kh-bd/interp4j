@@ -2,11 +2,11 @@ package dev.khbd.interp4j.javac.plugin;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
-import com.sun.source.tree.LiteralTree;
 import com.sun.source.tree.Tree;
 import com.sun.tools.javac.tree.JCTree;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -55,7 +55,7 @@ abstract class AbstractInterpolatorFactory implements InterpolatorFactory {
         public Result<List<Message>, JCTree.JCExpression> interpolate(JCTree.JCMethodInvocation invocation) {
             JCTree.JCExpression firstArgument = invocation.getArguments().get(0);
             if (firstArgument.getKind() != Tree.Kind.STRING_LITERAL) {
-                return Result.error(List.of(new Message("non.string.literal", firstArgument)));
+                return Result.error(Collections.singletonList(new Message("non.string.literal", firstArgument)));
             }
 
             JCTree.JCLiteral literalTree = (JCTree.JCLiteral) firstArgument;
@@ -63,7 +63,7 @@ abstract class AbstractInterpolatorFactory implements InterpolatorFactory {
 
             E expression = parse(literal);
             if (Objects.isNull(expression)) {
-                return Result.error(List.of(new Message("wrong.expression.format", firstArgument)));
+                return Result.error(Collections.singletonList(new Message("wrong.expression.format", firstArgument)));
             }
 
             List<Message> errors = validate(literalTree, expression);
@@ -85,7 +85,7 @@ abstract class AbstractInterpolatorFactory implements InterpolatorFactory {
          * Validate expression for correctness.
          */
         protected List<Message> validate(JCTree.JCLiteral literal, E expression) {
-            return List.of();
+            return Collections.emptyList();
         }
 
         /**

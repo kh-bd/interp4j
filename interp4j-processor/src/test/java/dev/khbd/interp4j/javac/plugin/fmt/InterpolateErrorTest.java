@@ -14,21 +14,7 @@ public class InterpolateErrorTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_expressionIsWrong_reportError() {
-        String source = """
-                package cases.wrong_format;
-                
-                import static dev.khbd.interp4j.core.Interpolations.*;
-                
-                public class Main {
-                
-                    public static String greet() {
-                        String name = "Alex";
-                        return fmt("Hello %s${name");
-                    }
-                }
-                """;
-
-        CompilationResult result = compiler.compile("cases/wrong_format/Main.java", source);
+        CompilationResult result = compiler.compile("/cases/fmt/no_closing_brace/Main.java");
 
         assertThat(result.isFail()).isTrue();
         assertThat(result.getErrors()).hasSize(1)
@@ -38,21 +24,7 @@ public class InterpolateErrorTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_expressionWithoutSpecifier_reportError() {
-        String source = """
-                package cases.wrong_format;
-                
-                import static dev.khbd.interp4j.core.Interpolations.*;
-                
-                public class Main {
-                
-                    public static String greet() {
-                        String name = "Alex";
-                        return fmt("Hello ${name}");
-                    }
-                }
-                """;
-
-        CompilationResult result = compiler.compile("cases/wrong_format/Main.java", source);
+        CompilationResult result = compiler.compile("/cases/fmt/code_without_specifier/Main.java");
 
         assertThat(result.isFail()).isTrue();
         assertThat(result.getErrors()).hasSize(1)
@@ -62,21 +34,7 @@ public class InterpolateErrorTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_expressionWithoutSpecifierAtFirstPosition_reportError() {
-        String source = """
-                package cases.wrong_format;
-                
-                import static dev.khbd.interp4j.core.Interpolations.*;
-                
-                public class Main {
-                
-                    public static String greet() {
-                        String name = "Alex";
-                        return fmt("${name}");
-                    }
-                }
-                """;
-
-        CompilationResult result = compiler.compile("cases/wrong_format/Main.java", source);
+        CompilationResult result = compiler.compile("/cases/fmt/first_code/Main.java");
 
         assertThat(result.isFail()).isTrue();
         assertThat(result.getErrors()).hasSize(1)
@@ -86,21 +44,7 @@ public class InterpolateErrorTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_specifierWithoutExpression_reportError() {
-        String source = """
-                package cases.wrong_format;
-                
-                import static dev.khbd.interp4j.core.Interpolations.*;
-                
-                public class Main {
-                
-                    public static String greet() {
-                        String name = "Alex";
-                        return fmt("%s");
-                    }
-                }
-                """;
-
-        CompilationResult result = compiler.compile("cases/wrong_format/Main.java", source);
+        CompilationResult result = compiler.compile("/cases/fmt/specifier_at_start_no_code/Main.java");
 
         assertThat(result.isFail()).isTrue();
         assertThat(result.getErrors()).hasSize(1)
@@ -110,21 +54,7 @@ public class InterpolateErrorTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_specifierWithoutExpressionAfterText_reportError() {
-        String source = """
-                package cases.wrong_format;
-                
-                import static dev.khbd.interp4j.core.Interpolations.*;
-                
-                public class Main {
-                
-                    public static String greet() {
-                        String name = "Alex";
-                        return fmt("Hello %s");
-                    }
-                }
-                """;
-
-        CompilationResult result = compiler.compile("cases/wrong_format/Main.java", source);
+        CompilationResult result = compiler.compile("/cases/fmt/specifier_with_no_code/Main.java");
 
         assertThat(result.isFail()).isTrue();
         assertThat(result.getErrors()).hasSize(1)
@@ -134,21 +64,7 @@ public class InterpolateErrorTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_doublePercentWithExpression_reportError() {
-        String source = """
-                package cases.wrong_format;
-                
-                import static dev.khbd.interp4j.core.Interpolations.*;
-                
-                public class Main {
-                
-                    public static String greet() {
-                        String name = "Alex";
-                        return fmt("Hello %%${name}");
-                    }
-                }
-                """;
-
-        CompilationResult result = compiler.compile("cases/wrong_format/Main.java", source);
+        CompilationResult result = compiler.compile("/cases/fmt/percent_with_code/Main.java");
 
         assertThat(result.isFail()).isTrue();
         assertThat(result.getErrors()).hasSize(1)
@@ -158,21 +74,7 @@ public class InterpolateErrorTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_nSpecifierWithExpression_reportError() {
-        String source = """
-                package cases.wrong_format;
-                
-                import static dev.khbd.interp4j.core.Interpolations.*;
-                
-                public class Main {
-                
-                    public static String greet() {
-                        String name = "Alex";
-                        return fmt("Hello %n${name}");
-                    }
-                }
-                """;
-
-        CompilationResult result = compiler.compile("cases/wrong_format/Main.java", source);
+        CompilationResult result = compiler.compile("/cases/fmt/n_with_code/Main.java");
 
         assertThat(result.isFail()).isTrue();
         assertThat(result.getErrors()).hasSize(1)
@@ -182,21 +84,7 @@ public class InterpolateErrorTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_explicitPosition_reportError() {
-        String source = """
-                package cases.wrong_format;
-                
-                import static dev.khbd.interp4j.core.Interpolations.*;
-                
-                public class Main {
-                
-                    public static String greet() {
-                        String name = "Alex";
-                        return fmt("Hello %1$s${name}");
-                    }
-                }
-                """;
-
-        CompilationResult result = compiler.compile("cases/wrong_format/Main.java", source);
+        CompilationResult result = compiler.compile("/cases/fmt/numeric_index/Main.java");
 
         assertThat(result.isFail()).isTrue();
         assertThat(result.getErrors()).hasSize(1)
@@ -206,21 +94,7 @@ public class InterpolateErrorTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_implicitPosition_reportError() {
-        String source = """
-                package cases.wrong_format;
-                
-                import static dev.khbd.interp4j.core.Interpolations.*;
-                
-                public class Main {
-                
-                    public static String greet() {
-                        String name = "Alex";
-                        return fmt("Hello %<s${name}");
-                    }
-                }
-                """;
-
-        CompilationResult result = compiler.compile("cases/wrong_format/Main.java", source);
+        CompilationResult result = compiler.compile("/cases/fmt/implicit_index/Main.java");
 
         assertThat(result.isFail()).isTrue();
         assertThat(result.getErrors()).hasSize(1)

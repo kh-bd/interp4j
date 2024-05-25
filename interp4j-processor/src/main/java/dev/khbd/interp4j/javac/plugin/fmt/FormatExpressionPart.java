@@ -20,7 +20,7 @@ public interface FormatExpressionPart {
     /**
      * Get part position.
      */
-    Position position();
+    Position getPosition();
 
     /**
      * Is expression part text or not.
