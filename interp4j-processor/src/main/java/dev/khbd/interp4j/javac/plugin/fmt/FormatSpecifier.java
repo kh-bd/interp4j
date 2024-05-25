@@ -64,13 +64,13 @@ public class FormatSpecifier implements FormatExpressionPart {
      * Check if specifier is special %% specifier.
      */
     public boolean isPercent() {
-        return conversion.symbols().equals("%");
+        return conversion.getSymbols().equals("%");
     }
 
     /**
      * Check if specifier is special %n specifier.
      */
     public boolean isNextLine() {
-        return conversion.symbols().equals("n");
+        return conversion.getSymbols().equals("n");
     }
 }

@@ -89,7 +89,7 @@ class FmtInterpolatorFactoryImpl extends AbstractInterpolatorFactory {
 
             @Override
             public void visitCodePart(FormatCode code) {
-                JavacParser parser = parserFactory.newParser(code.expression(), false, false, false);
+                JavacParser parser = parserFactory.newParser(code.getExpression(), false, false, false);
                 JCTree.JCExpression expr = parser.parseExpression();
                 expr.pos = basePosition;
                 arguments = arguments.append(expr);
@@ -97,7 +97,7 @@ class FmtInterpolatorFactoryImpl extends AbstractInterpolatorFactory {
 
             @Override
             public void visitTextPart(FormatText text) {
-                template.append(text.text());
+                template.append(text.getText());
             }
 
             @Override
@@ -111,7 +111,7 @@ class FmtInterpolatorFactoryImpl extends AbstractInterpolatorFactory {
         }
 
         @RequiredArgsConstructor
-        private static final class FormatValidator implements FormatExpressionVisitor {
+        private final class FormatValidator implements FormatExpressionVisitor {
 
             @Getter
             private final List<Message> messages = new ArrayList<>();
@@ -126,7 +126,7 @@ class FmtInterpolatorFactoryImpl extends AbstractInterpolatorFactory {
                         // text after specifier is wrong
                         FormatSpecifier specifier = (FormatSpecifier) prev;
                         if (!specifier.isPercent() && !specifier.isNextLine()) {
-                            messages.add(new Message("fmt.specifier.without.expression", literal, prev.position().start()));
+                            messages.add(new Message("fmt.specifier.without.expression", literal, prev.getPosition().getStart()));
                         }
                     }
                 }
@@ -137,17 +137,17 @@ class FmtInterpolatorFactoryImpl extends AbstractInterpolatorFactory {
             public void visitCodePart(FormatCode code) {
                 if (Objects.isNull(prev)) {
                     // code part is first in expression. wrong
-                    messages.add(new Message("fmt.expression.without.specifier", literal, code.position().start()));
+                    messages.add(new Message("fmt.expression.without.specifier", literal, code.getPosition().getStart()));
                 } else {
                     if (!prev.isSpecifier()) {
                         // specifier must be present before each expression
-                        messages.add(new Message("fmt.expression.without.specifier", literal, code.position().start()));
+                        messages.add(new Message("fmt.expression.without.specifier", literal, code.getPosition().getStart()));
                     } else {
                         // specifier present
                         // but, %% and %n are not allowed before expression
                         FormatSpecifier specifier = (FormatSpecifier) prev;
                         if (specifier.isPercent() || specifier.isNextLine()) {
-                            messages.add(new Message("fmt.expression.after.special.specifiers", literal, code.position().start()));
+                            messages.add(new Message("fmt.expression.after.special.specifiers", literal, code.getPosition().getStart()));
                         }
                     }
                 }
@@ -156,8 +156,8 @@ class FmtInterpolatorFactoryImpl extends AbstractInterpolatorFactory {
 
             @Override
             public void visitSpecifierPart(FormatSpecifier specifier) {
-                if (Objects.nonNull(specifier.index())) {
-                    messages.add(new Message("fmt.indexing", literal, specifier.position().start()));
+                if (Objects.nonNull(specifier.getIndex())) {
+                    messages.add(new Message("fmt.indexing", literal, specifier.getPosition().getStart()));
                 }
                 this.prev = specifier;
             }
@@ -168,7 +168,7 @@ class FmtInterpolatorFactoryImpl extends AbstractInterpolatorFactory {
                     // specifier is last part, and it is not special specifier type
                     FormatSpecifier specifier = (FormatSpecifier) prev;
                     if (!specifier.isPercent() && !specifier.isNextLine()) {
-                        messages.add(new Message("fmt.specifier.without.expression", literal, prev.position().start()));
+                        messages.add(new Message("fmt.specifier.without.expression", literal, prev.getPosition().getStart()));
                     }
                 }
             }

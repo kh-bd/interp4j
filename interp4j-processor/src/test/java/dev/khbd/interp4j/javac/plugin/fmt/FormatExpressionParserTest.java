@@ -112,7 +112,7 @@ public class FormatExpressionParserTest {
                         .specifier(new FormatSpecifier(new NumericIndex(1), new Conversion("s"), new Position(18, 22)))
                         .code(new FormatCode("name", new Position(24, 28)))
                         .text(new FormatText(". Age is ", new Position(29, 38)))
-                        .specifier(new FormatSpecifier(new ImplicitIndex(), new Conversion("d"), new Position(38, 41)))
+                        .specifier(new FormatSpecifier(ImplicitIndex.INSTANCE, new Conversion("d"), new Position(38, 41)))
                         .code(new FormatCode("age", new Position(43, 46)))
                         .build()
         );

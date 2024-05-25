@@ -14,25 +14,12 @@ public class InterpolateSuccessTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_noExpressionsAndNoSpecifiersInside_interpolate() throws Exception {
-        String source = """
-                package cases.simple;
-                
-                import static dev.khbd.interp4j.core.Interpolations.*;
-                
-                public class Main {
-                
-                    public static String greet() {
-                        return fmt("Hello, Alex");
-                    }
-                }
-                """;
-
-        CompilationResult result = compiler.compile("cases/simple/Main.java", source);
+        CompilationResult result = compiler.compile("/cases/fmt/only_text/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
         ClassLoader classLoader = result.getClassLoader();
-        Class<?> clazz = classLoader.loadClass("cases.simple.Main");
+        Class<?> clazz = classLoader.loadClass("cases.fmt.only_text.Main");
         Method method = clazz.getMethod("greet");
         String greet = (String) method.invoke(null);
 
@@ -41,25 +28,12 @@ public class InterpolateSuccessTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_nSpecifierAtTheEnd_interpolate() throws Exception {
-        String source = """
-                package cases.simple;
-                
-                import static dev.khbd.interp4j.core.Interpolations.*;
-                
-                public class Main {
-                
-                    public static String greet() {
-                        return fmt("Hello, Alex%n");
-                    }
-                }
-                """;
-
-        CompilationResult result = compiler.compile("cases/simple/Main.java", source);
+        CompilationResult result = compiler.compile("/cases/fmt/n_at_the_end/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
         ClassLoader classLoader = result.getClassLoader();
-        Class<?> clazz = classLoader.loadClass("cases.simple.Main");
+        Class<?> clazz = classLoader.loadClass("cases.fmt.n_at_the_end.Main");
         Method method = clazz.getMethod("greet");
         String greet = (String) method.invoke(null);
 
@@ -68,25 +42,12 @@ public class InterpolateSuccessTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_nSpecifierBeforeText_interpolate() throws Exception {
-        String source = """
-                package cases.simple;
-                
-                import static dev.khbd.interp4j.core.Interpolations.*;
-                
-                public class Main {
-                
-                    public static String greet() {
-                        return fmt("Hello, Alex.%nAnd what is yours?");
-                    }
-                }
-                """;
-
-        CompilationResult result = compiler.compile("cases/simple/Main.java", source);
+        CompilationResult result = compiler.compile("/cases/fmt/n_before_text/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
         ClassLoader classLoader = result.getClassLoader();
-        Class<?> clazz = classLoader.loadClass("cases.simple.Main");
+        Class<?> clazz = classLoader.loadClass("cases.fmt.n_before_text.Main");
         Method method = clazz.getMethod("greet");
         String greet = (String) method.invoke(null);
 
@@ -95,25 +56,12 @@ public class InterpolateSuccessTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_percentSpecifierAtTheEnd_interpolate() throws Exception {
-        String source = """
-                package cases.simple;
-                
-                import static dev.khbd.interp4j.core.Interpolations.*;
-                
-                public class Main {
-                
-                    public static String greet() {
-                        return fmt("Hello, Alex%%");
-                    }
-                }
-                """;
-
-        CompilationResult result = compiler.compile("cases/simple/Main.java", source);
+        CompilationResult result = compiler.compile("/cases/fmt/percent_at_the_end/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
         ClassLoader classLoader = result.getClassLoader();
-        Class<?> clazz = classLoader.loadClass("cases.simple.Main");
+        Class<?> clazz = classLoader.loadClass("cases.fmt.percent_at_the_end.Main");
         Method method = clazz.getMethod("greet");
         String greet = (String) method.invoke(null);
 
@@ -122,25 +70,12 @@ public class InterpolateSuccessTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_percentSpecifierBeforeText_interpolate() throws Exception {
-        String source = """
-                package cases.simple;
-                
-                import static dev.khbd.interp4j.core.Interpolations.*;
-                
-                public class Main {
-                
-                    public static String greet() {
-                        return fmt("55%%. Okey?");
-                    }
-                }
-                """;
-
-        CompilationResult result = compiler.compile("cases/simple/Main.java", source);
+        CompilationResult result = compiler.compile("/cases/fmt/percent_before_text/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
         ClassLoader classLoader = result.getClassLoader();
-        Class<?> clazz = classLoader.loadClass("cases.simple.Main");
+        Class<?> clazz = classLoader.loadClass("cases.fmt.percent_before_text.Main");
         Method method = clazz.getMethod("greet");
         String greet = (String) method.invoke(null);
 
@@ -149,27 +84,12 @@ public class InterpolateSuccessTest extends AbstractPluginTest {
 
     @Test
     public void interpolate_validExpressionWithCodes_interpolate() throws Exception {
-        String source = """
-                package cases.simple;
-                
-                import static dev.khbd.interp4j.core.Interpolations.*;
-                
-                public class Main {
-                
-                    public static String greet() {
-                        String name = "Alex";
-                        int age = 20;
-                        return fmt("Hello, %s${name}. Are you %d${age}?");
-                    }
-                }
-                """;
-
-        CompilationResult result = compiler.compile("cases/simple/Main.java", source);
+        CompilationResult result = compiler.compile("/cases/fmt/valid_with_codes/Main.java");
 
         assertThat(result.isSuccess()).isTrue();
 
         ClassLoader classLoader = result.getClassLoader();
-        Class<?> clazz = classLoader.loadClass("cases.simple.Main");
+        Class<?> clazz = classLoader.loadClass("cases.fmt.valid_with_codes.Main");
         Method method = clazz.getMethod("greet");
         String greet = (String) method.invoke(null);
 
