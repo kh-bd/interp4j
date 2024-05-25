@@ -54,13 +54,29 @@ configuration to your `pom.xml` file:
 <dependency>
     <groupId>dev.khbd.interp4j</groupId>
     <artifactId>interp4j-core</artifactId>
+    <scope>compile</scope>
     <version>LATEST</version>
 </dependency>
 ```
 
-Now, you can use `Interpolations.s` function in your code. This function is entry point to interpolations.
+Now, you can use function from `Interpolations` class in your code. These function are entry point to interpolations.
 
 Second, you need to configure your build tool to run interpolation process before source files compilation.
+
+### `s` interpolator
+
+`s` interpolator is simple. Write down a text and inject any java expression into in `${...}`. If an expression is
+a java identifier curly braces can be omitted. For example, `s("Hello, ${person.name}")` or `s("Hello, $name")`.
+
+### `fmt` interpolator
+
+`fmt` interpolator is a replacement for `String.format`. The usage is quite the same as `s` interpolator, but
+before each expression valid specifier must be provided. For example, `fmt("Hello, %20.4s${person.name}")`.
+All features of `String.format` are supported, but there are several syntactic rules:
+
+- before each expression part a valid specifier must be present
+- numeric or implicit indexing are not supported. So `fmt("%1$s${person.name}")` or `fmt("%1$s${person.name}, %<d${person.age}")` are not valid.
+- after specifiers `$$` and `%n` no code is allowed
 
 ## Versions
 
@@ -69,10 +85,10 @@ In the following table, you can find the latest interp4j version for each suppor
 
 | Java<br/> version | Latest release                                                                                                                                                                                           |
 |-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `1.8`             | [![Maven jdk1.8](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen&versionSuffix=_jre1.8)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j/1.1.0_jre1.8) |
-| `11`              | [![Maven jdk11](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen&versionSuffix=_jre11)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j/1.1.0_jre11)    |
-| `17`              | [![Maven jdk17](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen&versionSuffix=_jre17)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j/1.1.0_jre17)    |
-| `21`              | [![Maven jdk21](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen&versionSuffix=_jre21)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j/1.1.0_jre21)    |
+| `1.8`             | [![Maven jdk1.8](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen&versionSuffix=_jre1.8)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j/2.0.0_jre1.8) |
+| `11`              | [![Maven jdk11](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen&versionSuffix=_jre11)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j/2.0.0_jre11)    |
+| `17`              | [![Maven jdk17](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen&versionSuffix=_jre17)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j/2.0.0_jre17)    |
+| `21`              | [![Maven jdk21](https://img.shields.io/maven-central/v/dev.khbd.interp4j/interp4j?color=brightgreen&versionSuffix=_jre21)](https://mvnrepository.com/artifact/dev.khbd.interp4j/interp4j/2.0.0_jre21)    |
 
 ## Maven support
 
@@ -145,7 +161,7 @@ dependencies {
 
 task.withType(JavaCompile) {
     options.fork = true
-    options.compilerArgs.add('-Xplugin:interp4j interpolation.inlined=true')
+    options.compilerArgs.add('-Xplugin:interp4j')
 }
 ```
 
@@ -160,7 +176,7 @@ dependencies {
 
 task.withType(JavaCompile) {
     options.fork = true
-    options.compilerArgs.add('-Xplugin:interp4j interpolation.inlined=true')
+    options.compilerArgs.add('-Xplugin:interp4j')
     options.forkOptions.jvmArgs.addAll([
             '--add-exports', 'jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
             '--add-exports', 'jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
